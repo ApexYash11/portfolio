@@ -1,0 +1,12 @@
+/* Show hamburger only on small screens (e.g. tablets/phones) */
+@media screen and (max-width: 768px) {
+    #desktop-nav {
+        display: none;
+    }
+    #hamburger-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+}
