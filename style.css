@@ -379,13 +379,13 @@ section{
 .article-container{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2.5rem 2rem;
+  gap: 2rem 2rem; /* Reduced vertical gap for uniform alignment */
 }
 
 .article-container article{
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  gap: 1.5rem; /* Increased horizontal gap for better spacing */
+  align-items: center; /* Centered alignment for consistent layout */
 }
 
 .article-container article img{
@@ -398,19 +398,7 @@ section{
 .article-container article div{
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
-}
-
-.article-container article div h3{
-  font-size: 1.05rem;
-  margin: 0;
-  font-weight: 600;
-}
-
-.article-container article div p{
-  font-size: 0.9rem;
-  color: rgb(163, 163, 163);
-  margin: 0;
+  gap: 0.5rem; /* Adjusted gap for uniform spacing */
 }
 
 /* Projects Section */
