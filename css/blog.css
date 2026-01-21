@@ -1,4 +1,14 @@
-/* BLOGS PAGE STYLES */
+/* ============================
+   BLOG PAGE STYLES
+   Page-specific styles for blogs.html
+   ============================ */
+
+/* Import shared styles */
+@import url('./shared.css');
+
+/* ============================
+   BLOGS PAGE HERO
+   ============================ */
 
 /* Hero Section */
 .blogs-hero {
@@ -79,12 +89,14 @@
     height: 220px;
     overflow: hidden;
     width: 100%;
+    background: #0a0a0a;
 }
 
 .blog-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
     transition: transform 0.3s;
 }
 
