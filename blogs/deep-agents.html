@@ -48,6 +48,35 @@
             border-top: none;
             margin-top: 0;
         }
+        .section-heading.section-heading--problem {
+            margin: 3.25rem 0 1.5rem;
+            padding-top: 0;
+            border-top: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            line-height: 1.2;
+        }
+        .section-heading--problem span:first-child {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #9ca5b8;
+        }
+        .section-heading--problem span:last-child {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .section-heading--problem::after {
+            content: "";
+            width: 56px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #00d9ff, #6c63ff);
+            display: block;
+            margin-top: 0.5rem;
+        }
         .article-content h3 {
             font-size: 1.5rem;
             color: #fff;
@@ -95,6 +124,48 @@
             background: rgba(0, 217, 255, 0.05);
             padding: 1.5rem;
             border-radius: 0 8px 8px 0;
+        }
+        .resource-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .resource-group h3 {
+            font-size: 1.4rem;
+            margin: 0 0 0.5rem;
+            color: #fff;
+        }
+        .resource-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .resource-links li {
+            margin: 0;
+        }
+        .resource-links a {
+            color: #c5f1ff;
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 0.15rem;
+            transition: color 0.2s ease, border-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .resource-links a:hover,
+        .resource-links a:focus-visible {
+            color: #00d9ff;
+            border-bottom-color: #00d9ff;
+        }
+        .resource-links a:focus-visible {
+            outline: 2px solid rgba(0, 217, 255, 0.5);
+            outline-offset: 3px;
         }
         .article-tag {
             display: inline-block;
@@ -234,6 +305,87 @@
             border-radius: 2px;
         }
         
+        /* Navigation Button Redesign (Reverted) */
+        .nav-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.2rem !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            position: relative;
+            z-index: 1000;
+            white-space: nowrap;
+            background: rgba(0, 217, 255, 0.03) !important;
+            border: 1px solid rgba(0, 217, 255, 0.3) !important;
+            border-radius: 100px !important;
+            color: #00d9ff !important;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 217, 255, 0.1) !important;
+            border-color: #00d9ff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.15);
+        }
+        
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Bottom Section Redesign */
+        .bottom-cta-wrapper {
+            margin-top: 6rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .bottom-cta-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 1px;
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .bottom-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .bottom-cta-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+            color: #fff;
+        }
+
+        .floating-nav {
+            gap: 2rem;
+            padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        }
+        
         /* Mobile Responsiveness */
         @media (max-width: 1200px) {
             .toc-sidebar {
@@ -271,10 +423,9 @@
             <li><a href="../index.html#skills-grid" class="nav-link">Skills</a></li>
             <li><a href="../index.html#projects" class="nav-link">Projects</a></li>
             <li><a href="../index.html#blog" class="nav-link active">Blogs</a></li>
-            <li><a href="../index.html#contact" class="nav-link">Contact</a></li>
         </ul>
         <div class="nav-actions">
-             <a href="../index.html#contact" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Let's Talk</a>
+             <a href="../index.html#contact" class="btn btn-primary nav-btn">Let's Talk</a>
         </div>
     </nav>
 
@@ -344,7 +495,10 @@ graph LR
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
 
-            <h2 id="the-problem">The Problem: Why Most Agents Are Shallow</h2>
+            <h2 id="the-problem" class="section-heading section-heading--problem">
+                <span>The Problem:</span>
+                <span>Why Most Agents Are Shallow</span>
+            </h2>
             <p>You build an AI agent. It can search the web, analyze data, even write code. You give it a task: "Research the top 5 AI companies hiring in San Francisco, analyze their job openings, and write personalized cover letters for each."</p>
             <p>Your agent searches once. Gets overwhelmed. Writes one generic cover letter. Forgets companies 2 through 5. Fails completely.</p>
             <p>Sound familiar?</p>
@@ -745,7 +899,7 @@ graph TB
             </div>
 
             <h3>Automatic Context Eviction</h3>
-            <p>Here is a killer feature: FilesystemMiddleware automatically evicts large tool results to files.</p>
+            <p>Here is a killer feature: File System Middleware automatically evicts large tool results to files.</p>
 
 <pre><code class="language-python"># Agent calls expensive tool
 result = agent.internet_search("quantum computing")
@@ -878,7 +1032,7 @@ agent = create_deep_agent(
     system_prompt="You orchestrate research workflows"
 )</code></pre>
 
-            <h3>The task() Tool</h3>
+            <h3>The Task Tool ()  </h3>
             <p>The main agent delegates using the built-in <code>task</code> tool:</p>
 
 <pre><code class="language-python"># Step 1: Main agent decides to delegate
@@ -979,7 +1133,7 @@ agent = create_deep_agent(
 )
 # Agent automatically gets planning capabilities</code></pre>
 
-            <h3>FilesystemMiddleware</h3>
+            <h3>File System Middleware</h3>
             <p><strong>What it does:</strong> Adds file tools (ls, read, write, glob), handles eviction.</p>
             <p><strong>Automatic Eviction:</strong> If a tool result > threshold, it writes to a file and replaces the context with a pointer.</p>
 <pre><code class="language-python">middleware = FilesystemMiddleware(
@@ -988,7 +1142,7 @@ agent = create_deep_agent(
 )
 agent = create_deep_agent(middleware=[middleware])</code></pre>
 
-            <h3>SubAgentMiddleware</h3>
+            <h3>Sub Agent Middleware</h3>
             <p><strong>What it does:</strong> Provides the <code>task</code> tool, manages subagent lifecycle and context isolation.</p>
 <pre><code class="language-python">middleware = SubAgentMiddleware(
     default_model="anthropic:claude-sonnet-4-20250514",
@@ -1277,36 +1431,39 @@ flowchart TD
             </blockquote>
 
             <h2 id="resources">Resources for Learning More</h2>
-            
-            <h3>Core Reading</h3>
-            <ul>
-                <li><a href="https://github.com/langchain-ai/langchain" target="_blank" rel="noopener noreferrer">LangChain Deep Agents Repo</a></li>
-                <li><a href="https://github.com/kn1026/cc/blob/main/claudecode.md" target="_blank" rel="noopener noreferrer">Claude Code System Prompts</a></li>
-                <li><a href="https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus" target="_blank" rel="noopener noreferrer">Manus: Context Engineering</a></li>
-            </ul>
+            <section class="resource-section">
+                <div class="resource-group">
+                    <h3>Core Reading</h3>
+                    <ul class="resource-links">
+                        <li><a href="https://github.com/langchain-ai/langchain" target="_blank" rel="noopener noreferrer">LangChain Deep Agents Repo</a></li>
+                        <li><a href="https://github.com/kn1026/cc/blob/main/claudecode.md" target="_blank" rel="noopener noreferrer">Claude Code System Prompts</a></li>
+                        <li><a href="https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus" target="_blank" rel="noopener noreferrer">Manus: Context Engineering</a></li>
+                    </ul>
+                </div>
+                <div class="resource-group">
+                    <h3>Academic Papers</h3>
+                    <ul class="resource-links">
+                        <li><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct: Reasoning and Acting</a></li>
+                        <li><a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener noreferrer">Toolformer</a></li>
+                        <li><a href="https://arxiv.org/abs/2306.02224" target="_blank" rel="noopener noreferrer">AutoGPT Paper</a></li>
+                    </ul>
+                </div>
+                <div class="resource-group">
+                    <h3>Tools & Libraries</h3>
+                    <ul class="resource-links">
+                        <li><strong>Search:</strong> <a href="https://tavily.com/" target="_blank" rel="noopener noreferrer">Tavily</a> (Agents), <a href="https://serpapi.com/" target="_blank" rel="noopener noreferrer">SerpAPI</a></li>
+                        <li><strong>Vector DBs:</strong> Pinecone, Chroma, Weaviate</li>
+                        <li><strong>Sandboxing:</strong> <a href="https://e2b.dev/" target="_blank" rel="noopener noreferrer">E2B</a>, Modal, Docker</li>
+                        <li><strong>Observability:</strong> <a href="https://smith.langchain.com/" target="_blank" rel="noopener noreferrer">LangSmith</a>, Weights & Biases</li>
+                    </ul>
+                </div>
+            </section>
 
-            <h3>Academic Papers</h3>
-            <ul>
-                <li><a href="https://arxiv.org/abs/2210.03629" target="_blank" rel="noopener noreferrer">ReAct: Reasoning and Acting</a></li>
-                <li><a href="https://arxiv.org/abs/2302.04761" target="_blank" rel="noopener noreferrer">Toolformer</a></li>
-                <li><a href="https://arxiv.org/abs/2306.02224" target="_blank" rel="noopener noreferrer">AutoGPT Paper</a></li>
-            </ul>
-
-            <h3>Tools & Libraries</h3>
-            <ul>
-                <li><strong>Search:</strong> <a href="https://tavily.com/" target="_blank" rel="noopener noreferrer">Tavily</a> (Agents), <a href="https://serpapi.com/" target="_blank" rel="noopener noreferrer">SerpAPI</a></li>
-                <li><strong>Vector DBs:</strong> Pinecone, Chroma, Weaviate</li>
-                <li><strong>Sandboxing:</strong> <a href="https://e2b.dev/" target="_blank" rel="noopener noreferrer">E2B</a>, Modal, Docker</li>
-                <li><strong>Observability:</strong> <a href="https://smith.langchain.com/" target="_blank" rel="noopener noreferrer">LangSmith</a>, Weights & Biases</li>
-            </ul>
-
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
-            
-            <p><em>Author: Yash Maheshwari | Date: Jan 20, 2026</em></p>
-
-            <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                <p>Enjoyed this breakdown?</p>
-                <a href="../index.html#contact" class="btn btn-primary">Discuss AI Strategy</a>
+            <div class="bottom-cta-wrapper">
+                <a href="../index.html#contact" class="bottom-cta-btn">
+                    <span>Discuss AI Strategy</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </article>
         </main>
