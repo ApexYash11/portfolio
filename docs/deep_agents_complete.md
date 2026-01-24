@@ -1,6 +1,6 @@
 ---
 title: "Deep Agents: Why Most AI Agents Are Shallow (And How to Fix It)"
-date: "2026-01-18"
+date: "2026-01-24"
 author: "Yash Maheshwari"
 tags:
   [
