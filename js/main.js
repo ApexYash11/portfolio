@@ -17,6 +17,45 @@ window.addEventListener('load', () => {
     }
 });
 
+// Mobile Menu Toggle
+const navToggle = document.querySelector('.nav-toggle');
+const navLinksContainer = document.querySelector('.nav-links-container');
+const navOverlay = document.querySelector('.nav-overlay');
+const navLinksAll = document.querySelectorAll('.nav-link');
+
+function closeMobileMenu() {
+    navToggle?.classList.remove('active');
+    navLinksContainer?.classList.remove('active');
+    navOverlay?.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function openMobileMenu() {
+    navToggle?.classList.add('active');
+    navLinksContainer?.classList.add('active');
+    navOverlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+navToggle?.addEventListener('click', () => {
+    if (navToggle.classList.contains('active')) {
+        closeMobileMenu();
+    } else {
+        openMobileMenu();
+    }
+});
+
+navOverlay?.addEventListener('click', closeMobileMenu);
+
+// Close mobile menu when clicking any nav link
+navLinksAll.forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            closeMobileMenu();
+        }
+    });
+});
+
 // Parallax Effect
 window.addEventListener('scroll', () => {
     const scrolled = window.scrollY;
