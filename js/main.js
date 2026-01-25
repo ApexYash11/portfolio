@@ -27,7 +27,10 @@ function closeMobileMenu() {
     navToggle?.classList.remove('active');
     navLinksContainer?.classList.remove('active');
     navOverlay?.classList.remove('active');
-    document.body.style.overflow = 'auto';
+    // Only clear style if modal is not active to prevent scroll conflict
+    if (!document.querySelector('.modal.active')) {
+        document.body.style.overflow = '';
+    }
 }
 
 function openMobileMenu() {
