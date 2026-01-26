@@ -471,7 +471,7 @@
 
             <div class="mermaid">
 graph LR
-    subgraph Without ["❌ Without MCP: N×M Problem"]
+    subgraph Without ["Without MCP: NxM Problem"]
         A1[AI App 1]
         A2[AI App 2]
         A3[AI App 3]
@@ -492,15 +492,13 @@ graph LR
         A3 --> S2
         A3 --> S3
         A3 --> S4
-        
-        style Without fill:#1a1a1a,stroke:#EF4444,stroke-width:2px
     end
     
-    subgraph With ["✅ With MCP: N+M Solution"]
+    subgraph With ["With MCP: N+M Solution"]
         B1[AI App 1]
         B2[AI App 2]
         B3[AI App 3]
-        MCP["🔗 MCP Layer"]
+        MCP[MCP Layer]
         B1S1[GitHub]
         B1S2[Drive]
         B1S3[Database]
@@ -513,8 +511,6 @@ graph LR
         MCP --> B1S2
         MCP --> B1S3
         MCP --> B1S4
-        
-        style With fill:#1a1a1a,stroke:#10B981,stroke-width:2px
     end
             </div>
 
@@ -764,6 +760,24 @@ Server → Client: {
                 <li><strong>Circuit breaker pattern:</strong> If a server fails repeatedly, stop trying temporarily.</li>
             </ul>
 
+            <div class="mermaid">
+graph TD
+    A["Tool Call Fails"] --> B{Error Code?}
+    B -->|Retryable| C["Timeout/Server Error"]
+    B -->|Non-Retryable| D["Invalid Args/Auth Failure"]
+    C --> E["Exponential Backoff<br/>Wait: 2^n + jitter"]
+    E --> F["Retry Call"]
+    F --> G{Success?}
+    G -->|Yes| H["Return Result"]
+    G -->|No| I{Max Retries?}
+    I -->|No| E
+    I -->|Yes| J["Give Up<br/>Log Error"]
+    D --> K["Log Error<br/>Surface to User"]
+    H --> L["Success"]
+    J --> L
+    K --> L
+            </div>
+
             <h2 id="capabilities-negotiation">Capabilities Negotiation: Protocol Version Matching</h2>
 
             <p>During initialization, client and server exchange <strong>capabilities</strong>—what features each supports. This prevents version mismatches.</p>
@@ -811,6 +825,26 @@ Server → Client: {
             </ul>
 
             <p><strong>Best practice:</strong> Always implement graceful degradation. If advanced features aren't available, use the core API instead of failing.</p>
+
+            <div class="mermaid">
+graph TD
+    A["Client sends<br/>initialize request"] --> B{Server response?}
+    B -->|Compatible| C["Server has all<br/>requested capabilities"]
+    B -->|Limited| D["Server has<br/>some capabilities"]
+    B -->|Incompatible| E["Server rejects<br/>incompatible versions"]
+    
+    C --> F["Use full API<br/>tools + resources"]
+    D --> G["Use degraded API<br/>tools only"]
+    E --> H["Connection fails<br/>Retry or error"]
+    
+    F --> I["Success"]
+    G --> I
+    H --> J["Failed"]
+    
+    style A fill:#1a1a1a,stroke:#3B82F6
+    style I fill:#1a1a1a,stroke:#10B981
+    style J fill:#1a1a1a,stroke:#EF4444
+            </div>
 
             <h2 id="tools-vs-resources">Tools vs Resources: The Two Pillars</h2>
 
@@ -982,6 +1016,21 @@ for i in range(20):
             </code></pre>
 
             <p><strong>When to rate limit:</strong> When server returns HTTP 429 (Too Many Requests), back off. Respect `retry_after_ms` hints in error responses.</p>
+
+            <h3 id="backoff-visualization">Exponential Backoff Curve</h3>
+
+            <p>Here's what exponential backoff looks like in practice:</p>
+
+            <div class="mermaid">
+graph LR
+    A["Attempt 1<br/>Fail<br/>Wait 1s"] --> B["Attempt 2<br/>Fail<br/>Wait 2s"]
+    B --> C["Attempt 3<br/>Fail<br/>Wait 4s"]
+    C --> D["Attempt 4<br/>Fail<br/>Wait 8s"]
+    D --> E["Attempt 5<br/>Fail<br/>Wait 16s"]
+    E --> F["Attempt 6<br/>Success<br/>Total: 31s"]
+            </div>
+
+            <p><strong>Key insight:</strong> Each retry doubles the wait time. By attempt 5, you've waited ~31 seconds total. Most services recover by then.</p>
 
             <h2 id="transports">Transport Mechanisms: STDIO vs HTTP</h2>
 
@@ -1178,6 +1227,37 @@ Audit Log Entry: {
             </code></pre>
 
             <p><strong>Why this matters:</strong> If an AI application goes rogue (or is compromised), audit logs show exactly what it did, when, and who authorized it. Non-negotiable for regulated industries (finance, healthcare, legal).</p>
+
+            <h3 id="scope-matrix">Scope Authorization Matrix</h3>
+
+            <div class="mermaid">
+graph TB
+    subgraph Scopes ["Authorization Scopes"]
+        R["Read Scopes<br/>resource:read<br/>expense:read"]
+        W["Write Scopes<br/>resource:write<br/>expense:write"]
+        A["Admin Scopes<br/>user:admin<br/>config:admin"]
+    end
+    
+    subgraph Apps ["AI Applications"]
+        AI1["Claude"]
+        AI2["GPT"]
+        AI3["Custom App"]
+    end
+    
+    subgraph Permissions ["Granted Permissions"]
+        P1["Claude: read+write"]
+        P2["GPT: read-only"]
+        P3["Custom: read+write+admin"]
+    end
+    
+    R -.-> P1
+    W -.-> P1
+    A -.-> P3
+    
+    AI1 --> P1
+    AI2 --> P2
+    AI3 --> P3
+            </div>
 
             <h3 id="rate-limiting-security">Rate Limiting as Security</h3>
 
