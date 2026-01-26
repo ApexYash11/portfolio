@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Context Protocol (MCP): The Universal Bridge for AI - Yash Maheshwari</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <!-- Mermaid JS for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true, theme: 'dark', securityLevel: 'strict'});</script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <style>
+        /* Article Specific Styles */
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+        }
+        .article-header {
+            text-align: center;
+            padding: 8rem 0 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 3rem;
+        }
+        .article-meta {
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d1d5db;
+        }
+        .article-content h2 {
+            font-size: 2rem;
+            color: #fff;
+            margin: 4rem 0 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .article-content h2:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+        .section-heading {
+            margin: 3.25rem 0 1.5rem;
+            padding-top: 0;
+            border-top: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            line-height: 1.2;
+        }
+        .section-heading span:first-child {
+            font-size: 0.8rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: #9ca5b8;
+        }
+        .section-heading span:last-child {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .section-heading::after {
+            content: "";
+            width: 56px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #00d9ff, #6c63ff);
+            display: block;
+            margin-top: 0.5rem;
+        }
+        .article-content h3 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 2.5rem 0 1rem;
+        }
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+        .article-content ul, .article-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        .article-content li {
+            margin-bottom: 0.5rem;
+        }
+        .article-content img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .article-content pre {
+            background: #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 2rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .article-content code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: #00d9ff;
+        }
+        .article-content pre code {
+            color: #e0e0e0;
+            background: none;
+            padding: 0;
+        }
+        .article-content blockquote {
+            border-left: 3px solid #00d9ff;
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #a0a0a0;
+            background: rgba(0, 217, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+        .resource-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        .resource-group h3 {
+            font-size: 1.4rem;
+            margin: 0 0 0.5rem;
+            color: #fff;
+        }
+        .resource-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .resource-links li {
+            margin: 0;
+        }
+        .resource-links a {
+            color: #c5f1ff;
+            font-weight: 500;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 0.15rem;
+            transition: color 0.2s ease, border-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .resource-links a:hover,
+        .resource-links a:focus-visible {
+            color: #00d9ff;
+            border-bottom-color: #00d9ff;
+        }
+        .resource-links a:focus-visible {
+            outline: 2px solid rgba(0, 217, 255, 0.5);
+            outline-offset: 3px;
+        }
+        .article-tag {
+            display: inline-block;
+            background: rgba(0, 217, 255, 0.1);
+            color: #00d9ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th {
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: #fff;
+        }
+        /* Mermaid Diagram Styles */
+        .mermaid {
+            background: rgba(255,255,255,0.02);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        /* Code Block Styles */
+        pre[class*="language-"] {
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            background: #1a1a1a !important;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Blog Layout with TOC Sidebar */
+        .blog-layout {
+            display: flex;
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            justify-content: center;
+        }
+        
+        .blog-main {
+            flex: 1;
+            min-width: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* TOC Sidebar */
+        .toc-sidebar {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .toc-sticky {
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .toc-sticky h3 {
+            font-size: 1rem;
+            margin: 0 0 1rem 0;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .toc-list li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc-link {
+            display: block;
+            color: #a0a0a0;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-left: 2px solid transparent;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .toc-link:hover {
+            color: #fff;
+            border-left-color: #00d9ff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .toc-link.active {
+            color: #00d9ff;
+            border-left-color: #00d9ff;
+            background: rgba(0, 217, 255, 0.1);
+            font-weight: 500;
+        }
+        
+        /* Scrollbar for TOC */
+        .toc-sticky::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .toc-sticky::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .toc-sticky::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+        
+        /* Navigation Button Redesign */
+        .nav-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            padding: 0.6rem 1.2rem !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            position: relative;
+            z-index: 1000;
+            white-space: nowrap;
+            background: rgba(0, 217, 255, 0.03) !important;
+            border: 1px solid rgba(0, 217, 255, 0.3) !important;
+            border-radius: 100px !important;
+            color: #00d9ff !important;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(0, 217, 255, 0.1) !important;
+            border-color: #00d9ff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 217, 255, 0.15);
+        }
+        
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Bottom Section Redesign */
+        .bottom-cta-wrapper {
+            margin-top: 6rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .bottom-cta-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 1px;
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .bottom-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .bottom-cta-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+            color: #fff;
+        }
+
+        .floating-nav {
+            gap: 2rem;
+            padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 1200px) {
+            .toc-sidebar {
+                display: none;
+            }
+            
+            .blog-layout {
+                padding: 0 1.5rem;
+            }
+            
+            .blog-main {
+                max-width: 100%;
+            }
+        }
+        
+        @media (min-width: 1201px) {
+            .article-container {
+                max-width: 100%;
+                padding: 0;
+            }
+        }
+        
+        .lead {
+            font-size: 1.25rem !important;
+            color: #a0a0a0 !important;
+            margin-bottom: 2rem !important;
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <nav class="floating-nav">
+        <div class="nav-logo">
+            <a href="../index.html">&lt;/&gt; Yash Maheshwari</a>
+        </div>
+        <ul class="nav-links-container">
+            <li class="nav-indicator"></li>
+            <li><a href="../index.html#hero" class="nav-link">Home</a></li>
+            <li><a href="../index.html#about" class="nav-link">About</a></li>
+            <li><a href="../index.html#skills-grid" class="nav-link">Skills</a></li>
+            <li><a href="../index.html#projects" class="nav-link">Projects</a></li>
+            <li><a href="../index.html#blog" class="nav-link active">Blogs</a></li>
+        </ul>
+        <div class="nav-actions">
+             <a href="../index.html#contact" class="btn btn-primary nav-btn">Let's Talk</a>
+        </div>
+    </nav>
+
+    <div class="article-container">
+        <div style="margin-top: 120px; margin-bottom: 20px; padding: 0 2rem;">
+            <a href="../blogs.html" class="back-link">← Back to All Blogs</a>
+        </div>
+    </div>
+
+    <div class="blog-layout">
+        <!-- Main Article Content -->
+        <main class="blog-main">
+            <header class="article-header">
+                <h1>Model Context Protocol (MCP): The Universal Bridge for AI Applications</h1>
+                <div class="blog-meta article-meta">
+                    <span><i class="far fa-calendar"></i> Jan 26, 2026</span>
+                    <span><i class="far fa-clock"></i> 18 min read</span>
+                    <span><i class="far fa-user"></i> Yash Maheshwari</span>
+                </div>
+            </header>
+
+            <article class="article-content">
+            <p class="lead">
+                Discover how the Model Context Protocol (MCP) simplifies AI integrations. Learn why N×M integration problems become N+M solutions, and how to implement MCP in your AI applications.
+            </p>
+
+            <img src="../assets/images(MCP)/MCP_hero.png" alt="MCP Cover" style="max-width: 100%; height: auto;">
+
+            <h2 id="what-is-mcp">What is the Model Context Protocol?</h2>
+
+            <p><strong>Model Context Protocol (MCP)</strong> is a standardized framework that creates a universal bridge between AI applications (like Claude, ChatGPT) and external services or data sources (databases, APIs, file systems).</p>
+
+            <p>Think of it as the <strong>USB-C of AI integrations</strong>—one standardized connector instead of dozens of proprietary cables.</p>
+
+            <div class="mermaid">
+graph LR
+    subgraph Without ["❌ Without MCP: N×M Problem"]
+        A1[AI App 1]
+        A2[AI App 2]
+        A3[AI App 3]
+        S1[GitHub]
+        S2[Drive]
+        S3[Database]
+        S4[Slack]
+        
+        A1 --> S1
+        A1 --> S2
+        A1 --> S3
+        A1 --> S4
+        A2 --> S1
+        A2 --> S2
+        A2 --> S3
+        A2 --> S4
+        A3 --> S1
+        A3 --> S2
+        A3 --> S3
+        A3 --> S4
+        
+        style Without fill:#1a1a1a,stroke:#EF4444,stroke-width:2px
+    end
+    
+    subgraph With ["✅ With MCP: N+M Solution"]
+        B1[AI App 1]
+        B2[AI App 2]
+        B3[AI App 3]
+        MCP["🔗 MCP Layer"]
+        B1S1[GitHub]
+        B1S2[Drive]
+        B1S3[Database]
+        B1S4[Slack]
+        
+        B1 --> MCP
+        B2 --> MCP
+        B3 --> MCP
+        MCP --> B1S1
+        MCP --> B1S2
+        MCP --> B1S3
+        MCP --> B1S4
+        
+        style With fill:#1a1a1a,stroke:#10B981,stroke-width:2px
+    end
+            </div>
+
+            <h3 id="the-problem">The N×M Integration Problem</h3>
+
+            <p>Before MCP, integrating multiple AI applications with multiple services meant building <strong>N × M custom bridges</strong>:</p>
+
+            <ul>
+                <li>3 AI apps × 4 services = <strong>12 custom integrations</strong></li>
+                <li>Each integration had different auth, error handling, retry logic</li>
+                <li>Maintenance nightmare as services update APIs</li>
+                <li>Security vulnerabilities multiply with each bridge</li>
+            </ul>
+
+            <p><strong>With MCP:</strong> Each AI app connects once to MCP. Each service implements MCP once. <strong>3 + 4 = 7 total integrations instead of 12.</strong></p>
+
+            <h2 id="architecture">Architecture: Three Layers of MCP</h2>
+
+            <p>MCP operates on a simple three-layer model:</p>
+
+            <img src="../assets/images(MCP)/layers.png" alt="MCP Three-Layer Architecture" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="layer-1-host">Layer 1: Host (Applications)</h3>
+
+            <p>The Host layer includes all user-facing AI applications:</p>
+
+            <ul>
+                <li><strong>Claude / ChatGPT</strong> (for conversational AI)</li>
+                <li><strong>IDEs</strong> (VS Code with AI assistants)</li>
+                <li><strong>Custom AI applications</strong> (built with LangChain, LlamaIndex)</li>
+            </ul>
+
+            <p>Hosts don't care about backend details. They just need to call tools and get results.</p>
+
+            <h3 id="layer-2-client">Layer 2: Client (MCP Client)</h3>
+
+            <p>The MCP Client sits between the Host and Servers, managing:</p>
+
+            <ul>
+                <li><strong>Connection initialization</strong> and capability negotiation</li>
+                <li><strong>Tool discovery</strong> ("What can I call?")</li>
+                <li><strong>Tool execution</strong> ("Call this tool with these parameters")</li>
+                <li><strong>Error handling and retries</strong></li>
+                <li><strong>Security and authentication</strong></li>
+            </ul>
+
+            <img src="../assets/images(MCP)/connection.png" alt="Client-Server Connection" style="max-width: 100%; height: auto; margin: 2rem 0;">
+
+            <h3 id="layer-3-server">Layer 3: Server (External Services)</h3>
+
+            <p>Servers are the actual integrations—GitHub API, database connections, file systems, etc.</p>
+
+            <p>Each server implements the MCP Server interface:</p>
+
+            <pre><code class="language-json">
+{
+  "server": {
+    "name": "github-server",
+    "version": "1.0.0",
+    "tools": [
+      {
+        "name": "list_repositories",
+        "description": "List all repositories for a user",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "username": { "type": "string" }
+          }
+        }
+      },
+      {
+        "name": "create_issue",
+        "description": "Create a new GitHub issue",
+        "inputSchema": { ... }
+      }
+    ]
+  }
+}
+            </code></pre>
+
+            <h2 id="protocol-lifecycle">Protocol Lifecycle: Init → Operate → Shutdown</h2>
+
+            <p>MCP follows a well-defined three-phase lifecycle:</p>
+
+            <img src="../assets/images(MCP)/phases.png" alt="MCP Protocol Phases" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="phase-1">Phase 1: Initialization</h3>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {...},
+    "clientInfo": {
+      "name": "my-app",
+      "version": "1.0"
+    }
+  }
+}
+
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {...},
+    "serverInfo": {
+      "name": "github-server",
+      "version": "1.0"
+    }
+  }
+}
+            </code></pre>
+
+            <h3 id="phase-2">Phase 2: Operation</h3>
+
+            <p>Once initialized, the client can call tools repeatedly:</p>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "list_repositories",
+    "arguments": { "username": "torvalds" }
+  }
+}
+
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[List of repositories...]"
+      }
+    ]
+  }
+}
+            </code></pre>
+
+            <h3 id="phase-3">Phase 3: Shutdown</h3>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "close"
+}
+            </code></pre>
+
+            <h2 id="tools-vs-resources">Tools vs Resources: The Two Pillars</h2>
+
+            <p>MCP distinguishes between two types of capabilities:</p>
+
+            <img src="../assets/images(MCP)/comparison diagram.png" alt="Tools vs Resources" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="tools-def">Tools: Modifications & Actions</h3>
+
+            <p><strong>Tools</strong> are callable functions that modify state or perform actions:</p>
+
+            <ul>
+                <li><strong>✍️ Writing files</strong> - `create_file`, `update_file`</li>
+                <li><strong>📧 Sending messages</strong> - `send_email`, `post_slack`</li>
+                <li><strong>💾 Database updates</strong> - `add_expense`, `update_record`</li>
+                <li><strong>⚡ External actions</strong> - `create_issue`, `deploy_app`</li>
+            </ul>
+
+            <p><strong>Key property:</strong> Tools change state. Calling them multiple times produces different results (unless you're resetting state).</p>
+
+            <h3 id="resources-def">Resources: Data & Information</h3>
+
+            <p><strong>Resources</strong> are read-only data sources:</p>
+
+            <ul>
+                <li><strong>📄 File contents</strong> - `read_file`, `list_files`</li>
+                <li><strong>👤 User profiles</strong> - `get_profile`, `list_users`</li>
+                <li><strong>📊 Metrics & logs</strong> - `query_database`, `get_analytics`</li>
+                <li><strong>📚 Documentation</strong> - `search_docs`, `get_schema`</li>
+            </ul>
+
+            <p><strong>Key property:</strong> Resources are safe to call repeatedly. The AI can fetch the same data multiple times without side effects.</p>
+
+            <h2 id="transports">Transport Mechanisms: STDIO vs HTTP</h2>
+
+            <p>MCP supports two transport mechanisms:</p>
+
+            <img src="../assets/images(MCP)/side-by-side.png" alt="STDIO vs HTTP Comparison" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="stdio-transport">STDIO: Local, Ultra-Fast</h3>
+
+            <p>For local integrations (Host and Server on same machine):</p>
+
+            <ul>
+                <li><strong>Communication:</strong> Standard input/output pipes</li>
+                <li><strong>Latency:</strong> &lt;1ms (process-to-process)</li>
+                <li><strong>Use case:</strong> Development, single-machine deployments</li>
+                <li><strong>Security:</strong> Limited to same machine</li>
+            </ul>
+
+            <h3 id="http-transport">HTTP: Remote, Distributed</h3>
+
+            <p>For remote integrations (Host and Server on different machines):</p>
+
+            <ul>
+                <li><strong>Communication:</strong> HTTP requests + Server-Sent Events (SSE)</li>
+                <li><strong>Latency:</strong> 20-100ms (network-dependent)</li>
+                <li><strong>Use case:</strong> Cloud deployments, third-party services</li>
+                <li><strong>Security:</strong> Full TLS support, authentication tokens</li>
+            </ul>
+
+            <h2 id="real-world-example">Real-World Example: Expense Tracker App</h2>
+
+            <p>Let's build a simple MCP-enabled expense tracker:</p>
+
+            <img src="../assets/images(MCP)/layerd-arch.png" alt="Layered Architecture Example" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="expense-tools">Tools in Expense Tracker</h3>
+
+            <pre><code class="language-json">
+{
+  "tools": [
+    {
+      "name": "add_expense",
+      "description": "Record a new expense",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "amount": { "type": "number" },
+          "category": { "type": "string" },
+          "description": { "type": "string" },
+          "date": { "type": "string" }
+        },
+        "required": ["amount", "category"]
+      }
+    },
+    {
+      "name": "list_expenses",
+      "description": "List all expenses",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filter": { "type": "string" },
+          "limit": { "type": "integer" }
+        }
+      }
+    },
+    {
+      "name": "get_summary",
+      "description": "Get spending summary",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "period": { "type": "string", "enum": ["daily", "weekly", "monthly"] }
+        }
+      }
+    }
+  ]
+}
+            </code></pre>
+
+            <h3 id="expense-workflow">Workflow Example</h3>
+
+            <pre><code class="language-json">
+User: "Add $50 for coffee"
+
+MCP Client: Calls add_expense({
+  "amount": 50,
+  "category": "food",
+  "description": "coffee",
+  "date": "2026-01-26"
+})
+
+Server: Records in database, returns success
+
+User: "How much did I spend this week?"
+
+MCP Client: Calls get_summary({
+  "period": "weekly"
+})
+
+Server: Queries database, returns {"total": 250, "by_category": {...}}
+            </code></pre>
+
+            <h2 id="why-mcp-matters">Why MCP Matters (Now More Than Ever)</h2>
+
+            <img src="../assets/images(MCP)/context-engineering.png" alt="Context Engineering" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <p>As AI applications become more sophisticated, integration complexity explodes. MCP solves this:</p>
+
+            <ul>
+                <li><strong>🔌 Plug-and-play integrations</strong> - Add any MCP server to any MCP client instantly</li>
+                <li><strong>🔐 Security by design</strong> - Explicit tool definitions, rate limiting, audit logs</li>
+                <li><strong>⚙️ Easier maintenance</strong> - Update one server spec instead of patching all clients</li>
+                <li><strong>📈 Scalability</strong> - From hobby projects to enterprise deployments</li>
+                <li><strong>🌍 Community ecosystem</strong> - Share servers across teams and organizations</li>
+            </ul>
+
+            <h2 id="getting-started">Getting Started with MCP</h2>
+
+            <h3 id="step1">Step 1: Choose Your Framework</h3>
+
+            <ul>
+                <li><strong>Python:</strong> Use `mcp` Python SDK</li>
+                <li><strong>Node.js:</strong> Use `@modelcontextprotocol/sdk`</li>
+                <li><strong>Other languages:</strong> Implement JSON-RPC directly</li>
+            </ul>
+
+            <h3 id="step2">Step 2: Create Your First Server</h3>
+
+            <pre><code class="language-python">
+from mcp.server import Server
+
+server = Server(name="my-server")
+
+@server.tool()
+def get_user(username: str) -> str:
+    """Get user profile"""
+    return f"User: {username}"
+
+@server.tool()
+def create_note(title: str, content: str) -> str:
+    """Create a new note"""
+    return f"Note created: {title}"
+
+if __name__ == "__main__":
+    server.run()
+            </code></pre>
+
+            <h3 id="step3">Step 3: Connect a Client</h3>
+
+            <pre><code class="language-python">
+from mcp.client import Client
+
+client = Client("my-server")
+client.connect()
+
+# Call tools
+result = client.call_tool("get_user", {"username": "alice"})
+print(result)
+
+client.disconnect()
+            </code></pre>
+
+            <h2 id="resources">Resources & Further Reading</h2>
+
+            <div class="resource-section">
+                <div class="resource-group">
+                    <h3><i class="fas fa-book"></i> Official Documentation</h3>
+                    <ul class="resource-links">
+                        <li><a href="https://modelcontextprotocol.io/introduction" target="_blank">MCP Official Docs<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://github.com/modelcontextprotocol/specification" target="_blank">MCP Specification<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://github.com/modelcontextprotocol/servers" target="_blank">Official MCP Servers<i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="resource-group">
+                    <h3><i class="fas fa-code"></i> Implementation</h3>
+                    <ul class="resource-links">
+                        <li><a href="https://github.com/modelcontextprotocol/python-sdk" target="_blank">Python SDK<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank">TypeScript SDK<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/github" target="_blank">GitHub Server Example<i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="resource-group">
+                    <h3><i class="fas fa-graduation-cap"></i> Learning</h3>
+                    <ul class="resource-links">
+                        <li><a href="https://docs.anthropic.com/en/docs/build-a-bot" target="_blank">Building with Claude<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://modelcontextprotocol.io/examples" target="_blank">MCP Examples<i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://github.com/topics/model-context-protocol" target="_blank">Community Projects<i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bottom-cta-wrapper">
+                <p style="color: #a0a0a0; margin-bottom: 1.5rem;">Want to learn more about AI engineering?</p>
+                <a href="../index.html#contact" class="bottom-cta-btn">
+                    Get in Touch <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            </article>
+        </main>
+
+        <!-- Table of Contents Sidebar -->
+        <aside class="toc-sidebar">
+            <div class="toc-sticky">
+                <h3>Contents</h3>
+                <ul class="toc-list">
+                    <li><a href="#what-is-mcp" class="toc-link">What is MCP?</a></li>
+                    <li><a href="#the-problem" class="toc-link">The N×M Problem</a></li>
+                    <li><a href="#architecture" class="toc-link">Architecture</a>
+                        <ul class="toc-list" style="margin-left: 0.5rem; margin-top: 0.5rem;">
+                            <li><a href="#layer-1-host" class="toc-link">Layer 1: Host</a></li>
+                            <li><a href="#layer-2-client" class="toc-link">Layer 2: Client</a></li>
+                            <li><a href="#layer-3-server" class="toc-link">Layer 3: Server</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#protocol-lifecycle" class="toc-link">Lifecycle</a></li>
+                    <li><a href="#tools-vs-resources" class="toc-link">Tools vs Resources</a></li>
+                    <li><a href="#transports" class="toc-link">Transports</a></li>
+                    <li><a href="#real-world-example" class="toc-link">Real-World Example</a></li>
+                    <li><a href="#why-mcp-matters" class="toc-link">Why It Matters</a></li>
+                    <li><a href="#getting-started" class="toc-link">Getting Started</a></li>
+                    <li><a href="#resources" class="toc-link">Resources</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-section" style="margin-top: 8rem;">
+        <div class="footer-content">
+            <div class="footer-right">
+                <p class="copyright">© 2026 YASH MAHESHWARI</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script>
+        // TOC Active Link Tracking
+        const toc = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('h2, h3');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            toc.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
