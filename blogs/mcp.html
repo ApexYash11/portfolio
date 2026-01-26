@@ -671,6 +671,147 @@ Client → Server: {
 }
             </code></pre>
 
+            <h2 id="error-handling">Error Handling & Recovery</h2>
+
+            <p>In production, things fail. MCP uses JSON-RPC error responses to communicate failures clearly.</p>
+
+            <h3 id="error-format">Standard Error Response Format</h3>
+
+            <pre><code class="language-json">
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "error": {
+    "code": -32000,
+    "message": "Server error",
+    "data": {
+      "detail": "Database connection failed",
+      "retryable": true,
+      "retry_after_ms": 5000
+    }
+  }
+}
+            </code></pre>
+
+            <h3 id="error-cases">Common Error Scenarios</h3>
+
+            <p><strong>1. Invalid Arguments</strong></p>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "add_expense",
+    "arguments": { "amount": "not-a-number", "category": "food" }
+  }
+}
+
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "error": {
+    "code": -32602,
+    "message": "Invalid params",
+    "data": { "field": "amount", "reason": "Expected number, got string" }
+  }
+}
+            </code></pre>
+
+            <p><strong>2. Timeout/Server Unavailable</strong></p>
+
+            <pre><code class="language-json">
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "error": {
+    "code": -32000,
+    "message": "Server error",
+    "data": {
+      "detail": "Database query timed out after 30s",
+      "retryable": true,
+      "retry_after_ms": 10000
+    }
+  }
+}
+            </code></pre>
+
+            <p><strong>3. Authorization Failure</strong></p>
+
+            <pre><code class="language-json">
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "error": {
+    "code": -32001,
+    "message": "Forbidden",
+    "data": {
+      "detail": "User lacks 'expense:write' permission",
+      "retryable": false,
+      "required_scope": "expense:write"
+    }
+  }
+}
+            </code></pre>
+
+            <h3 id="client-error-handling">How Clients Should Handle Errors</h3>
+
+            <ul>
+                <li><strong>Retryable errors (timeout, server error):</strong> Implement exponential backoff. Wait before retrying.</li>
+                <li><strong>Non-retryable errors (invalid args, auth failure):</strong> Log and surface to user. Don't retry.</li>
+                <li><strong>Use `retry_after_ms` hint:</strong> Servers specify how long to wait—respect it.</li>
+                <li><strong>Circuit breaker pattern:</strong> If a server fails repeatedly, stop trying temporarily.</li>
+            </ul>
+
+            <h2 id="capabilities-negotiation">Capabilities Negotiation: Protocol Version Matching</h2>
+
+            <p>During initialization, client and server exchange <strong>capabilities</strong>—what features each supports. This prevents version mismatches.</p>
+
+            <h3 id="capability-exchange">The Capability Exchange</h3>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "initialize",
+  "params": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {
+      "experimental": false,
+      "tools": true,
+      "resources": true,
+      "pagination": true
+    },
+    "clientInfo": { "name": "claude-ai", "version": "1.2.0" }
+  }
+}
+
+Server → Client: {
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "capabilities": {
+      "tools": true,
+      "resources": false,
+      "webhooks": true
+    },
+    "serverInfo": { "name": "github-server", "version": "2.0.1" }
+  }
+}
+            </code></pre>
+
+            <h3 id="capability-mismatch">Handling Capability Mismatches</h3>
+
+            <ul>
+                <li><strong>Client wants resources, server doesn't offer them:</strong> Client falls back to tools API only.</li>
+                <li><strong>Server requires experimental features, client doesn't support:</strong> Connection fails—incompatible.</li>
+                <li><strong>Protocol version mismatch:</strong> Client or server rejects if versions differ.</li>
+            </ul>
+
+            <p><strong>Best practice:</strong> Always implement graceful degradation. If advanced features aren't available, use the core API instead of failing.</p>
+
             <h2 id="tools-vs-resources">Tools vs Resources: The Two Pillars</h2>
 
             <p>MCP distinguishes between two types of capabilities:</p>
@@ -703,6 +844,145 @@ Client → Server: {
 
             <p><strong>Key property:</strong> Resources are safe to call repeatedly. The AI can fetch the same data multiple times without side effects.</p>
 
+            <h2 id="idempotency">Idempotency & Stateful Operations</h2>
+
+            <p>Tools modify state. But calling the same tool twice with the same parameters should ideally produce the same result—this is called <strong>idempotency</strong>.</p>
+
+            <h3 id="idempotency-keys">Using Idempotency Keys</h3>
+
+            <p>Real MCP servers use idempotency keys to detect and prevent duplicate operations:</p>
+
+            <pre><code class="language-json">
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "add_expense",
+    "arguments": {
+      "amount": 50,
+      "category": "food",
+      "description": "coffee",
+      "idempotency_key": "expense-2026-01-26-001"
+    }
+  }
+}
+
+Server (First call): Creates expense, stores idempotency key, returns success
+
+Client → Server: {
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "add_expense",
+    "arguments": {
+      "amount": 50,
+      "category": "food",
+      "description": "coffee",
+      "idempotency_key": "expense-2026-01-26-001"
+    }
+  }
+}
+
+Server (Second call): Recognizes idempotency key, returns SAME result without creating duplicate
+            </code></pre>
+
+            <h3 id="transaction-semantics">Transaction Semantics</h3>
+
+            <ul>
+                <li><strong>Atomic tools:</strong> Either fully succeed or fully fail—no partial updates</li>
+                <li><strong>Multi-step workflows:</strong> Use transactions to group related operations</li>
+                <li><strong>Rollback on failure:</strong> If step 2 fails, don't execute step 3</li>
+            </ul>
+
+            <p><strong>For engineers:</strong> When implementing MCP servers, include idempotency keys in your tool schema. This prevents duplicate charges, duplicate records, and silent failures from retries.</p>
+
+            <h2 id="resilience-patterns">Resilience Patterns: Retries, Timeouts & Rate Limiting</h2>
+
+            <p>Production systems fail. MCP clients need robust retry strategies.</p>
+
+            <h3 id="exponential-backoff">Exponential Backoff with Jitter</h3>
+
+            <pre><code class="language-python">
+import time
+import random
+
+def call_with_retries(client, tool_name, args, max_retries=5):
+    """Call a tool with exponential backoff"""
+    
+    for attempt in range(max_retries):
+        try:
+            result = client.call_tool(tool_name, args)
+            return result
+        except TimeoutError as e:
+            if attempt == max_retries - 1:
+                raise  # Give up after max retries
+            
+            # Exponential backoff: 2^attempt seconds + random jitter
+            wait_time = (2 ** attempt) + random.uniform(0, 1)
+            print(f"Attempt {attempt + 1} failed. Waiting {wait_time:.1f}s...")
+            time.sleep(wait_time)
+        
+        except (ValueError, PermissionError) as e:
+            # Non-retryable errors—fail immediately
+            raise
+    
+# Usage
+result = call_with_retries(client, "add_expense", {"amount": 50, "category": "food"})
+            </code></pre>
+
+            <h3 id="timeout-policies">Timeout Policies</h3>
+
+            <ul>
+                <li><strong>Connection timeout:</strong> 5-10 seconds (time to establish connection)</li>
+                <li><strong>Read timeout:</strong> 30-60 seconds (time to receive response)</li>
+                <li><strong>Request timeout:</strong> 60-120 seconds (total time for entire operation)</li>
+            </ul>
+
+            <p><strong>Implementation tip:</strong> Set timeouts per-tool. Some operations are naturally slower (database queries vs API calls).</p>
+
+            <h3 id="rate-limiting">Rate Limiting & Backpressure</h3>
+
+            <pre><code class="language-python">
+from collections import deque
+from time import time
+
+class RateLimiter:
+    """Simple token bucket rate limiter"""
+    
+    def __init__(self, tokens_per_second=10, max_burst=20):
+        self.rate = tokens_per_second
+        self.capacity = max_burst
+        self.tokens = max_burst
+        self.last_update = time()
+    
+    def acquire(self):
+        """Wait if necessary until we have a token"""
+        now = time()
+        elapsed = now - self.last_update
+        self.tokens = min(self.capacity, self.tokens + elapsed * self.rate)
+        self.last_update = now
+        
+        if self.tokens >= 1:
+            self.tokens -= 1
+            return  # Token acquired, proceed
+        
+        # No tokens—wait
+        wait_time = (1 - self.tokens) / self.rate
+        time.sleep(wait_time)
+        self.tokens = 0
+
+# Usage
+limiter = RateLimiter(tokens_per_second=5)  # Max 5 calls/second
+
+for i in range(20):
+    limiter.acquire()
+    result = client.call_tool("get_user", {"id": i})
+            </code></pre>
+
+            <p><strong>When to rate limit:</strong> When server returns HTTP 429 (Too Many Requests), back off. Respect `retry_after_ms` hints in error responses.</p>
+
             <h2 id="transports">Transport Mechanisms: STDIO vs HTTP</h2>
 
             <p>MCP supports two transport mechanisms:</p>
@@ -730,6 +1010,20 @@ Client → Server: {
                 <li><strong>Use case:</strong> Cloud deployments, third-party services</li>
                 <li><strong>Security:</strong> Full TLS support, authentication tokens</li>
             </ul>
+
+            <h3 id="why-sse">Why HTTP + SSE (Not WebSocket)?</h3>
+
+            <p>You might ask: why SSE instead of WebSocket? They're both bi-directional-ish, but SSE has advantages for MCP:</p>
+
+            <ul>
+                <li><strong>Simpler protocol:</strong> SSE is text-based, runs over HTTP. WebSocket requires connection upgrade, different framing.</li>
+                <li><strong>Built-in reconnection:</strong> SSE clients auto-reconnect on disconnect. WebSocket clients need custom logic.</li>
+                <li><strong>Better firewall compatibility:</strong> SSE is just HTTP—proxies and firewalls understand it. WebSocket connections sometimes get blocked.</li>
+                <li><strong>Server-initiated messages:</strong> SSE is designed for servers pushing data to clients. Natural fit for MCP's bidirectional protocol.</li>
+                <li><strong>Overhead:</strong> WebSocket frames add 2-14 bytes per message. SSE is lighter for text-based JSON-RPC.</li>
+            </ul>
+
+            <p><strong>When to use WebSocket instead:</strong> If you need sub-100ms latency (financial trading, real-time gaming), or if you're already using a WebSocket-based framework, WebSocket is fine too. MCP doesn't mandate SSE—it's just the recommended approach.</p>
 
             <h2 id="real-world-example">Real-World Example: Expense Tracker App</h2>
 
@@ -817,6 +1111,85 @@ Server: Queries database, returns {"total": 250, "by_category": {...}}
                 <li><strong>📈 Scalability</strong> - From hobby projects to enterprise deployments</li>
                 <li><strong>🌍 Community ecosystem</strong> - Share servers across teams and organizations</li>
             </ul>
+
+            <h2 id="security-model">Security Model: Authorization, Scopes & Audit Logging</h2>
+
+            <p>When MCP connects external services to AI applications, security becomes critical. MCP provides a complete security model—not just TLS.</p>
+
+            <h3 id="scope-based-auth">Scope-Based Authorization</h3>
+
+            <p>MCP servers define <strong>scopes</strong>—permissions that control what clients can do:</p>
+
+            <pre><code class="language-json">
+Server Configuration: {
+  "tools": [
+    {
+      "name": "add_expense",
+      "required_scope": "expense:write",
+      "description": "Record a new expense"
+    },
+    {
+      "name": "list_expenses",
+      "required_scope": "expense:read",
+      "description": "List expenses"
+    },
+    {
+      "name": "delete_expense",
+      "required_scope": "expense:admin",
+      "description": "Delete an expense"
+    }
+  ]
+}
+
+Client Authorization Header: {
+  "Authorization": "Bearer token-with-expense:read,expense:write"
+}
+
+Result: Client can call add_expense and list_expenses, but not delete_expense
+            </code></pre>
+
+            <h3 id="principle-least-privilege">Principle of Least Privilege</h3>
+
+            <ul>
+                <li><strong>Read-only scopes:</strong> For AI applications that only need to fetch data, grant `resource:read` only.</li>
+                <li><strong>Write-restricted scopes:</strong> For AI that can modify data, grant specific write scopes (e.g., `expense:write` but NOT `user:write`).</li>
+                <li><strong>Admin scopes:</strong> Reserve for operators only. Never grant to AI applications.</li>
+            </ul>
+
+            <h3 id="audit-logging">Audit Logging & Compliance</h3>
+
+            <p>Every tool call should be logged:</p>
+
+            <pre><code class="language-json">
+Audit Log Entry: {
+  "timestamp": "2026-01-26T14:23:15Z",
+  "client_id": "claude-ai-prod",
+  "tool_name": "add_expense",
+  "arguments": {
+    "amount": 50,
+    "category": "food",
+    "description": "coffee"
+  },
+  "result": "success",
+  "scopes_used": ["expense:write"],
+  "user_id": "alice@company.com",
+  "ip_address": "192.168.1.100"
+}
+            </code></pre>
+
+            <p><strong>Why this matters:</strong> If an AI application goes rogue (or is compromised), audit logs show exactly what it did, when, and who authorized it. Non-negotiable for regulated industries (finance, healthcare, legal).</p>
+
+            <h3 id="rate-limiting-security">Rate Limiting as Security</h3>
+
+            <p>Rate limiting isn't just performance—it's security:</p>
+
+            <ul>
+                <li><strong>Prevent abuse:</strong> A compromised AI app can't hammer your database with infinite requests</li>
+                <li><strong>Protect resources:</strong> Expensive operations (large file transfers, complex queries) are naturally throttled</li>
+                <li><strong>Cost control:</strong> Prevents runaway bills from API calls</li>
+            </ul>
+
+            <p><strong>Configuration example:</strong> "Claude AI can make 100 read calls/minute and 10 write calls/minute"</p>
 
             <h2 id="getting-started">Getting Started with MCP</h2>
 
@@ -919,10 +1292,15 @@ client.disconnect()
                         </ul>
                     </li>
                     <li><a href="#protocol-lifecycle" class="toc-link">Lifecycle</a></li>
+                    <li><a href="#error-handling" class="toc-link">Error Handling</a></li>
+                    <li><a href="#capabilities-negotiation" class="toc-link">Capabilities</a></li>
                     <li><a href="#tools-vs-resources" class="toc-link">Tools vs Resources</a></li>
+                    <li><a href="#idempotency" class="toc-link">Idempotency</a></li>
+                    <li><a href="#resilience-patterns" class="toc-link">Resilience</a></li>
                     <li><a href="#transports" class="toc-link">Transports</a></li>
                     <li><a href="#real-world-example" class="toc-link">Real-World Example</a></li>
                     <li><a href="#why-mcp-matters" class="toc-link">Why It Matters</a></li>
+                    <li><a href="#security-model" class="toc-link">Security Model</a></li>
                     <li><a href="#getting-started" class="toc-link">Getting Started</a></li>
                     <li><a href="#resources" class="toc-link">Resources</a></li>
                 </ul>
