@@ -471,46 +471,63 @@
 
             <div class="mermaid">
 graph LR
-    subgraph Without ["Without MCP: NxM Problem"]
-        A1[AI App 1]
-        A2[AI App 2]
-        A3[AI App 3]
-        S1[GitHub]
-        S2[Drive]
-        S3[Database]
-        S4[Slack]
+    subgraph Without ["Without MCP: N×M Problem"]
+        A1["AI App 1"]
+        A2["AI App 2"]
+        A3["AI App 3"]
+        S1["GitHub"]
+        S2["Drive"]
+        S3["Database"]
+        S4["Slack"]
         
-        A1 --> S1
-        A1 --> S2
-        A1 --> S3
-        A1 --> S4
-        A2 --> S1
-        A2 --> S2
-        A2 --> S3
-        A2 --> S4
-        A3 --> S1
-        A3 --> S2
-        A3 --> S3
-        A3 --> S4
+        A1 -.->|"Custom"| S1
+        A1 -.->|"Custom"| S2
+        A1 -.->|"Custom"| S3
+        A1 -.->|"Custom"| S4
+        A2 -.->|"Custom"| S1
+        A2 -.->|"Custom"| S2
+        A2 -.->|"Custom"| S3
+        A2 -.->|"Custom"| S4
+        A3 -.->|"Custom"| S1
+        A3 -.->|"Custom"| S2
+        A3 -.->|"Custom"| S3
+        A3 -.->|"Custom"| S4
+        
+        style A1 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+        style A2 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+        style A3 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+        style S1 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+        style S2 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+        style S3 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+        style S4 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
     end
     
     subgraph With ["With MCP: N+M Solution"]
-        B1[AI App 1]
-        B2[AI App 2]
-        B3[AI App 3]
-        MCP[MCP Layer]
-        B1S1[GitHub]
-        B1S2[Drive]
-        B1S3[Database]
-        B1S4[Slack]
+        B1["AI App 1"]
+        B2["AI App 2"]
+        B3["AI App 3"]
+        MCP["MCP Protocol<br/>Layer"]
+        B1S1["GitHub"]
+        B1S2["Drive"]
+        B1S3["Database"]
+        B1S4["Slack"]
         
-        B1 --> MCP
-        B2 --> MCP
-        B3 --> MCP
-        MCP --> B1S1
-        MCP --> B1S2
-        MCP --> B1S3
-        MCP --> B1S4
+        B1 -->|"Standard"| MCP
+        B2 -->|"Standard"| MCP
+        B3 -->|"Standard"| MCP
+        MCP -->|"Standard"| B1S1
+        MCP -->|"Standard"| B1S2
+        MCP -->|"Standard"| B1S3
+        MCP -->|"Standard"| B1S4
+        
+        style B1 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+        style B2 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+        style B3 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+        style MCP fill:#00d9ff,stroke:#fff,stroke-width:3px,color:#000
+        style B1S1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+        style B1S2 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+        style B1S3 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+        style B1S4 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
     end
             </div>
 
@@ -762,20 +779,29 @@ Server → Client: {
 
             <div class="mermaid">
 graph TD
-    A["Tool Call Fails"] --> B{Error Code?}
-    B -->|Retryable| C["Timeout/Server Error"]
-    B -->|Non-Retryable| D["Invalid Args/Auth Failure"]
+    A["Tool Call Fails"] --> B{"Error Code?"}
+    B -->|"Retryable"| C["Timeout/Server Error"]
+    B -->|"Non-Retryable"| D["Invalid Args/Auth Failure"]
     C --> E["Exponential Backoff<br/>Wait: 2^n + jitter"]
     E --> F["Retry Call"]
-    F --> G{Success?}
-    G -->|Yes| H["Return Result"]
-    G -->|No| I{Max Retries?}
-    I -->|No| E
-    I -->|Yes| J["Give Up<br/>Log Error"]
+    F --> G{"Success?"}
+    G -->|"Yes"| H["Return Result"]
+    G -->|"No"| I{"Max Retries?"}
+    I -->|"No"| E
+    I -->|"Yes"| J["Give Up<br/>Log Error"]
     D --> K["Log Error<br/>Surface to User"]
     H --> L["Success"]
     J --> L
     K --> L
+    
+    style A fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style C fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style D fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style E fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style H fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style J fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style K fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style L fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
             </div>
 
             <h2 id="tools-vs-resources">Tools vs Resources: The Two Pillars</h2>
@@ -857,19 +883,19 @@ result = call_with_retries(client, "add_expense", {"amount": 50, "category": "fo
             <h3 id="rate-limiting">Rate Limiting & Backpressure</h3>
 
             <pre><code class="language-python">
-from collections import deque
+import asyncio
 from time import time
 
 class RateLimiter:
-    """Simple token bucket rate limiter"""
+    """Async token bucket rate limiter"""
     
-    def __init__(self, tokens_per_second=10, max_burst=20):
+    def __init__(self, tokens_per_second: int = 10, max_burst: int = 20):
         self.rate = tokens_per_second
         self.capacity = max_burst
         self.tokens = max_burst
         self.last_update = time()
     
-    def acquire(self):
+    async def acquire(self) -> None:
         """Wait if necessary until we have a token"""
         now = time()
         elapsed = now - self.last_update
@@ -880,17 +906,17 @@ class RateLimiter:
             self.tokens -= 1
             return  # Token acquired, proceed
         
-        # No tokens—wait
+        # No tokens—wait asynchronously
         wait_time = (1 - self.tokens) / self.rate
-        time.sleep(wait_time)
+        await asyncio.sleep(wait_time)
         self.tokens = 0
 
-# Usage
+# Usage (async context)
 limiter = RateLimiter(tokens_per_second=5)  # Max 5 calls/second
 
 for i in range(20):
-    limiter.acquire()
-    result = client.call_tool("get_user", {"id": i})
+    await limiter.acquire()
+    result = await client.call_tool("get_user", {"id": i})
             </code></pre>
 
             <p><strong>When to rate limit:</strong> When server returns HTTP 429 (Too Many Requests), back off. Respect `retry_after_ms` hints in error responses.</p>
@@ -910,6 +936,8 @@ graph LR
 
             <p><strong>Key insight:</strong> Each retry doubles the wait time. By attempt 5, you've waited ~31 seconds total. Most services recover by then.</p>
 
+            <p>These resilience patterns—retries, timeouts, rate limiting—are essential building blocks. But they only matter if you're building something worth protecting. Let's step back and understand why MCP is transforming AI application development.</p>
+
             <h2 id="why-mcp-matters">Why MCP Matters (Now More Than Ever)</h2>
 
             <img src="../assets/images(MCP)/context-engineering.png" alt="Context Engineering" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
@@ -927,6 +955,20 @@ graph LR
             </ul>
 
             <p><strong>MCP is infrastructure, not magic.</strong> It doesn't make your AI smarter—it makes your AI more capable by providing standardized access to tools and data.</p>
+
+            <h3 id="real-world-use-cases">Real-World Use Cases</h3>
+
+            <p>MCP is being used in production across various domains:</p>
+
+            <ul>
+                <li><strong>Development Tools:</strong> VS Code extensions, Claude Desktop integrations, custom IDE assistants</li>
+                <li><strong>Data Analysis:</strong> AI agents querying databases, generating reports, analyzing metrics in real-time</li>
+                <li><strong>DevOps Automation:</strong> Infrastructure provisioning, deployment pipelines, log analysis and alerting</li>
+                <li><strong>Customer Support:</strong> AI assistants with access to CRM, ticketing systems, knowledge bases</li>
+                <li><strong>Content Management:</strong> Automated publishing, multi-platform syndication, SEO optimization</li>
+            </ul>
+
+            <p>Now let's explore how to secure these integrations properly.</p>
 
             <h2 id="security-model">Security Model: Authorization, Scopes & Audit Logging</h2>
 
@@ -1038,6 +1080,8 @@ graph TB
 
             <p><strong>Configuration example:</strong> "Claude AI can make 100 read calls/minute and 10 write calls/minute"</p>
 
+            <p>With security and authorization handled, the next question is: how does data actually flow between clients and servers? MCP supports multiple transport mechanisms, each optimized for different deployment scenarios.</p>
+
             <h2 id="transport-mechanisms">Transport Mechanisms: STDIO vs HTTP</h2>
 
             <p>MCP supports multiple transport mechanisms. The protocol stays the same—only the delivery method changes.</p>
@@ -1066,7 +1110,7 @@ graph TB
                 <li><strong>Security:</strong> Full TLS support, authentication tokens, audit logging</li>
             </ul>
 
-            <p><strong>Why SSE instead of WebSocket?</strong> SSE is simpler (text-based, runs over HTTP), has built-in auto-reconnection, better firewall compatibility, and is optimized for text-based JSON-RPC messages. WebSocket adds frame overhead and connection complexity.</p>
+            <p>Understanding these transport options is crucial, but choosing the right one depends on your deployment pattern. Let's explore when to use local versus remote deployments.</p>
 
             <h2 id="local-vs-remote">Local vs Remote Deployment Patterns</h2>
 
@@ -1204,8 +1248,10 @@ if __name__ == "__main__":
             <pre><code class="language-python">
 from mcp.client import Client
 from mcp.client.stdio import stdio_client
+from typing import List
 
-async def main():
+async def main() -> None:
+    """Basic MCP client example with type hints"""
     # Connect to server via STDIO
     async with stdio_client(
         command="python",
@@ -1228,8 +1274,9 @@ async def main():
             
             print(f"Result: {result.content[0].text}")
 
-import asyncio
-asyncio.run(main())
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
             </code></pre>
 
             <h3 id="multi-server-client">Multi-Server Client</h3>
@@ -1315,6 +1362,8 @@ async def main():
         {"repo": "my-repo", "title": "Bug: Login broken"}
     )
             </code></pre>
+
+            <p>While building custom clients gives you full control, many developers use existing frameworks. LangChain, a popular AI orchestration framework, has excellent MCP integration that simplifies multi-server workflows.</p>
 
             <h2 id="langchain-integration">LangChain Integration</h2>
 
@@ -1952,7 +2001,9 @@ if __name__ == "__main__":
 
             <h2 id="fastmcp">FastMCP: Simplified MCP Server Development</h2>
 
-            <p>While the official MCP SDK is powerful, it has boilerplate. <strong>FastMCP</strong> is a developer-friendly framework (similar to Flask for Python) that reduces verbosity while maintaining full protocol compliance.</p>
+            <p>While the official MCP SDK is powerful and production-ready, it requires significant boilerplate code for schema definitions, tool registration, and transport configuration. <strong>FastMCP</strong> is a third-party framework built on top of the official MCP SDK that dramatically reduces this complexity.</p>
+
+            <p>Think of it as <strong>Flask for MCP</strong>—a lightweight, developer-friendly wrapper that handles the protocol details automatically while letting you focus on business logic. FastMCP is fully protocol-compliant and widely adopted in the MCP community for rapid development.</p>
 
             <h3 id="fastmcp-philosophy">The Philosophy: Less Boilerplate, Same Power</h3>
 
@@ -2223,7 +2274,7 @@ cold_start_optimization = true
 graph LR
     F1["Write Server Code"] --> F2["fastmcp login"]
     F2 --> F3["fastmcp deploy"]
-    F3 --> F4["Done! ✅"]
+    F3 --> F4["Done!"]
     
     style F1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
     style F2 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
@@ -2241,7 +2292,7 @@ graph LR
     M4 --> M5["Setup Database"]
     M5 --> M6["Configure Monitoring"]
     M6 --> M7["Deploy"]
-    M7 --> M8["Maintain Infrastructure ⚠️"]
+    M7 --> M8["Maintain Infrastructure"]
     
     style M1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
     style M2 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
@@ -2304,7 +2355,7 @@ fastmcp link-repo https://github.com/yourusername/expense-tracker
 git add server.py
 git commit -m "Add budget feature"
 git push origin main
-# ✅ Automatically deployed to FastMCP Cloud
+# Automatically deployed to FastMCP Cloud
             </code></pre>
 
             <h3 id="fastmcp-secret-management">Secret Management</h3>

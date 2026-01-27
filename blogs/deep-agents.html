@@ -202,12 +202,47 @@
         }
         /* Mermaid Diagram Styles */
         .mermaid {
-            background: rgba(255,255,255,0.02);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 2rem 0;
-            text-align: center;
-            overflow-x: auto; /* Allow scrolling for large diagrams */
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            margin: 2.5rem 0;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            overflow-x: auto;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mermaid svg {
+            max-width: 100%;
+            height: auto !important;
+            min-height: 250px;
+            font-size: 16px !important;
+        }
+        
+        /* Make mermaid text more readable */
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node polygon {
+            stroke-width: 2px !important;
+        }
+        
+        .mermaid text {
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            fill: #fff !important;
+        }
+        
+        /* Add spacing after diagram labels */
+        h3 + p + .mermaid,
+        p + .mermaid {
+            margin-top: 1.5rem;
+        }
+        
+        .mermaid + p {
+            margin-top: 2rem;
         }
         /* Code Block Styles */
         pre[class*="language-"] {
@@ -477,25 +512,28 @@ Repeat until task is complete.</code></pre>
             <p><strong>The ReAct loop works great for simple tasks</strong> like "What's the weather in Tokyo?" or "Summarize this article."</p>
 
             <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
-                <div class="mermaid" style="width: 100%; background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <div class="mermaid" role="img" aria-label="Diagram showing basic AI agent ReAct pattern loop">
 graph LR
-    subgraph ReAct["Basic Agent Loop (ReAct Pattern)"]
-        direction LR
-        R1[User Request] --> R2[Think/Reason]
-        R2 --> R3[Act: Use Tool]
-        R3 --> R4[Observe Result]
-        R4 --> R5{Task Done?}
-        R5 -->|No| R2
-        R5 -->|Yes| R6[Respond]
-        style R3 fill:#4a90e2,color:#fff
-        style ReAct fill:transparent,stroke:#4a90e2,stroke-dasharray: 5 5
-    end
+    R1["User Request"] --> R2["Think/Reason"]
+    R2 --> R3["Act: Use Tool"]
+    R3 --> R4["Observe Result"]
+    R4 --> R5{"Task Done?"}
+    R5 -->|"No"| R2
+    R5 -->|"Yes"| R6["Respond"]
+    
+    style R1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style R2 fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style R3 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style R4 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style R6 fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
                 </div>
             </div>
 
             <p><strong>But for complex, multi-step tasks?</strong> Simple agents fail spectacularly. They forget steps, lose context, and produce incomplete work.</p>
 
             <p><strong>That's where Deep Agents come in.</strong> Let me show you the problem first, then the solution.</p>
+
+            <p>Understanding this simple loop is crucial because it reveals exactly where traditional agents break down. Let's explore why most agents are shallow—and what happens when you ask them to do real work.</p>
 
             <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
 
@@ -581,19 +619,21 @@ def shallow_agent(task):
         # No persistent storage</code></pre>
 
                 <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
-                    <div class="mermaid" style="width: 100%; background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="mermaid" role="img" aria-label="Shallow agent architecture showing single-threaded execution with context overflow">
 graph LR
-    subgraph Shallow["Shallow Agent Architecture"]
-        direction LR
-        S1[User Request] --> S2[LLM]
-        S2 --> S3[Tool Selection]
-        S3 --> S4[Execute Tool]
-        S4 --> S5[Add to History]
-        S5 --> S2
-        S5 --> S6[Response]
-        style S5 fill:#ff6b6b,color:#fff
-        style Shallow fill:transparent,stroke:#ff6b6b,stroke-dasharray: 5 5
-    end
+    S1["User Request"] --> S2["LLM"]
+    S2 --> S3["Tool Selection"]
+    S3 --> S4["Execute Tool"]
+    S4 --> S5["Add to History"]
+    S5 --> S2
+    S5 --> S6["Response"]
+    
+    style S1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style S2 fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style S3 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style S4 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style S5 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style S6 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
                     </div>
                 </div>
 
@@ -624,24 +664,28 @@ def deep_agent(task):
     return synthesize(research)</code></pre>
 
                 <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
-                    <div class="mermaid" style="width: 100%; background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div class="mermaid" role="img" aria-label="Deep agent architecture showing planning, delegation, and file system integration">
 graph LR
-    subgraph Deep["Deep Agent Architecture"]
-        direction LR
-        D1[User Request] --> D2[Planning: write_todos]
-        D2 --> D3{Complex?}
-        D3 -->|Yes| D4[Spawn Subagent]
-        D3 -->|No| D5[Execute Tool]
-        D4 --> D6[Store in Files]
-        D5 --> D6
-        D6 --> D7{More TODOs?}
-        D7 -->|Yes| D3
-        D7 -->|No| D8[Read Files]
-        D8 --> D9[Synthesize]
-        D9 --> D10[Response]
-        style D6 fill:#50c878,color:#fff
-        style Deep fill:transparent,stroke:#50c878,stroke-dasharray: 5 5
-    end
+    D1["User Request"] --> D2["Planning: write_todos"]
+    D2 --> D3{"Complex?"}
+    D3 -->|"Yes"| D4["Spawn Subagent"]
+    D3 -->|"No"| D5["Execute Tool"]
+    D4 --> D6["Store in Files"]
+    D5 --> D6
+    D6 --> D7{"More TODOs?"}
+    D7 -->|"Yes"| D3
+    D7 -->|"No"| D8["Read Files"]
+    D8 --> D9["Synthesize"]
+    D9 --> D10["Response"]
+    
+    style D1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style D2 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style D4 fill:#ffd700,stroke:#000,stroke-width:2px,color:#000
+    style D5 fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style D6 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style D8 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style D9 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style D10 fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
                     </div>
                 </div>
 
@@ -713,7 +757,7 @@ agent = create_deep_agent(
 # → Discovers Google's new Willow chip
 #
 # Step 3: write_todos([
-#     "✓ Search for quantum computing overview",
+#     "Search for quantum computing overview",
 #     "Deep dive on Google Willow chip",  # ← NEW STEP ADDED
 #     "Find recent developments",
 #     "Synthesize findings"
@@ -721,33 +765,39 @@ agent = create_deep_agent(
 
             <p>The plan evolves. The agent learns and adjusts. This is the key to handling complex, multi-step tasks.</p>
 
-            <div class="mermaid">
+            <p>But planning alone isn't enough. Even with a perfect plan, agents hit a hard wall: context limits. This is where file systems become essential.</p>
+
+            <div class="mermaid" role="img" aria-label="Deep agent execution flow showing planning, delegation, file storage, and synthesis">
 flowchart TB
-    Start([Start: Receive Task]) --> Plan[Write TODOs<br/>Planning Phase]
-    Plan --> Loop{For Each TODO}
+    Start(["Start: Receive Task"]) --> Plan["Write TODOs<br/>Planning Phase"]
+    Plan --> Loop{"For Each TODO"}
     
-    Loop -->|Next TODO| Complex{Is Complex?}
+    Loop -->|"Next TODO"| Complex{"Is Complex?"}
     
-    Complex -->|Yes| Spawn[Spawn Subagent]
-    Spawn --> SubExec[Subagent Executes<br/>in Isolation]
-    SubExec --> StoreFile1[Store Result<br/>in File]
+    Complex -->|"Yes"| Spawn["Spawn Subagent"]
+    Spawn --> SubExec["Subagent Executes<br/>in Isolation"]
+    SubExec --> StoreFile1["Store Result<br/>in File"]
     
-    Complex -->|No| Direct[Execute Tool<br/>Directly]
-    Direct --> StoreFile2[Store Result<br/>in File]
+    Complex -->|"No"| Direct["Execute Tool<br/>Directly"]
+    Direct --> StoreFile2["Store Result<br/>in File"]
     
-    StoreFile1 --> Update[Update TODOs<br/>Based on Learnings]
+    StoreFile1 --> Update["Update TODOs<br/>Based on Learnings"]
     StoreFile2 --> Update
     
-    Update --> Check{All TODOs<br/>Complete?}
-    Check -->|No| Loop
-    Check -->|Yes| Synth[Synthesize<br/>from Files]
-    Synth --> Final([Final Response])
+    Update --> Check{"All TODOs<br/>Complete?"}
+    Check -->|"No"| Loop
+    Check -->|"Yes"| Synth["Synthesize<br/>from Files"]
+    Synth --> Final(["Final Response"])
     
-    style Plan fill:#50c878
-    style Spawn fill:#ffd700
-    style StoreFile1 fill:#ff6b6b
-    style StoreFile2 fill:#ff6b6b
-    style Synth fill:#4a90e2
+    style Start fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style Plan fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style Spawn fill:#ffd700,stroke:#000,stroke-width:2px,color:#000
+    style SubExec fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style StoreFile1 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style StoreFile2 fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style Update fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style Synth fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style Final fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
             </div>
 
             <h2 id="pillar-2">Pillar 2: File Systems</h2>
@@ -780,7 +830,7 @@ Add code files for a coding task:
 → 5 Python files: 50,000 tokens
 → Documentation: 40,000 tokens
 
-New Total: 264,500 tokens ❌
+New Total: 264,500 tokens [OVERFLOW]
 
 Context window: 200,000 tokens
 Overflow: 64,500 tokens</code></pre>
@@ -889,17 +939,18 @@ agent = create_deep_agent(backend=backend)
 agent.write_file("/temp/scratchpad.txt", "...")      # Temporary
 agent.write_file("/memories/user_prefs.md", "...")  # Permanent</code></pre>
 
-            <div class="mermaid">
+            <div class="mermaid" role="img" aria-label="Agent file system backend architecture showing routing between in-memory and persistent storage">
 graph TB
-    Ops["Agent File Operations<br/>ls, read, write, edit"] --> Router{Backend Router}
+    Ops["Agent File Operations<br/>ls, read, write, edit"] --> Router{"Backend Router"}
     
     Router --> State["StateBackend<br/>In-Memory"]
     Router --> Store["StoreBackend<br/>Persistent"]
     Router --> Composite["CompositeBackend<br/>Path-Based Routing"]
     
-    style State fill:#ff6b6b,color:white
-    style Store fill:#50c878,color:white
-    style Composite fill:#4a90e2,color:white
+    style Ops fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style State fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style Store fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style Composite fill:#ffd700,stroke:#000,stroke-width:2px,color:#000
             </div>
 
             <h3>Automatic Context Eviction</h3>
@@ -954,7 +1005,7 @@ Problems: Context is cluttered, agent gets confused, performance degrades.</code
 ├─ Overall plan: 1,000 tokens
 ├─ "Delegated research to subagents"
 ├─ Summary from research: 2,000 tokens
-└─ Total: 3,500 tokens ✓
+└─ Total: 3,500 tokens
 
 Research Subagent #1:
 ├─ Task: "Research Company 1"
@@ -968,6 +1019,8 @@ Research Subagent #2:
 └─ Stores findings in company2.md</code></pre>
 
             <p>Each agent has a clean, focused context. The main agent orchestrates without getting bogged down.</p>
+
+            <p>With file systems managing context and planning guiding execution, we have one final ingredient: the ability to delegate specialized work. This is where subagents transform deep agents from powerful to unstoppable.</p>
 
             <h4>2. Specialized Instructions</h4>
             <p>Each subagent can have custom prompts and tools:</p>
@@ -1112,15 +1165,15 @@ CAPABILITIES:
 <pre><code>TOOL USAGE EXAMPLES:
 
 write_todos:
-✓ Good: write_todos(["Research topic", "Analyze findings", "Create report"])
+Good: write_todos(["Research topic", "Analyze findings", "Create report"])
 ✗ Bad: write_todos(["Do everything"])
 
 task (subagent delegation):
-✓ Good: task("researcher", "Deep dive on Company X's culture and values")
+Good: task("researcher", "Deep dive on Company X's culture and values")
 ✗ Bad: task("helper", "help me")
 
 write_file:
-✓ Good: write_file("openai_research.md", detailed_findings)
+Good: write_file("openai_research.md", detailed_findings)
 ✗ Bad: write_file("stuff.txt", "some info")</code></pre>
 
             <h2 id="middleware">The Middleware Architecture</h2>
@@ -1316,30 +1369,30 @@ result = research_agent.invoke({
                     <tbody>
                         <tr>
                             <td><strong>LangChain Deep Agents</strong></td>
-                            <td>✅ Built-in</td>
-                            <td>✅ Built-in</td>
-                            <td>✅ Built-in</td>
+                            <td>Yes - Built-in</td>
+                            <td>Yes - Built-in</td>
+                            <td>Yes - Built-in</td>
                             <td>Complex reasoning</td>
                         </tr>
                         <tr>
                             <td><strong>LangGraph</strong></td>
-                            <td>⚠️ Manual</td>
-                            <td>⚠️ Manual</td>
-                            <td>⚠️ Manual</td>
+                            <td>Manual</td>
+                            <td>Manual</td>
+                            <td>Manual</td>
                             <td>Custom workflows</td>
                         </tr>
                         <tr>
                             <td><strong>CrewAI</strong></td>
-                            <td>✅ Good</td>
-                            <td>⚠️ Limited</td>
-                            <td>✅ Strong</td>
+                            <td>Yes - Good</td>
+                            <td>Limited</td>
+                            <td>Yes - Strong</td>
                             <td>Team collaboration</td>
                         </tr>
                          <tr>
                             <td><strong>AutoGen</strong></td>
-                            <td>⚠️ Manual</td>
-                            <td>❌ None</td>
-                            <td>✅ Strong</td>
+                            <td>Manual</td>
+                            <td>None</td>
+                            <td>Yes - Strong</td>
                             <td>Conversations</td>
                         </tr>
                     </tbody>
@@ -1394,13 +1447,13 @@ flowchart TD
     
     Complex -->|Yes| Deep{Need planning +<br/>files out of box?}
     
-    Deep -->|Yes| LCDeep["✅ LangChain<br/>Deep Agents"]
+    Deep -->|Yes| LCDeep["LangChain<br/>Deep Agents"]
     
     Deep -->|No| Custom{Need custom<br/>control?}
     
-    Custom -->|Yes| LGraph["✅ LangGraph"]
+    Custom -->|Yes| LGraph["LangGraph"]
     
-    Custom -->|No| Multi["✅ CrewAI or<br/>AutoGen"]
+    Custom -->|No| Multi["CrewAI or<br/>AutoGen"]
     
     style LCDeep fill:#50c878,color:#fff
     style LGraph fill:#4a90e2,color:#fff
