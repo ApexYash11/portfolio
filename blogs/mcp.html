@@ -451,7 +451,7 @@
                 <h1>Model Context Protocol (MCP): The Universal Bridge for AI Applications</h1>
                 <div class="blog-meta article-meta">
                     <span><i class="far fa-calendar"></i> Jan 26, 2026</span>
-                    <span><i class="far fa-clock"></i> 18 min read</span>
+                    <span><i class="far fa-clock"></i> 20 min read</span>
                     <span><i class="far fa-user"></i> Yash Maheshwari</span>
                 </div>
             </header>
@@ -778,74 +778,6 @@ graph TD
     K --> L
             </div>
 
-            <h2 id="capabilities-negotiation">Capabilities Negotiation: Protocol Version Matching</h2>
-
-            <p>During initialization, client and server exchange <strong>capabilities</strong>—what features each supports. This prevents version mismatches.</p>
-
-            <h3 id="capability-exchange">The Capability Exchange</h3>
-
-            <pre><code class="language-json">
-Client → Server: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "initialize",
-  "params": {
-    "protocolVersion": "2024-11-05",
-    "capabilities": {
-      "experimental": false,
-      "tools": true,
-      "resources": true,
-      "pagination": true
-    },
-    "clientInfo": { "name": "claude-ai", "version": "1.2.0" }
-  }
-}
-
-Server → Client: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "protocolVersion": "2024-11-05",
-    "capabilities": {
-      "tools": true,
-      "resources": false,
-      "webhooks": true
-    },
-    "serverInfo": { "name": "github-server", "version": "2.0.1" }
-  }
-}
-            </code></pre>
-
-            <h3 id="capability-mismatch">Handling Capability Mismatches</h3>
-
-            <ul>
-                <li><strong>Client wants resources, server doesn't offer them:</strong> Client falls back to tools API only.</li>
-                <li><strong>Server requires experimental features, client doesn't support:</strong> Connection fails—incompatible.</li>
-                <li><strong>Protocol version mismatch:</strong> Client or server rejects if versions differ.</li>
-            </ul>
-
-            <p><strong>Best practice:</strong> Always implement graceful degradation. If advanced features aren't available, use the core API instead of failing.</p>
-
-            <div class="mermaid">
-graph TD
-    A["Client sends<br/>initialize request"] --> B{Server response?}
-    B -->|Compatible| C["Server has all<br/>requested capabilities"]
-    B -->|Limited| D["Server has<br/>some capabilities"]
-    B -->|Incompatible| E["Server rejects<br/>incompatible versions"]
-    
-    C --> F["Use full API<br/>tools + resources"]
-    D --> G["Use degraded API<br/>tools only"]
-    E --> H["Connection fails<br/>Retry or error"]
-    
-    F --> I["Success"]
-    G --> I
-    H --> J["Failed"]
-    
-    style A fill:#1a1a1a,stroke:#3B82F6
-    style I fill:#1a1a1a,stroke:#10B981
-    style J fill:#1a1a1a,stroke:#EF4444
-            </div>
-
             <h2 id="tools-vs-resources">Tools vs Resources: The Two Pillars</h2>
 
             <p>MCP distinguishes between two types of capabilities:</p>
@@ -857,10 +789,10 @@ graph TD
             <p><strong>Tools</strong> are callable functions that modify state or perform actions:</p>
 
             <ul>
-                <li><strong>✍️ Writing files</strong> - `create_file`, `update_file`</li>
-                <li><strong>📧 Sending messages</strong> - `send_email`, `post_slack`</li>
-                <li><strong>💾 Database updates</strong> - `add_expense`, `update_record`</li>
-                <li><strong>⚡ External actions</strong> - `create_issue`, `deploy_app`</li>
+                <li><strong>Writing files</strong> - `create_file`, `update_file`</li>
+                <li><strong>Sending messages</strong> - `send_email`, `post_slack`</li>
+                <li><strong>Database updates</strong> - `add_expense`, `update_record`</li>
+                <li><strong>External actions</strong> - `create_issue`, `deploy_app`</li>
             </ul>
 
             <p><strong>Key property:</strong> Tools change state. Calling them multiple times produces different results (unless you're resetting state).</p>
@@ -870,67 +802,13 @@ graph TD
             <p><strong>Resources</strong> are read-only data sources:</p>
 
             <ul>
-                <li><strong>📄 File contents</strong> - `read_file`, `list_files`</li>
-                <li><strong>👤 User profiles</strong> - `get_profile`, `list_users`</li>
-                <li><strong>📊 Metrics & logs</strong> - `query_database`, `get_analytics`</li>
-                <li><strong>📚 Documentation</strong> - `search_docs`, `get_schema`</li>
+                <li><strong>File contents</strong> - `read_file`, `list_files`</li>
+                <li><strong>User profiles</strong> - `get_profile`, `list_users`</li>
+                <li><strong>Metrics & logs</strong> - `query_database`, `get_analytics`</li>
+                <li><strong>Documentation</strong> - `search_docs`, `get_schema`</li>
             </ul>
 
             <p><strong>Key property:</strong> Resources are safe to call repeatedly. The AI can fetch the same data multiple times without side effects.</p>
-
-            <h2 id="idempotency">Idempotency & Stateful Operations</h2>
-
-            <p>Tools modify state. But calling the same tool twice with the same parameters should ideally produce the same result—this is called <strong>idempotency</strong>.</p>
-
-            <h3 id="idempotency-keys">Using Idempotency Keys</h3>
-
-            <p>Real MCP servers use idempotency keys to detect and prevent duplicate operations:</p>
-
-            <pre><code class="language-json">
-Client → Server: {
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "tools/call",
-  "params": {
-    "name": "add_expense",
-    "arguments": {
-      "amount": 50,
-      "category": "food",
-      "description": "coffee",
-      "idempotency_key": "expense-2026-01-26-001"
-    }
-  }
-}
-
-Server (First call): Creates expense, stores idempotency key, returns success
-
-Client → Server: {
-  "jsonrpc": "2.0",
-  "id": 3,
-  "method": "tools/call",
-  "params": {
-    "name": "add_expense",
-    "arguments": {
-      "amount": 50,
-      "category": "food",
-      "description": "coffee",
-      "idempotency_key": "expense-2026-01-26-001"
-    }
-  }
-}
-
-Server (Second call): Recognizes idempotency key, returns SAME result without creating duplicate
-            </code></pre>
-
-            <h3 id="transaction-semantics">Transaction Semantics</h3>
-
-            <ul>
-                <li><strong>Atomic tools:</strong> Either fully succeed or fully fail—no partial updates</li>
-                <li><strong>Multi-step workflows:</strong> Use transactions to group related operations</li>
-                <li><strong>Rollback on failure:</strong> If step 2 fails, don't execute step 3</li>
-            </ul>
-
-            <p><strong>For engineers:</strong> When implementing MCP servers, include idempotency keys in your tool schema. This prevents duplicate charges, duplicate records, and silent failures from retries.</p>
 
             <h2 id="resilience-patterns">Resilience Patterns: Retries, Timeouts & Rate Limiting</h2>
 
@@ -1074,92 +952,23 @@ graph LR
 
             <p><strong>When to use WebSocket instead:</strong> If you need sub-100ms latency (financial trading, real-time gaming), or if you're already using a WebSocket-based framework, WebSocket is fine too. MCP doesn't mandate SSE—it's just the recommended approach.</p>
 
-            <h2 id="real-world-example">Real-World Example: Expense Tracker App</h2>
-
-            <p>Let's build a simple MCP-enabled expense tracker:</p>
-
-            <img src="../assets/images(MCP)/layerd-arch.png" alt="Layered Architecture Example" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
-
-            <h3 id="expense-tools">Tools in Expense Tracker</h3>
-
-            <pre><code class="language-json">
-{
-  "tools": [
-    {
-      "name": "add_expense",
-      "description": "Record a new expense",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "amount": { "type": "number" },
-          "category": { "type": "string" },
-          "description": { "type": "string" },
-          "date": { "type": "string" }
-        },
-        "required": ["amount", "category"]
-      }
-    },
-    {
-      "name": "list_expenses",
-      "description": "List all expenses",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "filter": { "type": "string" },
-          "limit": { "type": "integer" }
-        }
-      }
-    },
-    {
-      "name": "get_summary",
-      "description": "Get spending summary",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "period": { "type": "string", "enum": ["daily", "weekly", "monthly"] }
-        }
-      }
-    }
-  ]
-}
-            </code></pre>
-
-            <h3 id="expense-workflow">Workflow Example</h3>
-
-            <pre><code class="language-json">
-User: "Add $50 for coffee"
-
-MCP Client: Calls add_expense({
-  "amount": 50,
-  "category": "food",
-  "description": "coffee",
-  "date": "2026-01-26"
-})
-
-Server: Records in database, returns success
-
-User: "How much did I spend this week?"
-
-MCP Client: Calls get_summary({
-  "period": "weekly"
-})
-
-Server: Queries database, returns {"total": 250, "by_category": {...}}
-            </code></pre>
-
             <h2 id="why-mcp-matters">Why MCP Matters (Now More Than Ever)</h2>
 
             <img src="../assets/images(MCP)/context-engineering.png" alt="Context Engineering" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
 
-            <p>As AI applications become more sophisticated, integration complexity explodes. MCP solves this:</p>
+            <p>As AI applications become more sophisticated, integration complexity explodes. MCP solves this fundamental problem:</p>
 
             <ul>
-                <li><strong>🔌 Plug-and-play integrations</strong> - Add any MCP server to any MCP client instantly</li>
-                <li><strong>🔐 Security by design</strong> - Explicit tool definitions, rate limiting, audit logs</li>
-                <li><strong>⚙️ Easier maintenance</strong> - Update one server spec instead of patching all clients</li>
-                <li><strong>📈 Scalability</strong> - From hobby projects to enterprise deployments</li>
-                <li><strong>🌍 Community ecosystem</strong> - Share servers across teams and organizations</li>
+                <li><strong>Plug-and-play integrations</strong> - Add any MCP server to any MCP client instantly</li>
+                <li><strong>Security by design</strong> - Explicit tool definitions, rate limiting, audit logs</li>
+                <li><strong>Easier maintenance</strong> - Update one server spec instead of patching all clients</li>
+                <li><strong>Scalability</strong> - From hobby projects to enterprise deployments</li>
+                <li><strong>Community ecosystem</strong> - Share servers across teams and organizations</li>
+                <li><strong>Natural language interfaces</strong> - Users interact via conversational AI, not forms</li>
+                <li><strong>Future-proof</strong> - Protocol standardization means your tools work with future LLMs</li>
             </ul>
+
+            <p><strong>MCP is infrastructure, not magic.</strong> It doesn't make your AI smarter—it makes your AI more capable by providing standardized access to tools and data.</p>
 
             <h2 id="security-model">Security Model: Authorization, Scopes & Audit Logging</h2>
 
@@ -1271,13 +1080,797 @@ graph TB
 
             <p><strong>Configuration example:</strong> "Claude AI can make 100 read calls/minute and 10 write calls/minute"</p>
 
+            <h2 id="transport-mechanisms">Transport Mechanisms: STDIO vs HTTP</h2>
+
+            <p>MCP supports multiple transport mechanisms. The protocol stays the same—only the delivery method changes.</p>
+
+            <img src="../assets/images(MCP)/side-by-side.png" alt="STDIO vs HTTP Comparison" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+
+            <h3 id="stdio-local">STDIO: Ultra-Fast Local Communication</h3>
+
+            <p>For local integrations (Host and Server on same machine), STDIO provides sub-millisecond latency:</p>
+
+            <ul>
+                <li><strong>Communication:</strong> Standard input/output pipes</li>
+                <li><strong>Latency:</strong> &lt;1ms (process-to-process)</li>
+                <li><strong>Use case:</strong> Development, single-machine deployments, Claude Desktop</li>
+                <li><strong>Security:</strong> Limited to same machine (perfect for local privacy)</li>
+            </ul>
+
+            <h3 id="http-remote">HTTP + SSE: Distributed Remote Access</h3>
+
+            <p>For remote integrations (Host and Server on different machines), HTTP provides network-based communication:</p>
+
+            <ul>
+                <li><strong>Communication:</strong> HTTP requests + Server-Sent Events (SSE)</li>
+                <li><strong>Latency:</strong> 20-100ms (network-dependent)</li>
+                <li><strong>Use case:</strong> Cloud deployments, team collaboration, third-party services</li>
+                <li><strong>Security:</strong> Full TLS support, authentication tokens, audit logging</li>
+            </ul>
+
+            <p><strong>Why SSE instead of WebSocket?</strong> SSE is simpler (text-based, runs over HTTP), has built-in auto-reconnection, better firewall compatibility, and is optimized for text-based JSON-RPC messages. WebSocket adds frame overhead and connection complexity.</p>
+
+            <div class="mermaid">
+graph TB
+    subgraph "Local Deployment"
+        HD1[Claude Desktop]
+        CS1["Client (STDIO)"]
+        SS1["Server Process"]
+        DB1[(Local Data)]
+        
+        HD1 -->|pipes| CS1
+        CS1 -->|JSON-RPC| SS1
+        SS1 --> DB1
+    end
+    
+    subgraph "Remote Deployment"
+        HD2[Claude Desktop]
+        CS2["Client (HTTP)"]
+        INT[Internet/TLS]
+        SS2["Server Cloud"]
+        DB2[(Remote DB)]
+        
+        HD2 -->|HTTP/SSE| CS2
+        CS2 -->|TLS Encrypted| INT
+        INT --> SS2
+        SS2 --> DB2
+    end
+    
+    style CS1 fill:#50c878
+    style SS1 fill:#4a90e2
+    style CS2 fill:#50c878
+    style SS2 fill:#ff9500
+            </div>
+
+            <h2 id="local-vs-remote">Local vs Remote Deployment Patterns</h2>
+
+            <h3 id="local-deployment">Local Server Deployment</h3>
+
+            <p>Best for development and personal use. Server runs on your machine, accessed via STDIO:</p>
+
+            <pre><code class="language-python">
+# server.py (local deployment)
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+import sqlite3
+
+server = Server("expense-tracker")
+
+@server.tool()
+async def add_expense(amount: float, category: str):
+    # Access local SQLite database
+    db = sqlite3.connect("expenses.db")
+    db.execute("INSERT INTO expenses VALUES (?, ?)", (amount, category))
+    db.commit()
+    return {"success": True}
+
+async def main():
+    async with stdio_server() as (read, write):
+        await server.run(read, write, server.create_initialization_options())
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+            </code></pre>
+
+            <p><strong>Configuration (claude_desktop_config.json):</strong></p>
+
+            <pre><code class="language-json">
+{
+  "mcpServers": {
+    "expenses": {
+      "command": "python",
+      "args": ["/Users/alice/.mcp/expense-tracker/server.py"]
+    }
+  }
+}
+            </code></pre>
+
+            <h3 id="remote-deployment">Remote Server Deployment</h3>
+
+            <p>For production and team collaboration, deploy server to the cloud using HTTP transport:</p>
+
+            <pre><code class="language-python">
+# server.py (remote deployment)
+from mcp.server import Server
+from mcp.server.sse import SseServerTransport
+from starlette.applications import Starlette
+from starlette.routing import Route
+import uvicorn
+import asyncpg
+
+server = Server("expense-tracker-prod")
+
+@server.tool()
+async def add_expense(amount: float, category: str):
+    # Access remote PostgreSQL database
+    db = await asyncpg.connect("postgresql://user:pass@db.example.com/expenses")
+    await db.execute("INSERT INTO expenses VALUES ($1, $2)", amount, category)
+    return {"success": True}
+
+app = Starlette()
+sse = SseServerTransport("/messages")
+
+async def handle_sse(request):
+    async with sse.connect_sse(
+        request.scope,
+        request.receive,
+        request._send
+    ) as streams:
+        await server.run(streams[0], streams[1], server.create_initialization_options())
+
+app.add_route("/sse", handle_sse)
+
+if __name__ == "__main__":
+    # Deploy: gunicorn -w 1 -k uvicorn.workers.UvicornWorker server:app
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+            </code></pre>
+
+            <p><strong>Configuration (remote access):</strong></p>
+
+            <pre><code class="language-json">
+{
+  "mcpServers": {
+    "expenses-prod": {
+      "url": "https://expense-tracker.example.com/sse",
+      "transport": "sse"
+    }
+  }
+}
+            </code></pre>
+
+            <h2 id="building-clients">Building MCP Clients</h2>
+
+            <h3 id="basic-client">Basic Client Implementation</h3>
+
+            <p>While most use existing hosts (Claude Desktop, VS Code), you can build custom clients for specialized workflows:</p>
+
+            <pre><code class="language-python">
+from mcp.client import Client
+from mcp.client.stdio import stdio_client
+
+async def main():
+    # Connect to server via STDIO
+    async with stdio_client(
+        command="python",
+        args=["server.py"]
+    ) as (read, write):
+        
+        async with Client(read, write) as client:
+            # Initialize
+            await client.initialize()
+            
+            # List available tools
+            tools = await client.list_tools()
+            print(f"Available tools: {[t.name for t in tools]}")
+            
+            # Call a tool
+            result = await client.call_tool(
+                "add_expense",
+                arguments={"amount": 50, "category": "food"}
+            )
+            
+            print(f"Result: {result.content[0].text}")
+
+import asyncio
+asyncio.run(main())
+            </code></pre>
+
+            <h3 id="multi-server-client">Multi-Server Client</h3>
+
+            <p>The real power: one client connecting to multiple servers, routing tool calls appropriately:</p>
+
+            <pre><code class="language-python">
+from mcp.client import Client
+from mcp.client.stdio import stdio_client
+from mcp.client.http import http_client
+
+class MultiServerClient:
+    def __init__(self):
+        self.servers = {}
+    
+    async def add_server(self, name, transport_config):
+        """Add a new server connection"""
+        if transport_config.get("type") == "stdio":
+            connection = stdio_client(
+                command=transport_config["command"],
+                args=transport_config["args"]
+            )
+        else:
+            connection = http_client(url=transport_config["url"])
+        
+        async with Client(*connection) as client:
+            await client.initialize()
+            tools = await client.list_tools()
+            
+            self.servers[name] = {
+                "client": client,
+                "tools": {t.name: t for t in tools}
+            }
+    
+    async def call_tool(self, server_name, tool_name, arguments):
+        """Route tool call to correct server"""
+        if server_name not in self.servers:
+            raise ValueError(f"Unknown server: {server_name}")
+        
+        client = self.servers[server_name]["client"]
+        return await client.call_tool(tool_name, arguments)
+    
+    def list_all_tools(self):
+        """Get all tools from all servers"""
+        all_tools = {}
+        for server_name, server_data in self.servers.items():
+            all_tools[server_name] = list(server_data["tools"].keys())
+        return all_tools
+
+# Usage
+async def main():
+    multi_client = MultiServerClient()
+    
+    # Add local expense tracker
+    await multi_client.add_server(
+        "expenses",
+        {"type": "stdio", "command": "python", "args": ["expense-server.py"]}
+    )
+    
+    # Add remote GitHub server
+    await multi_client.add_server(
+        "github",
+        {"type": "http", "url": "https://mcp-github.example.com/sse"}
+    )
+    
+    # List all available tools
+    print(multi_client.list_all_tools())
+    # Output: {
+    #   "expenses": ["add_expense", "list_expenses", "total_expenses"],
+    #   "github": ["create_issue", "list_repos", "create_pr"]
+    # }
+    
+    # Call tools on specific servers
+    await multi_client.call_tool(
+        "expenses",
+        "add_expense",
+        {"amount": 30, "category": "food"}
+    )
+    
+    await multi_client.call_tool(
+        "github",
+        "create_issue",
+        {"repo": "my-repo", "title": "Bug: Login broken"}
+    )
+            </code></pre>
+
+            <h2 id="langchain-integration">LangChain Integration</h2>
+
+            <p>Use MCP servers seamlessly within LangChain workflows:</p>
+
+            <pre><code class="language-python">
+from langchain_mcp import MCPToolkit
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_openai_functions_agent, AgentExecutor
+
+# Create MCP toolkit with multiple servers
+toolkit = MCPToolkit(
+    servers=[
+        {
+            "name": "expenses",
+            "command": "python",
+            "args": ["expense-server.py"],
+            "transport": "stdio"
+        },
+        {
+            "name": "github",
+            "url": "https://mcp-github.example.com/sse",
+            "transport": "http"
+        }
+    ]
+)
+
+# Get all tools as LangChain tools
+tools = toolkit.get_tools()
+
+# Create agent with OpenAI
+llm = ChatOpenAI(model="gpt-4")
+agent = create_openai_functions_agent(llm, tools)
+executor = AgentExecutor.from_agent_and_tools(agent, tools)
+
+# Use in workflow
+result = executor.invoke({
+    "input": "Add a $50 expense for coffee and create a GitHub issue for the expense tracker"
+})
+
+print(result["output"])
+            </code></pre>
+
+            <h2 id="practical-example">Practical Example: Complete Expense Tracker</h2>
+
+            <p>Let's build a complete production-ready MCP server for expense tracking:</p>
+
+            <pre><code class="language-python">
+# expense_tracker_server.py
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent
+import json
+import os
+from datetime import datetime
+from typing import Optional
+
+server = Server("expense-tracker")
+EXPENSES_FILE = "expenses.json"
+
+def load_expenses():
+    if os.path.exists(EXPENSES_FILE):
+        with open(EXPENSES_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_expenses(expenses):
+    with open(EXPENSES_FILE, 'w') as f:
+        json.dump(expenses, f, indent=2)
+
+@server.list_tools()
+async def list_tools() -> list[Tool]:
+    return [
+        Tool(
+            name="add_expense",
+            description="Add a new expense to tracker",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "amount": {"type": "number", "description": "Expense amount"},
+                    "category": {"type": "string", "description": "Expense category"},
+                    "description": {"type": "string", "description": "Optional description"},
+                    "date": {"type": "string", "description": "Date (ISO format, defaults to today)"}
+                },
+                "required": ["amount", "category"]
+            }
+        ),
+        Tool(
+            name="list_expenses",
+            description="List all expenses with optional filtering",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "category": {"type": "string", "description": "Filter by category"},
+                    "start_date": {"type": "string", "description": "Start date (ISO format)"},
+                    "end_date": {"type": "string", "description": "End date (ISO format)"},
+                    "limit": {"type": "integer", "description": "Max results"}
+                }
+            }
+        ),
+        Tool(
+            name="get_summary",
+            description="Get spending summary",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "period": {"type": "string", "enum": ["daily", "weekly", "monthly", "yearly"]},
+                    "category": {"type": "string", "description": "Filter by category"}
+                }
+            }
+        ),
+        Tool(
+            name="delete_expense",
+            description="Delete an expense by ID",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "expense_id": {"type": "integer", "description": "Expense ID"}
+                },
+                "required": ["expense_id"]
+            }
+        )
+    ]
+
+@server.call_tool()
+async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    if name == "add_expense":
+        expenses = load_expenses()
+        expense = {
+            "id": max([e.get("id", 0) for e in expenses] + [0]) + 1,
+            "amount": arguments["amount"],
+            "category": arguments["category"],
+            "description": arguments.get("description", ""),
+            "date": arguments.get("date", datetime.now().isoformat().split('T')[0])
+        }
+        expenses.append(expense)
+        save_expenses(expenses)
+        
+        return [TextContent(
+            type="text",
+            text=f"Added expense: ${expense['amount']:.2f} ({expense['category']}) on {expense['date']}"
+        )]
+    
+    elif name == "list_expenses":
+        expenses = load_expenses()
+        category = arguments.get("category")
+        
+        if category:
+            expenses = [e for e in expenses if e["category"].lower() == category.lower()]
+        
+        if not expenses:
+            return [TextContent(type="text", text="No expenses found.")]
+        
+        result = "\n".join([
+            f"• ID {e['id']}: ${e['amount']:.2f} - {e['category']} - {e['description'] or 'N/A'} ({e['date']})"
+            for e in expenses
+        ])
+        
+        return [TextContent(type="text", text=f"Your expenses:\n{result}")]
+    
+    elif name == "get_summary":
+        expenses = load_expenses()
+        category = arguments.get("category")
+        
+        if category:
+            expenses = [e for e in expenses if e["category"].lower() == category.lower()]
+        
+        total = sum(e["amount"] for e in expenses)
+        
+        # Group by category
+        by_category = {}
+        for e in expenses:
+            cat = e["category"]
+            by_category[cat] = by_category.get(cat, 0) + e["amount"]
+        
+        summary = f"Total Spending: ${total:.2f}\n\nBy Category:\n"
+        for cat, amount in sorted(by_category.items(), key=lambda x: x[1], reverse=True):
+            summary += f"• {cat}: ${amount:.2f}\n"
+        
+        return [TextContent(type="text", text=summary)]
+    
+    elif name == "delete_expense":
+        expenses = load_expenses()
+        expense_id = arguments["expense_id"]
+        
+        initial_count = len(expenses)
+        expenses = [e for e in expenses if e["id"] != expense_id]
+        
+        if len(expenses) == initial_count:
+            return [TextContent(type="text", text=f"Expense {expense_id} not found.")]
+        
+        save_expenses(expenses)
+        return [TextContent(type="text", text=f"Deleted expense {expense_id}.")]
+    
+    raise ValueError(f"Unknown tool: {name}")
+
+async def main():
+    async with stdio_server() as (read_stream, write_stream):
+        await server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
+            </code></pre>
+
+            <h2 id="key-properties">Key Engineering Properties</h2>
+
+            <p>MCP provides specific technical guarantees that make it production-ready:</p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Property</th>
+                            <th>Description</th>
+                            <th>Benefit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Protocol-Driven</strong></td>
+                            <td>Standardized JSON-RPC format, versioned, language-agnostic</td>
+                            <td>Any language can implement MCP servers</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Decoupled Architecture</strong></td>
+                            <td>Host ≠ Client ≠ Server with clear boundaries</td>
+                            <td>Each component replaceable independently</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fault Isolation</strong></td>
+                            <td>1:1 client-server relationship</td>
+                            <td>One server crash doesn't affect others</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Horizontal Scalability</strong></td>
+                            <td>Add servers without modifying clients</td>
+                            <td>Grows with your needs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tool Standardization</strong></td>
+                            <td>JSON Schema for inputs, structured outputs</td>
+                            <td>Consistent error handling everywhere</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transport Flexibility</strong></td>
+                            <td>Same protocol, multiple transports (STDIO, HTTP, Serverless)</td>
+                            <td>Deploy anywhere without protocol changes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="patterns">Patterns and Anti-Patterns</h2>
+
+            <h3 id="good-patterns">Good Patterns</h3>
+
+            <p><strong>Single responsibility servers:</strong></p>
+
+            <pre><code class="language-python">
+# Good: Focused server with clear purpose
+github_server = Server("github")
+
+@github_server.tool()
+async def create_issue(repo: str, title: str, body: str): pass
+
+@github_server.tool()
+async def list_repos(username: str): pass
+
+@github_server.tool()
+async def create_pr(repo: str, title: str, from_branch: str, to_branch: str): pass
+            </code></pre>
+
+            <p><strong>Clear capability boundaries:</strong></p>
+
+            <pre><code class="language-python">
+# Good: Resources for reading, tools for writing
+@server.resource("file:///{path}")
+async def read_file(path: str):
+    """No side effects - safe to call multiple times"""
+    return {"uri": f"file:///{path}", "text": open(path).read()}
+
+@server.tool()
+async def write_file(path: str, content: str):
+    """Has side effects - modifies state"""
+    with open(path, 'w') as f:
+        f.write(content)
+    return {"success": True}
+            </code></pre>
+
+            <p><strong>Robust error handling:</strong></p>
+
+            <pre><code class="language-python">
+# Good: Detailed, actionable error messages
+@server.tool()
+async def add_expense(amount: float, category: str):
+    if amount <= 0:
+        raise ValueError("Amount must be positive")
+    
+    if not category:
+        raise ValueError("Category cannot be empty")
+    
+    try:
+        db.insert(amount, category)
+        return {"success": True}
+    except DatabaseError as e:
+        raise RuntimeError(f"Failed to save expense: {str(e)}")
+            </code></pre>
+
+            <h3 id="anti-patterns">Anti-Patterns to Avoid</h3>
+
+            <p><strong>God servers (mixing concerns):</strong></p>
+
+            <pre><code class="language-python">
+# Bad: One server doing everything
+mega_server = Server("everything")
+@mega_server.tool()
+async def read_file(...): pass
+@mega_server.tool()
+async def send_email(...): pass
+@mega_server.tool()
+async def query_database(...): pass
+@mega_server.tool()
+async def search_web(...): pass
+# This defeats the purpose of decoupling
+            </code></pre>
+
+            <p><strong>Mixing tool and resource concerns:</strong></p>
+
+            <pre><code class="language-python">
+# Bad: Tool that should be a resource
+@server.tool()
+async def get_user_profile(user_id: int):
+    # This has no side effects - should be a resource!
+    return db.query("SELECT * FROM users WHERE id = ?", user_id)
+
+# Correct:
+@server.resource("user://{user_id}")
+async def get_user_profile(user_id: int):
+    return {"uri": f"user://{user_id}", "data": {...}}
+            </code></pre>
+
+            <p><strong>Skipping initialization:</strong></p>
+
+            <pre><code class="language-python">
+# Bad: Using client without initialization
+client = Client(read, write)
+tools = await client.list_tools()  # FAILS!
+
+# Correct:
+client = Client(read, write)
+await client.initialize()  # Always first!
+tools = await client.list_tools()  # Now works
+            </code></pre>
+
+            <h2 id="alternatives">Comparison with Alternatives</h2>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>MCP</th>
+                            <th>REST APIs</th>
+                            <th>Function Calling</th>
+                            <th>LangChain Tools</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Purpose</strong></td>
+                            <td>AI tool integration protocol</td>
+                            <td>General data access</td>
+                            <td>LLM tool use</td>
+                            <td>Python tool framework</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Standardization</strong></td>
+                            <td>Universal protocol</td>
+                            <td>Provider-specific (OpenAPI)</td>
+                            <td>Provider-specific</td>
+                            <td>Framework-specific</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Language Support</strong></td>
+                            <td>Any (JSON-RPC)</td>
+                            <td>Any (HTTP)</td>
+                            <td>Provider-specific</td>
+                            <td>Python only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reusability</strong></td>
+                            <td>Across all MCP hosts</td>
+                            <td>Very high (universal)</td>
+                            <td>Provider only</td>
+                            <td>LangChain only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Discovery</strong></td>
+                            <td>Automatic (runtime)</td>
+                            <td>Manual (OpenAPI)</td>
+                            <td>Static definitions</td>
+                            <td>Static definitions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Best Use Case</strong></td>
+                            <td>Production AI apps</td>
+                            <td>General APIs</td>
+                            <td>Simple integrations</td>
+                            <td>Rapid prototyping</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 id="debugging">Debugging MCP Applications</h2>
+
+            <h3 id="common-issues">Common Issues and Solutions</h3>
+
+            <p><strong>Issue: Server not connecting</strong></p>
+
+            <pre><code class="language-bash">
+# Check if server process starts
+python server.py
+# Should print nothing and wait for input (not crash)
+
+# Check configuration path is absolute
+{
+  "command": "python",
+  "args": ["/Users/alice/servers/expense-tracker.py"]  # Not relative!
+}
+
+# On Windows, check path with backslashes
+{
+  "command": "python",
+  "args": ["C:\\Users\\alice\\servers\\expense-tracker.py"]
+}
+            </code></pre>
+
+            <p><strong>Issue: Tools not appearing in Claude</strong></p>
+
+            <pre><code class="language-python">
+# Ensure tools are registered BEFORE server.run()
+@server.list_tools()
+async def list_tools():
+    return [...]  # Must return non-empty list
+
+# Check initialization completed
+await client.initialize()  # Required!
+tools = await client.list_tools()
+
+# Restart Claude Desktop completely (not just reload)
+            </code></pre>
+
+            <p><strong>Issue: JSON-RPC protocol errors</strong></p>
+
+            <pre><code class="language-json">
+// Invalid request (missing jsonrpc version)
+{"method": "tools/call", "params": {...}}  // Invalid
+
+// Valid request
+{"jsonrpc": "2.0", "method": "tools/call", "id": 1, "params": {...}}  // Valid
+
+// Invalid: missing request id
+{"jsonrpc": "2.0", "method": "tools/call"}  // Invalid
+
+// Valid: all required fields
+{"jsonrpc": "2.0", "id": 123, "method": "tools/call", "params": {...}}  // Valid
+            </code></pre>
+
+            <p><strong>Issue: Transport errors with HTTP</strong></p>
+
+            <pre><code class="language-python">
+# Check server is running and reachable
+import requests
+response = requests.get("https://your-server.com/sse")
+# Should return 200 OK
+
+# Check SSL certificates if using HTTPS
+# Add to debug: verify=False (development only!)
+async with http_client(
+    url="https://your-server.com/sse",
+    verify_ssl=False  # Development only!
+) as (read, write):
+    ...
+
+# Check firewall isn't blocking port
+# Use curl to test
+curl https://your-server.com/sse
+            </code></pre>
+
+            <h3 id="debugging-tools">Debugging Tools</h3>
+
+            <ul>
+                <li><strong>MCP Inspector:</strong> Official debugging UI for testing servers</li>
+                <li><strong>Server logs:</strong> Add logging statements in your server code</li>
+                <li><strong>Client-side error handlers:</strong> Catch and log all errors</li>
+                <li><strong>Network inspection:</strong> Use curl/Postman for HTTP transports</li>
+                <li><strong>JSON validation:</strong> Verify all JSON-RPC messages are well-formed</li>
+            </ul>
+
             <h2 id="getting-started">Getting Started with MCP</h2>
 
             <h3 id="step1">Step 1: Choose Your Framework</h3>
 
             <ul>
-                <li><strong>Python:</strong> Use `mcp` Python SDK</li>
-                <li><strong>Node.js:</strong> Use `@modelcontextprotocol/sdk`</li>
+                <li><strong>Python:</strong> Use `pip install mcp`</li>
+                <li><strong>Node.js:</strong> Use `npm install @modelcontextprotocol/sdk`</li>
                 <li><strong>Other languages:</strong> Implement JSON-RPC directly</li>
             </ul>
 
@@ -1285,39 +1878,421 @@ graph TB
 
             <pre><code class="language-python">
 from mcp.server import Server
+from mcp.server.stdio import stdio_server
 
-server = Server(name="my-server")
-
-@server.tool()
-def get_user(username: str) -> str:
-    """Get user profile"""
-    return f"User: {username}"
+server = Server(name="hello-world")
 
 @server.tool()
-def create_note(title: str, content: str) -> str:
-    """Create a new note"""
-    return f"Note created: {title}"
+async def greet(name: str) -> str:
+    """Greet someone"""
+    return f"Hello, {name}! Welcome to MCP."
+
+async def main():
+    async with stdio_server() as (read, write):
+        await server.run(read, write, server.create_initialization_options())
 
 if __name__ == "__main__":
-    server.run()
+    import asyncio
+    asyncio.run(main())
             </code></pre>
 
-            <h3 id="step3">Step 3: Connect a Client</h3>
+            <h3 id="step3">Step 3: Configure Claude Desktop</h3>
+
+            <p><strong>Find your config file:</strong></p>
+
+            <ul>
+                <li><strong>Mac:</strong> `~/Library/Application Support/Claude/claude_desktop_config.json`</li>
+                <li><strong>Windows:</strong> `%APPDATA%\Claude\claude_desktop_config.json`</li>
+                <li><strong>Linux:</strong> `~/.config/Claude/claude_desktop_config.json`</li>
+            </ul>
+
+            <p><strong>Add your server:</strong></p>
+
+            <pre><code class="language-json">
+{
+  "mcpServers": {
+    "hello-world": {
+      "command": "python",
+      "args": ["/Users/alice/.mcp/hello-world/server.py"]
+    }
+  }
+}
+            </code></pre>
+
+            <p><strong>Important:</strong> Use absolute paths, not relative paths. Get the full path with `pwd` (Mac/Linux) or `cd` (Windows).</p>
+
+            <h3 id="step4">Step 4: Test It</h3>
+
+            <ol>
+                <li>Restart Claude Desktop completely</li>
+                <li>Look for the 🔨 hammer icon in Claude (indicates MCP connected)</li>
+                <li>Try: "Greet me with my name"</li>
+                <li>Claude should call your server's `greet` tool</li>
+            </ol>
+
+            <h2 id="fastmcp">FastMCP: Simplified MCP Server Development</h2>
+
+            <p>While the official MCP SDK is powerful, it has boilerplate. <strong>FastMCP</strong> is a developer-friendly framework (similar to Flask for Python) that reduces verbosity while maintaining full protocol compliance.</p>
+
+            <h3 id="fastmcp-philosophy">The Philosophy: Less Boilerplate, Same Power</h3>
+
+            <p><strong>Official MCP SDK (verbose):</strong></p>
 
             <pre><code class="language-python">
-from mcp.client import Client
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent
 
-client = Client("my-server")
-client.connect()
+server = Server("expense-tracker")
 
-# Call tools
-result = client.call_tool("get_user", {"username": "alice"})
-print(result)
+@server.list_tools()
+async def list_tools() -> list[Tool]:
+    return [
+        Tool(
+            name="add_expense",
+            description="Add a new expense",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "amount": {"type": "number"},
+                    "category": {"type": "string"}
+                },
+                "required": ["amount", "category"]
+            }
+        )
+    ]
 
-client.disconnect()
+@server.call_tool()
+async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    if name == "add_expense":
+        # ... logic here
+        return [TextContent(type="text", text="Added")]
+
+async def main():
+    async with stdio_server() as (read, write):
+        await server.run(read, write, server.create_initialization_options())
             </code></pre>
 
-            <h2 id="resources">Resources & Further Reading</h2>
+            <p><strong>FastMCP (clean):</strong></p>
+
+            <pre><code class="language-python">
+from fastmcp import FastMCP
+
+mcp = FastMCP("expense-tracker")
+
+@mcp.tool()
+def add_expense(amount: float, category: str) -> str:
+    """Add a new expense"""
+    # ... logic here
+    return f"Added ${amount} ({category})"
+
+if __name__ == "__main__":
+    mcp.run()
+            </code></pre>
+
+            <p><strong>Difference:**</strong> FastMCP handles tool discovery, schema generation, error handling, and transport automatically. You write the business logic—FastMCP handles the protocol.</p>
+
+            <h3 id="why-fastmcp">Why You Should Consider FastMCP</h3>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Official MCP SDK</th>
+                            <th>FastMCP</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Learning Curve</strong></td>
+                            <td>Steep (protocol details exposed)</td>
+                            <td>Gentle (familiar decorator pattern)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Code Verbosity</strong></td>
+                            <td>High (explicit schemas)</td>
+                            <td>Low (inferred from types)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Type Hints</strong></td>
+                            <td>Required for clarity</td>
+                            <td>Auto-generates schemas from hints</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time to First Server</strong></td>
+                            <td>30-45 minutes</td>
+                            <td>5 minutes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Setup.py/pyproject.toml</strong></td>
+                            <td>Required</td>
+                            <td>Optional</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Development Speed</strong></td>
+                            <td>Slower</td>
+                            <td>Faster</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Production Ready</strong></td>
+                            <td>Fully mature</td>
+                            <td>Fully mature</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advanced Control</strong></td>
+                            <td>Full access</td>
+                            <td>Good access</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 id="fastmcp-example">FastMCP Complete Example</h3>
+
+            <pre><code class="language-python">
+from fastmcp import FastMCP
+import json
+import os
+from datetime import datetime
+
+mcp = FastMCP("expense-tracker")
+
+EXPENSES_FILE = "expenses.json"
+
+def load_expenses():
+    if os.path.exists(EXPENSES_FILE):
+        with open(EXPENSES_FILE, 'r') as f:
+            return json.load(f)
+    return []
+
+def save_expenses(expenses):
+    with open(EXPENSES_FILE, 'w') as f:
+        json.dump(expenses, f, indent=2)
+
+@mcp.tool()
+def add_expense(amount: float, category: str, description: str = "") -> str:
+    """Add a new expense to tracker"""
+    expenses = load_expenses()
+    expense = {
+        "id": max([e.get("id", 0) for e in expenses] + [0]) + 1,
+        "amount": amount,
+        "category": category,
+        "description": description,
+        "date": datetime.now().isoformat().split('T')[0]
+    }
+    expenses.append(expense)
+    save_expenses(expenses)
+    return f"Added ${amount:.2f} ({category})"
+
+@mcp.tool()
+def list_expenses(category: str = None, limit: int = 100) -> str:
+    """List all expenses"""
+    expenses = load_expenses()
+    
+    if category:
+        expenses = [e for e in expenses if e["category"].lower() == category.lower()]
+    
+    if not expenses:
+        return "No expenses found."
+    
+    result = "\n".join([
+        f"• ID {e['id']}: ${e['amount']:.2f} - {e['category']} ({e['date']})"
+        for e in expenses[:limit]
+    ])
+    return f"Your expenses:\n{result}"
+
+@mcp.tool()
+def get_summary() -> str:
+    """Get spending summary"""
+    expenses = load_expenses()
+    
+    if not expenses:
+        return "No expenses recorded."
+    
+    total = sum(e["amount"] for e in expenses)
+    by_category = {}
+    for e in expenses:
+        cat = e["category"]
+        by_category[cat] = by_category.get(cat, 0) + e["amount"]
+    
+    summary = f"Total Spending: ${total:.2f}\n\nBy Category:\n"
+    for cat, amount in sorted(by_category.items(), key=lambda x: x[1], reverse=True):
+        summary += f"• {cat}: ${amount:.2f}\n"
+    
+    return summary
+
+@mcp.tool()
+def delete_expense(expense_id: int) -> str:
+    """Delete an expense"""
+    expenses = load_expenses()
+    initial_count = len(expenses)
+    expenses = [e for e in expenses if e["id"] != expense_id]
+    
+    if len(expenses) == initial_count:
+        return f"Expense {expense_id} not found."
+    
+    save_expenses(expenses)
+    return f"Deleted expense {expense_id}."
+
+if __name__ == "__main__":
+    mcp.run()
+            </code></pre>
+
+            <p><strong>Total: 70 lines of focused business logic. No schema definitions, no decorators complexity, no transport boilerplate.</strong></p>
+
+            <h3 id="fastmcp-cloud">FastMCP Cloud: Deploy in Seconds</h3>
+
+            <p>FastMCP Cloud is a hosted platform that manages server lifecycle for you. Deploy servers with a single command:</p>
+
+            <pre><code class="language-bash">
+# Install FastMCP CLI
+pip install fastmcp
+
+# Login with GitHub (free tier available)
+fastmcp login
+
+# Deploy your server
+fastmcp deploy server.py
+
+# Output:
+# Deployed to: https://your-username-expense-tracker.fastmcp.dev
+            </code></pre>
+
+            <h3 id="fastmcp-cloud-benefits">Why Use FastMCP Cloud?</h3>
+
+            <ul>
+                <li><strong>Zero infrastructure:</strong> No Docker, no Kubernetes, no server management</li>
+                <li><strong>Instant deployment:</strong> One command deploys instantly</li>
+                <li><strong>Free tier:</strong> Generous free tier for development and small projects</li>
+                <li><strong>Auto-scaling:</strong> Handles traffic spikes automatically</li>
+                <li><strong>GitHub integration:</strong> Push to GitHub, auto-deploy from main branch</li>
+                <li><strong>Environment variables:</strong> Secure secret management built-in</li>
+                <li><strong>Monitoring:</strong> Built-in logs, metrics, error tracking</li>
+                <li><strong>Custom domains:</strong> Use your own domain names (paid tier)</li>
+            </ul>
+
+            <h3 id="fastmcp-config">FastMCP Cloud Configuration</h3>
+
+            <p>Create a `fastmcp.toml` in your project root:</p>
+
+            <pre><code class="language-toml">
+[project]
+name = "expense-tracker"
+description = "Personal expense tracking with MCP"
+version = "1.0.0"
+
+[deployment]
+python_version = "3.11"
+requirements = "requirements.txt"
+
+[environment]
+DATABASE_URL = "${secrets.DATABASE_URL}"
+API_KEY = "${secrets.API_KEY}"
+
+[features]
+auto_scaling = true
+cold_start_optimization = true
+            </code></pre>
+
+            <h3 id="fastmcp-vs-manual">FastMCP Cloud vs Manual Deployment</h3>
+
+            <div class="mermaid">
+graph TB
+    subgraph "Manual Deployment (AWS/Render)"
+        M1["Write Server Code"]
+        M2["Create Dockerfile"]
+        M3["Setup Docker Registry"]
+        M4["Configure GitHub Actions"]
+        M5["Setup Database"]
+        M6["Configure Monitoring"]
+        M7["Deploy"]
+        M8["Maintain Infrastructure"]
+        
+        M1 --> M2 --> M3 --> M4 --> M5 --> M6 --> M7 --> M8
+    end
+    
+    subgraph "FastMCP Cloud"
+        F1["Write Server Code"]
+        F2["fastmcp login"]
+        F3["fastmcp deploy"]
+        F4["Done!"]
+        
+        F1 --> F2 --> F3 --> F4
+    end
+    
+    style F4 fill:#50c878
+    style M8 fill:#ff6b6b
+            </div>
+
+            <h3 id="fastmcp-client-config">Client Configuration for FastMCP Cloud</h3>
+
+            <pre><code class="language-json">
+{
+  "mcpServers": {
+    "expenses": {
+      "url": "https://your-username-expense-tracker.fastmcp.dev/sse",
+      "transport": "sse"
+    }
+  }
+}
+            </code></pre>
+
+            <p>That's it. Now Claude Desktop connects to your hosted server.</p>
+
+            <h3 id="fastmcp-use-cases">When to Use FastMCP vs Official SDK</h3>
+
+            <p><strong>Use FastMCP when:</strong></p>
+
+            <ul>
+                <li>Building simple to moderate-complexity servers</li>
+                <li>Want rapid development and iteration</li>
+                <li>Don't need deep protocol customization</li>
+                <li>Prefer intuitive Python patterns</li>
+                <li>Want to deploy without infrastructure work</li>
+                <li>Building for personal or small team use</li>
+            </ul>
+
+            <p><strong>Use Official MCP SDK when:</strong></p>
+
+            <ul>
+                <li>Building enterprise-grade systems</li>
+                <li>Need custom protocol extensions</li>
+                <li>Complex resource streaming requirements</li>
+                <li>Deep control over lifecycle and capabilities</li>
+                <li>Implementing novel transport mechanisms</li>
+                <li>Integrating into existing frameworks</li>
+            </ul>
+
+            <h3 id="fastmcp-github-integration">GitHub Auto-Deploy with FastMCP Cloud</h3>
+
+            <p>Link your repository for automatic deployment on every push:</p>
+
+            <pre><code class="language-bash">
+# Connect GitHub repository
+fastmcp link-repo https://github.com/yourusername/expense-tracker
+
+# Now every push to main branch automatically deploys
+git add server.py
+git commit -m "Add budget feature"
+git push origin main
+# ✅ Automatically deployed to FastMCP Cloud
+            </code></pre>
+
+            <h3 id="fastmcp-secret-management">Secret Management</h3>
+
+            <pre><code class="language-bash">
+# Set secrets securely
+fastmcp set-secret DATABASE_URL "postgresql://user:pass@db.com"
+fastmcp set-secret API_KEY "sk-12345..."
+
+# Use in code
+import os
+db_url = os.getenv("DATABASE_URL")
+api_key = os.getenv("API_KEY")
+
+# Secrets never appear in logs or deployment info
+            </code></pre>
 
             <div class="resource-section">
                 <div class="resource-group">
@@ -1364,24 +2339,29 @@ client.disconnect()
                 <ul class="toc-list">
                     <li><a href="#what-is-mcp" class="toc-link">What is MCP?</a></li>
                     <li><a href="#the-problem" class="toc-link">The N×M Problem</a></li>
-                    <li><a href="#architecture" class="toc-link">Architecture</a>
-                        <ul class="toc-list" style="margin-left: 0.5rem; margin-top: 0.5rem;">
-                            <li><a href="#layer-1-host" class="toc-link">Layer 1: Host</a></li>
-                            <li><a href="#layer-2-client" class="toc-link">Layer 2: Client</a></li>
-                            <li><a href="#layer-3-server" class="toc-link">Layer 3: Server</a></li>
-                        </ul>
-                    </li>
+                    <li><a href="#architecture" class="toc-link">Architecture</a></li>
                     <li><a href="#protocol-lifecycle" class="toc-link">Lifecycle</a></li>
                     <li><a href="#error-handling" class="toc-link">Error Handling</a></li>
-                    <li><a href="#capabilities-negotiation" class="toc-link">Capabilities</a></li>
                     <li><a href="#tools-vs-resources" class="toc-link">Tools vs Resources</a></li>
-                    <li><a href="#idempotency" class="toc-link">Idempotency</a></li>
                     <li><a href="#resilience-patterns" class="toc-link">Resilience</a></li>
-                    <li><a href="#transports" class="toc-link">Transports</a></li>
-                    <li><a href="#real-world-example" class="toc-link">Real-World Example</a></li>
+                    <li><a href="#transport-mechanisms" class="toc-link">Transport Mechanisms</a></li>
+                    <li><a href="#local-vs-remote" class="toc-link">Local vs Remote</a></li>
+                    <li><a href="#building-clients" class="toc-link">Building Clients</a></li>
+                    <li><a href="#langchain-integration" class="toc-link">LangChain Integration</a></li>
+                    <li><a href="#practical-example" class="toc-link">Practical Example</a></li>
+                    <li><a href="#key-properties" class="toc-link">Key Properties</a></li>
+                    <li><a href="#patterns" class="toc-link">Patterns & Anti-Patterns</a></li>
+                    <li><a href="#alternatives" class="toc-link">Alternatives Comparison</a></li>
+                    <li><a href="#debugging" class="toc-link">Debugging</a></li>
                     <li><a href="#why-mcp-matters" class="toc-link">Why It Matters</a></li>
                     <li><a href="#security-model" class="toc-link">Security Model</a></li>
                     <li><a href="#getting-started" class="toc-link">Getting Started</a></li>
+                    <li><a href="#fastmcp" class="toc-link">FastMCP</a>
+                        <ul class="toc-list" style="margin-left: 0.5rem; margin-top: 0.5rem;">
+                            <li><a href="#fastmcp-cloud" class="toc-link">FastMCP Cloud</a></li>
+                            <li><a href="#fastmcp-github-integration" class="toc-link">GitHub Auto-Deploy</a></li>
+                        </ul>
+                    </li>
                     <li><a href="#resources" class="toc-link">Resources</a></li>
                 </ul>
             </div>
