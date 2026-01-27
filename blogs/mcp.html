@@ -910,48 +910,6 @@ graph LR
 
             <p><strong>Key insight:</strong> Each retry doubles the wait time. By attempt 5, you've waited ~31 seconds total. Most services recover by then.</p>
 
-            <h2 id="transports">Transport Mechanisms: STDIO vs HTTP</h2>
-
-            <p>MCP supports two transport mechanisms:</p>
-
-            <img src="../assets/images(MCP)/side-by-side.png" alt="STDIO vs HTTP Comparison" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
-
-            <h3 id="stdio-transport">STDIO: Local, Ultra-Fast</h3>
-
-            <p>For local integrations (Host and Server on same machine):</p>
-
-            <ul>
-                <li><strong>Communication:</strong> Standard input/output pipes</li>
-                <li><strong>Latency:</strong> &lt;1ms (process-to-process)</li>
-                <li><strong>Use case:</strong> Development, single-machine deployments</li>
-                <li><strong>Security:</strong> Limited to same machine</li>
-            </ul>
-
-            <h3 id="http-transport">HTTP: Remote, Distributed</h3>
-
-            <p>For remote integrations (Host and Server on different machines):</p>
-
-            <ul>
-                <li><strong>Communication:</strong> HTTP requests + Server-Sent Events (SSE)</li>
-                <li><strong>Latency:</strong> 20-100ms (network-dependent)</li>
-                <li><strong>Use case:</strong> Cloud deployments, third-party services</li>
-                <li><strong>Security:</strong> Full TLS support, authentication tokens</li>
-            </ul>
-
-            <h3 id="why-sse">Why HTTP + SSE (Not WebSocket)?</h3>
-
-            <p>You might ask: why SSE instead of WebSocket? They're both bi-directional-ish, but SSE has advantages for MCP:</p>
-
-            <ul>
-                <li><strong>Simpler protocol:</strong> SSE is text-based, runs over HTTP. WebSocket requires connection upgrade, different framing.</li>
-                <li><strong>Built-in reconnection:</strong> SSE clients auto-reconnect on disconnect. WebSocket clients need custom logic.</li>
-                <li><strong>Better firewall compatibility:</strong> SSE is just HTTP—proxies and firewalls understand it. WebSocket connections sometimes get blocked.</li>
-                <li><strong>Server-initiated messages:</strong> SSE is designed for servers pushing data to clients. Natural fit for MCP's bidirectional protocol.</li>
-                <li><strong>Overhead:</strong> WebSocket frames add 2-14 bytes per message. SSE is lighter for text-based JSON-RPC.</li>
-            </ul>
-
-            <p><strong>When to use WebSocket instead:</strong> If you need sub-100ms latency (financial trading, real-time gaming), or if you're already using a WebSocket-based framework, WebSocket is fine too. MCP doesn't mandate SSE—it's just the recommended approach.</p>
-
             <h2 id="why-mcp-matters">Why MCP Matters (Now More Than Ever)</h2>
 
             <img src="../assets/images(MCP)/context-engineering.png" alt="Context Engineering" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
@@ -1110,39 +1068,37 @@ graph TB
 
             <p><strong>Why SSE instead of WebSocket?</strong> SSE is simpler (text-based, runs over HTTP), has built-in auto-reconnection, better firewall compatibility, and is optimized for text-based JSON-RPC messages. WebSocket adds frame overhead and connection complexity.</p>
 
+            <h2 id="local-vs-remote">Local vs Remote Deployment Patterns</h2>
+
+            <p><strong>Local Deployment (STDIO):</strong></p>
+
             <div class="mermaid">
-graph TB
-    subgraph "Local Deployment"
-        HD1[Claude Desktop]
-        CS1["Client (STDIO)"]
-        SS1["Server Process"]
-        DB1[(Local Data)]
-        
-        HD1 -->|pipes| CS1
-        CS1 -->|JSON-RPC| SS1
-        SS1 --> DB1
-    end
+graph LR
+    HD1["Claude Desktop"] -->|"Standard I/O Pipes"| CS1["MCP Client"]
+    CS1 -->|"JSON-RPC"| SS1["MCP Server<br/>Process"]
+    SS1 -->|"Direct Access"| DB1[("Local SQLite<br/>Database")]
     
-    subgraph "Remote Deployment"
-        HD2[Claude Desktop]
-        CS2["Client (HTTP)"]
-        INT[Internet/TLS]
-        SS2["Server Cloud"]
-        DB2[(Remote DB)]
-        
-        HD2 -->|HTTP/SSE| CS2
-        CS2 -->|TLS Encrypted| INT
-        INT --> SS2
-        SS2 --> DB2
-    end
-    
-    style CS1 fill:#50c878
-    style SS1 fill:#4a90e2
-    style CS2 fill:#50c878
-    style SS2 fill:#ff9500
+    style HD1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style CS1 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style SS1 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style DB1 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
             </div>
 
-            <h2 id="local-vs-remote">Local vs Remote Deployment Patterns</h2>
+            <p><strong>Remote Deployment (HTTP + SSE):</strong></p>
+
+            <div class="mermaid">
+graph LR
+    HD2["Claude Desktop"] -->|"HTTP/SSE"| CS2["MCP Client"]
+    CS2 -->|"TLS Encrypted<br/>Internet"| INT["Firewall/Router"]
+    INT -->|"HTTPS"| SS2["MCP Server<br/>Cloud"]
+    SS2 -->|"Network Query"| DB2[("PostgreSQL<br/>Remote DB")]
+    
+    style HD2 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style CS2 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style INT fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style SS2 fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style DB2 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+            </div>
 
             <h3 id="local-deployment">Local Server Deployment</h3>
 
@@ -1364,6 +1320,31 @@ async def main():
 
             <p>Use MCP servers seamlessly within LangChain workflows:</p>
 
+            <div class="mermaid">
+graph TB
+    subgraph MCP_Servers["MCP Servers"]
+        E["Expense Server<br/>STDIO"]    
+        G["GitHub Server<br/>HTTP"]
+    end
+    
+    subgraph LangChain_Framework["LangChain"]
+        MCPToolkit["MCPToolkit<br/>Aggregates Tools"]
+        Agent["OpenAI Agent<br/>Decides Actions"]
+    end
+    
+    subgraph User_Interface["User"]
+        User["User Input<br/>Add expense, create issue"]
+    end
+    
+    User -->|Request| Agent
+    Agent -->|Available Tools| MCPToolkit
+    MCPToolkit -->|add_expense| E
+    MCPToolkit -->|create_issue| G
+    E -->|Result| Agent
+    G -->|Result| Agent
+    Agent -->|Final Answer| User
+            </div>
+
             <pre><code class="language-python">
 from langchain_mcp import MCPToolkit
 from langchain_openai import ChatOpenAI
@@ -1405,6 +1386,45 @@ print(result["output"])
             <h2 id="practical-example">Practical Example: Complete Expense Tracker</h2>
 
             <p>Let's build a complete production-ready MCP server for expense tracking:</p>
+
+            <div class="mermaid">
+graph TB
+    subgraph MC["MCP Client"]
+        Claude["Claude Host<br/>Calls Tools"]
+    end
+    
+    subgraph MS["MCP Server"]
+        Server["Expense Tracker<br/>STDIO Transport"]
+        Tools["Tools Available"]
+    end
+    
+    subgraph ST["Storage"]
+        JSON["expenses.json<br/>Persistent"]
+    end
+    
+    subgraph TF["Tool Functions"]
+        Add["add_expense"]
+        List["list_expenses"]
+        Delete["delete_expense"]
+        Summary["get_summary"]
+    end
+    
+    Claude -->|Call Tool| Server
+    Server --> Tools
+    Tools --> Add
+    Tools --> List
+    Tools --> Delete
+    Tools --> Summary
+    Add -->|Read/Write| JSON
+    List -->|Read| JSON
+    Delete -->|Delete| JSON
+    Summary -->|Aggregate| JSON
+    JSON -->|Return Result| Claude
+    
+    style Claude fill:#4a90e2
+    style Server fill:#50c878
+    style JSON fill:#ff9500
+            </div>
 
             <pre><code class="language-python">
 # expense_tracker_server.py
@@ -2197,32 +2217,40 @@ cold_start_optimization = true
 
             <h3 id="fastmcp-vs-manual">FastMCP Cloud vs Manual Deployment</h3>
 
+            <p><strong>FastMCP Cloud:</strong></p>
+
             <div class="mermaid">
-graph TB
-    subgraph "Manual Deployment (AWS/Render)"
-        M1["Write Server Code"]
-        M2["Create Dockerfile"]
-        M3["Setup Docker Registry"]
-        M4["Configure GitHub Actions"]
-        M5["Setup Database"]
-        M6["Configure Monitoring"]
-        M7["Deploy"]
-        M8["Maintain Infrastructure"]
-        
-        M1 --> M2 --> M3 --> M4 --> M5 --> M6 --> M7 --> M8
-    end
+graph LR
+    F1["Write Server Code"] --> F2["fastmcp login"]
+    F2 --> F3["fastmcp deploy"]
+    F3 --> F4["Done! ✅"]
     
-    subgraph "FastMCP Cloud"
-        F1["Write Server Code"]
-        F2["fastmcp login"]
-        F3["fastmcp deploy"]
-        F4["Done!"]
-        
-        F1 --> F2 --> F3 --> F4
-    end
+    style F1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style F2 fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style F3 fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style F4 fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
+            </div>
+
+            <p><strong>Manual Deployment (AWS/Render):</strong></p>
+
+            <div class="mermaid">
+graph LR
+    M1["Write Server Code"] --> M2["Create Dockerfile"]
+    M2 --> M3["Setup Docker Registry"]
+    M3 --> M4["Configure GitHub Actions"]
+    M4 --> M5["Setup Database"]
+    M5 --> M6["Configure Monitoring"]
+    M6 --> M7["Deploy"]
+    M7 --> M8["Maintain Infrastructure ⚠️"]
     
-    style F4 fill:#50c878
-    style M8 fill:#ff6b6b
+    style M1 fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style M2 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M3 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M4 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M5 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M6 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M7 fill:#666,stroke:#fff,stroke-width:2px,color:#fff
+    style M8 fill:#ff6b6b,stroke:#fff,stroke-width:3px,color:#fff
             </div>
 
             <h3 id="fastmcp-client-config">Client Configuration for FastMCP Cloud</h3>
@@ -2343,20 +2371,20 @@ api_key = os.getenv("API_KEY")
                     <li><a href="#protocol-lifecycle" class="toc-link">Lifecycle</a></li>
                     <li><a href="#error-handling" class="toc-link">Error Handling</a></li>
                     <li><a href="#tools-vs-resources" class="toc-link">Tools vs Resources</a></li>
-                    <li><a href="#resilience-patterns" class="toc-link">Resilience</a></li>
+                    <li><a href="#resilience-patterns" class="toc-link">Resilience Patterns</a></li>
+                    <li><a href="#why-mcp-matters" class="toc-link">Why MCP Matters</a></li>
+                    <li><a href="#security-model" class="toc-link">Security Model</a></li>
                     <li><a href="#transport-mechanisms" class="toc-link">Transport Mechanisms</a></li>
-                    <li><a href="#local-vs-remote" class="toc-link">Local vs Remote</a></li>
-                    <li><a href="#building-clients" class="toc-link">Building Clients</a></li>
+                    <li><a href="#local-vs-remote" class="toc-link">Local vs Remote Deployment</a></li>
+                    <li><a href="#building-clients" class="toc-link">Building MCP Clients</a></li>
                     <li><a href="#langchain-integration" class="toc-link">LangChain Integration</a></li>
                     <li><a href="#practical-example" class="toc-link">Practical Example</a></li>
                     <li><a href="#key-properties" class="toc-link">Key Properties</a></li>
                     <li><a href="#patterns" class="toc-link">Patterns & Anti-Patterns</a></li>
                     <li><a href="#alternatives" class="toc-link">Alternatives Comparison</a></li>
                     <li><a href="#debugging" class="toc-link">Debugging</a></li>
-                    <li><a href="#why-mcp-matters" class="toc-link">Why It Matters</a></li>
-                    <li><a href="#security-model" class="toc-link">Security Model</a></li>
                     <li><a href="#getting-started" class="toc-link">Getting Started</a></li>
-                    <li><a href="#fastmcp" class="toc-link">FastMCP</a>
+                    <li><a href="#fastmcp" class="toc-link">FastMCP Framework</a>
                         <ul class="toc-list" style="margin-left: 0.5rem; margin-top: 0.5rem;">
                             <li><a href="#fastmcp-cloud" class="toc-link">FastMCP Cloud</a></li>
                             <li><a href="#fastmcp-github-integration" class="toc-link">GitHub Auto-Deploy</a></li>
