@@ -13,8 +13,33 @@
     <!-- PrismJS for Syntax Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <!-- Mermaid JS for diagrams -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true, theme: 'dark', securityLevel: 'strict'});</script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            mermaid.initialize({ 
+                startOnLoad: true, 
+                theme: 'dark',
+                themeVariables: {
+                    primaryColor: '#00d9ff',
+                    primaryTextColor: '#fff',
+                    primaryBorderColor: '#00d9ff',
+                    lineColor: '#00d9ff',
+                    secondaryColor: '#6c63ff',
+                    tertiaryColor: '#1a1a2e',
+                    background: '#0a0a0a',
+                    mainBkg: '#1a1a2e',
+                    secondBkg: '#0a0a0a',
+                    textColor: '#fff',
+                    fontSize: '16px'
+                },
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true,
+                    curve: 'basis'
+                }
+            });
+        });
+    </script>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -203,20 +228,23 @@
         /* Mermaid Diagram Styles */
         .mermaid {
             background: rgba(255,255,255,0.02);
-            padding: 1rem;
+            padding: 2rem 1rem;
             border-radius: 8px;
             margin: 2rem 0;
             text-align: center;
             overflow-x: auto;
-            min-height: 200px;
+            overflow-y: visible;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
         
         .mermaid svg {
             max-width: 100%;
             height: auto !important;
+            display: block;
+            margin: 0 auto;
         }
         /* Code Block Styles */
         pre[class*="language-"] {
@@ -414,14 +442,16 @@
             }
             
             .mermaid {
-                padding: 0.5rem;
+                padding: 1rem 0.5rem;
                 margin: 1.5rem 0;
-                overflow-x: scroll;
+                overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
             
             .mermaid svg {
-                min-width: 600px;
+                max-width: 100%;
+                width: auto;
+                height: auto !important;
             }
         }
         
@@ -459,12 +489,18 @@
             }
             
             .mermaid {
-                padding: 0.25rem;
-                font-size: 12px;
+                padding: 0.5rem 0.25rem;
+                font-size: 11px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             
             .mermaid svg {
-                min-width: 500px;
+                max-width: 100%;
+                width: auto;
+                height: auto !important;
+                transform: scale(0.85);
+                transform-origin: left center;
             }
         }
         
