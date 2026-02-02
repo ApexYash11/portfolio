@@ -2693,6 +2693,12 @@ section.grid-12 {
     overflow: hidden;
 }
 
+/* Featured / Current Experience Accent */
+.experience-card:first-of-type .experience-content-wrapper {
+    border-left: 4px solid var(--accent-color);
+    background: linear-gradient(90deg, rgba(74, 158, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+}
+
 /* Hover Effect: Glow & Lift */
 .experience-content-wrapper:hover {
     transform: translateY(-2px);
@@ -2777,6 +2783,36 @@ section.grid-12 {
     background: rgba(74, 158, 255, 0.15);
     color: #4a9eff;
     border: 1px solid rgba(74, 158, 255, 0.3);
+    position: relative;
+    overflow: visible;
+}
+
+.status-current::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    background: #4a9eff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4a9eff;
+    animation: status-pulse 2s infinite;
+}
+
+@keyframes status-pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(74, 158, 255, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(74, 158, 255, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(74, 158, 255, 0);
+    }
 }
 
 .role-duration-row {
