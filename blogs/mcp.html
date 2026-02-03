@@ -12,13 +12,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- PrismJS for Syntax Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <!-- Mermaid JS for diagrams -->
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        
-        mermaid.initialize({ 
-            startOnLoad: true, 
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
             theme: 'dark',
+            securityLevel: 'loose',
             themeVariables: {
                 primaryColor: '#00d9ff',
                 primaryTextColor: '#fff',
@@ -31,13 +30,7 @@
                 secondBkg: '#0a0a0a',
                 textColor: '#fff',
                 fontSize: '16px'
-            },
-            flowchart: {
-                useMaxWidth: true,
-                htmlLabels: true,
-                curve: 'basis'
-            },
-            securityLevel: 'loose'
+            }
         });
     </script>
     <script>
@@ -944,7 +937,7 @@ graph TD
 
             <p>MCP distinguishes between two types of capabilities:</p>
 
-            <img src="../assets/images-mcp/comparison diagram.png" alt="Tools vs Resources" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
+            <img src="../assets/images-mcp/comparison%20diagram.png" alt="Tools vs Resources" style="max-width: 100%; height: auto; margin-bottom: 2rem;">
 
             <h3 id="tools-def">Tools: Modifications & Actions</h3>
 
@@ -2596,29 +2589,5 @@ api_key = os.getenv("API_KEY")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script>
-        // TOC Active Link Tracking
-        const toc = document.querySelectorAll('.toc-link');
-        const sections = document.querySelectorAll('h2, h3');
-
-        window.addEventListener('scroll', () => {
-            let current = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
-            });
-
-            toc.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').slice(1) === current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    </script>
-    <script>hljs.highlightAll();</script>
 </body>
 </html>
