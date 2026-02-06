@@ -1,21 +1,37 @@
-// Preloader
+// Preloader - Fast & snappy counter (completes in ~1 second)
 window.addEventListener('load', () => {
+    if (window.__preloaderRan) return;
+    window.__preloaderRan = true;
+
     const preloader = document.querySelector('.preloader');
     const countElement = document.querySelector('.count');
     
-    if (preloader && countElement) {
-        let count = 0;
-        const counter = setInterval(() => {
+    if (!preloader || !countElement) return;
+
+    let count = 0;
+    let lastTime = 0;
+    
+    function animateCounter(currentTime) {
+        // Increment every ~10ms for fast, snappy feel (100 iterations in ~1 second)
+        if (currentTime - lastTime >= 10) {
             if (count < 100) {
                 count++;
                 countElement.textContent = count;
-            } else {
-                clearInterval(counter);
-                preloader.classList.add('hide');
             }
-        }, 20);
+            lastTime = currentTime;
+        }
+        
+        if (count < 100) {
+            requestAnimationFrame(animateCounter);
+        } else {
+            // At 100%, hide preloader immediately without extra increment
+            preloader.classList.add('hide');
+        }
     }
+    
+    requestAnimationFrame(animateCounter);
 });
+
 
 // Mobile Menu Toggle
 const navToggle = document.querySelector('.nav-toggle');
@@ -60,17 +76,28 @@ navLinksAll.forEach(link => {
 });
 
 // Parallax Effect
+let scrolling = false;
+
 window.addEventListener('scroll', () => {
-    const scrolled = window.scrollY;
-    // Removed .project-img-container img from parallax to prevent images from moving out of view
-    const parallaxImages = document.querySelectorAll('.hero-image img, .about-image img');
-    
-    parallaxImages.forEach(img => {
-        const speed = 0.1;
-        // Use translate property to avoid conflict with CSS transform (scale)
-        img.style.translate = `0 ${scrolled * speed}px`;
-    });
-});
+    scrolling = true;
+}, { passive: true });  // Non-blocking scroll listener
+
+function updateParallax() {
+    if (scrolling) {
+        const scrolled = window.scrollY;
+        const parallaxImages = document.querySelectorAll('.hero-image img, .about-image img');
+        
+        parallaxImages.forEach(img => {
+            const speed = 0.1;
+            img.style.translate = `0 ${scrolled * speed}px`;
+        });
+        
+        scrolling = false;
+    }
+    requestAnimationFrame(updateParallax);
+}
+
+requestAnimationFrame(updateParallax)
 
 // Navigation Active State & Indicator
 const navLinks = document.querySelectorAll('.nav-link');
@@ -367,7 +394,7 @@ if (themeToggleBtn && themeIcon) {
     });
 }
 
-// Typewriter Effect
+// Typewriter Effect - Optimized with requestAnimationFrame for smooth character rendering
 const typewriterElement = document.getElementById('typewriter-text');
 const cursorElement = document.querySelector('.typewriter-cursor');
 const roles = ["AI/ML Engineer", "Backend Guy", "ML Developer", "LLM / LLMOps Guy"];
@@ -375,6 +402,7 @@ let roleIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
 let typeSpeed = 100;
+let lastTypeTime = 0;
 
 function type() {
     const currentRole = roles[roleIndex];
@@ -405,7 +433,8 @@ function type() {
         typeSpeed = 500; // Start-of-word pause
         if (cursorElement) cursorElement.classList.remove('typing');
     }
-
+    
+    // Use setTimeout for variable typing speed, scheduled at next RAF
     setTimeout(type, typeSpeed);
 }
 

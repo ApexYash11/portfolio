@@ -7,10 +7,27 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
     <title>Yash Maheshwari | AI/ML Engineer</title>
+    
+    <!-- DNS prefetch for external CDNs (moved to head for faster resolution) -->
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    
+    <!-- Preconnect for Google Fonts (faster font delivery) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="mediaqueries.css">
-    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Load async, don't block rendering -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
+    
+    <!-- Fallback for no-JS -->
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    </noscript>
     <script>
         window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -530,7 +547,7 @@
                 data-features="OCR Document Parsing, Fraud Probability Score, Automated Underwriting, Real-time Dashboard">
                 <div class="project-card">
                     <div class="project-img-container">
-                        <img src="./assets/claimwise.jpeg" alt="Claimwise">
+                        <img src="./assets/claimwise.jpeg" alt="Claimwise" loading="lazy">
                     </div>
                     <div class="project-info">
                         <div class="project-title-area">
@@ -555,7 +572,7 @@
                 data-features="Anomaly Detection, Low-latency Processing, Predictive Risk Modeling, Secure API Integration">
                 <div class="project-card">
                     <div class="project-img-container">
-                        <img src="./assets/trade Guard AI.png" alt="TradeGuardAI">
+                        <img src="./assets/trade Guard AI.png" alt="TradeGuardAI" loading="lazy">
                     </div>
                     <div class="project-info">
                         <div class="project-title-area">
@@ -580,7 +597,7 @@
                 data-features="Expense Categorization, Budget Planning, Investment Tracking, Multi-device Sync">
                 <div class="project-card">
                     <div class="project-img-container">
-                        <img src="./assets/wealthify.png" alt="Wealthify">
+                        <img src="./assets/wealthify.png" alt="Wealthify" loading="lazy">
                     </div>
                     <div class="project-info">
                         <div class="project-title-area">
@@ -605,7 +622,7 @@
                 data-features="Technical Analysis, Sentiment Extraction, Real-time News Ticker, Exportable PDF Reports">
                 <div class="project-card">
                     <div class="project-img-container">
-                        <img src="./assets/jasper.png" alt="Jasper Finance">
+                        <img src="./assets/jasper.png" alt="Jasper Finance" loading="lazy">
                     </div>
                     <div class="project-info">
                         <div class="project-title-area">
@@ -632,7 +649,7 @@
             <div class="span-4 article-card reveal-img">
                 <a href="./blogs/deep-agents.html" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
                     <div class="article-thumb">
-                        <img src="./assets/images-deep-agents/cover_photo.png.png" alt="Deep Agents">
+                        <img src="./assets/images-deep-agents/cover_photo.png.png" alt="Deep Agents" loading="lazy">
                     </div>
                     <div class="article-content">
                         <div class="article-meta">
@@ -650,7 +667,7 @@
             <div class="span-4 article-card reveal-img" style="transition-delay: 0.1s;">
                 <a href="./blogs/mcp.html" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;">
                     <div class="article-thumb">
-                        <img src="./assets/images-mcp/MCP_hero.png" alt="Model Context Protocol">
+                        <img src="./assets/images-mcp/MCP_hero.png" alt="Model Context Protocol" loading="lazy">
                     </div>
                     <div class="article-content">
                         <div class="article-meta">
