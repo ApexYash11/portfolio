@@ -2491,8 +2491,7 @@ section.grid-12 {
     outline: 1px solid var(--text-color);
 }
 
-/* Featureds Section */
-.featured-articles-section {
+/* Featured Articles Section */.featured-articles-section {
     padding: 6rem 0;
 }
 
