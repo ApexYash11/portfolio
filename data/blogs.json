@@ -5,7 +5,7 @@
         "date": "Jan 24, 2025",
         "readTime": "22 min read",
         "excerpt": "A complete guide to building AI agents that actually plan, delegate, and remember. Learn the architecture behind Claude Code, Deep Research, and how to build production-ready deep agents.",
-        "image": "./assets/images-deep-agents/cover_photo.png.png",
+        "image": "./assets/images-deep-agents/cover_photo.png",
         "link": "./blogs/deep-agents.html",
         "featured": true,
         "tags": ["AI Agents", "LangChain", "LLMOps"]

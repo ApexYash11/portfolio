@@ -124,7 +124,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isHash && !isSamePage) return;
             const targetId = this.hash;
             if (!targetId || targetId === '#') return;
-            const targetElement = document.querySelector(targetId);
+            
+            let targetElement;
+            if (targetId.startsWith('#')) {
+                targetElement = document.getElementById(targetId.slice(1));
+            } else {
+                try {
+                    targetElement = document.querySelector(targetId);
+                } catch (err) {
+                    console.error('Invalid selector:', targetId);
+                }
+            }
+
             if (targetElement) {
                  e.preventDefault();
                  targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });

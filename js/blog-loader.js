@@ -25,22 +25,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             article.id = blog.id;
             article.className = 'blog-card-large reveal-text';
             
-            article.innerHTML = `
-                <a href="${blog.link}">
-                    <div class="blog-image">
-                        <img src="${blog.image}" alt="${blog.title}" loading="lazy">
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <span><i class="far fa-calendar"></i> ${blog.date}</span>
-                            <span><i class="far fa-clock"></i> ${blog.readTime}</span>
-                        </div>
-                        <h3>${blog.title}</h3>
-                        <p>${blog.excerpt}</p>
-                        <span class="read-more">Read Full Article <i class="fas fa-arrow-right" style="margin-left: 0.5rem; font-size: 0.8rem;"></i></span>
-                    </div>
-                </a>
-            `;
+            const link = document.createElement('a');
+            link.setAttribute('href', blog.link);
+            
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'blog-image';
+            const img = document.createElement('img');
+            img.setAttribute('src', blog.image);
+            img.setAttribute('alt', blog.title);
+            img.setAttribute('loading', 'lazy');
+            imageDiv.appendChild(img);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'blog-content';
+            
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'blog-meta';
+            const dateSpan = document.createElement('span');
+            dateSpan.innerHTML = `<i class="far fa-calendar"></i> `;
+            dateSpan.appendChild(document.createTextNode(blog.date));
+            const timeSpan = document.createElement('span');
+            timeSpan.innerHTML = `<i class="far fa-clock"></i> `;
+            timeSpan.appendChild(document.createTextNode(blog.readTime));
+            metaDiv.appendChild(dateSpan);
+            metaDiv.appendChild(timeSpan);
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = blog.title;
+            const p = document.createElement('p');
+            p.textContent = blog.excerpt;
+            
+            const readMore = document.createElement('span');
+            readMore.className = 'read-more';
+            readMore.textContent = 'Read Full Article ';
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-arrow-right';
+            icon.style.cssText = 'margin-left: 0.5rem; font-size: 0.8rem;';
+            readMore.appendChild(icon);
+            
+            contentDiv.appendChild(metaDiv);
+            contentDiv.appendChild(h3);
+            contentDiv.appendChild(p);
+            contentDiv.appendChild(readMore);
+            
+            link.appendChild(imageDiv);
+            link.appendChild(contentDiv);
+            article.appendChild(link);
+            
             container.appendChild(article);
         });
 

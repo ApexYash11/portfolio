@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tocLinks.length > 0) {
         const headingMap = new Map();
         tocLinks.forEach(link => {
-            const id = link.getAttribute('href').substring(1);
+            const href = link.getAttribute('href');
+            if (!href || href === '#') return;
+            const id = href.substring(1);
             const heading = document.getElementById(id);
             if (heading) headingMap.set(heading, link);
         });
@@ -88,7 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 setTimeout(() => copyButton.innerHTML = '<i class="far fa-copy"></i> Copy', 2000);
             } catch (err) {
+                console.error('Failed to copy code:', err);
                 copyButton.innerHTML = '<i class="fas fa-times"></i> Failed';
+                setTimeout(() => copyButton.innerHTML = '<i class="far fa-copy"></i> Copy', 2000);
             }
         });
         wrapper.appendChild(copyButton);

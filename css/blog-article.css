@@ -1,5 +1,5 @@
 /* ============================
-   SHARED BLOG ARTICLE STYYLES
+   SHARED BLOG ARTICLE STYLES
    Used by individual blog posts in /blogs/
    ============================ */
 
@@ -114,6 +114,12 @@
     background: rgba(0, 217, 255, 0.2);
     border-color: #00d9ff;
     transform: translateY(-2px);
+}
+
+.copy-code-btn:focus-visible {
+    outline: 2px solid #00d9ff;
+    outline-offset: 4px;
+    background: rgba(0, 217, 255, 0.2);
 }
 
 .copy-code-btn.copied {
@@ -246,20 +252,20 @@
     margin: 2rem 0;
 }
 
-table {
+.article-content table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-th, td {
+.article-content th, .article-content td {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-th {
+.article-content th {
     background: rgba(255, 255, 255, 0.05);
     font-weight: 600;
 }
@@ -413,6 +419,14 @@ th {
 .toc-link:hover, .toc-link.active {
     color: #00d9ff;
     border-left-color: #00d9ff;
+}
+
+.toc-link:focus-visible {
+    color: #00d9ff;
+    border-left-color: #00d9ff;
+    outline: 2px solid rgba(0, 217, 255, 0.5);
+    outline-offset: 2px;
+    background: rgba(0, 217, 255, 0.05);
 }
 
 .toc-link.active {
