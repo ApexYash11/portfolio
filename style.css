@@ -571,7 +571,7 @@ section.grid-12 {
 [class*="span-"] {
     border-right: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 .span-12 {
@@ -863,7 +863,7 @@ section.grid-12 {
 
 /* About Section */
 .section-header {
-    padding: 4rem 2rem;
+    padding: 3.5rem 2rem 1.5rem;
 }
 
 .section-header h2 {
@@ -998,9 +998,9 @@ section.grid-12 {
 
 /* Projects Section */
 .projects-section {
-    row-gap: 4rem;
+    row-gap: 3rem;
     column-gap: 2rem;
-    padding: 6rem 2rem;
+    padding: 0 2rem 4rem;
 }
 
 .project-item {
@@ -1293,7 +1293,7 @@ section.grid-12 {
 
 /* Contact Section */
 .contact-section {
-    padding-bottom: 4rem;
+    padding: 0 0 4rem;
 }
 
 .contact-visual {
@@ -1623,7 +1623,7 @@ section.grid-12 {
 
 /* Skills Grid Section */
 .skills-grid-section {
-    padding: 6rem 2rem;
+    padding: 0 2rem 4rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
@@ -2492,7 +2492,7 @@ section.grid-12 {
 }
 
 /* Featured Articles Section */.featured-articles-section {
-    padding: 6rem 0;
+    padding: 0 0 4rem;
 }
 
 .article-card {
@@ -2615,8 +2615,8 @@ section.grid-12 {
    ----------------------------- */
 .experience-section {
     position: relative;
-    padding: 0 1rem;
-    margin-bottom: 6rem;
+    padding: 0;
+    margin-bottom: 0;
 }
 
 .experience-container {

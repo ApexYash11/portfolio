@@ -1,0 +1,24 @@
+[
+    {
+        "id": "deep-agents",
+        "title": "Deep Agents: Why Most AI Agents Are Shallow",
+        "date": "Jan 24, 2025",
+        "readTime": "22 min read",
+        "excerpt": "A complete guide to building AI agents that actually plan, delegate, and remember. Learn the architecture behind Claude Code, Deep Research, and how to build production-ready deep agents.",
+        "image": "./assets/images-deep-agents/cover_photo.png.png",
+        "link": "./blogs/deep-agents.html",
+        "featured": true,
+        "tags": ["AI Agents", "LangChain", "LLMOps"]
+    },
+    {
+        "id": "mcp",
+        "title": "Model Context Protocol: The Universal Bridge for AI",
+        "date": "Jan 28, 2025",
+        "readTime": "18 min read",
+        "excerpt": "Discover how MCP simplifies AI integrations and solves the NxM integration problem. Learn the three-layer architecture, master tools vs resources, and implement MCP in your applications.",
+        "image": "./assets/images-mcp/MCP_hero.png",
+        "link": "./blogs/mcp.html",
+        "featured": true,
+        "tags": ["MCP", "Integrations", "AI"]
+    }
+]
