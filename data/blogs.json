@@ -20,5 +20,16 @@
         "link": "./blogs/mcp.html",
         "featured": true,
         "tags": ["MCP", "Integrations", "AI"]
+    },
+    {
+        "id": "rag-langsmith",
+        "title": "RAG Systems in Production: From 40% Accuracy to 95% with LangSmith",
+        "date": "Feb 13, 2026",
+        "readTime": "20 min read",
+        "excerpt": "How to trace, evaluate, and optimize Retrieval-Augmented Generation pipelines for production deployment. Learn to transform RAG systems from demo magic to battle-tested production systems.",
+        "image": "./assets/images-rag-langsmith/cover_image_rag.png",
+        "link": "./blogs/rag-langsmith.html",
+        "featured": true,
+        "tags": ["RAG", "LangSmith", "LLMOps"]
     }
 ]
