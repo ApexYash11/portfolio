@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Systems in Production with LangSmith - Yash Maheshwari</title>
+    <link rel="stylesheet" href="../css/shared.css">
+    <link rel="stylesheet" href="../css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#00d9ff',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#00d9ff',
+                lineColor: '#00d9ff',
+                secondaryColor: '#6c63ff',
+                tertiaryColor: '#1a1a2e',
+                background: '#0a0a0a',
+                mainBkg: '#1a1a2e',
+                secondBkg: '#0a0a0a',
+                textColor: '#fff',
+                fontSize: '16px'
+            }
+        });
+    </script>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <link rel="stylesheet" href="../css/blog-article.css">
+</head>
+<body data-theme="dark">
+
+    <nav class="floating-nav">
+        <div class="nav-logo">
+            <a href="../index.html">&lt;/&gt; Yash Maheshwari</a>
+        </div>
+        <ul class="nav-links-container">
+            <li class="nav-indicator"></li>
+            <li><a href="../index.html#hero" class="nav-link">Home</a></li>
+            <li><a href="../index.html#about" class="nav-link">About</a></li>
+            <li><a href="../index.html#skills-grid" class="nav-link">Skills</a></li>
+            <li><a href="../index.html#projects" class="nav-link">Projects</a></li>
+            <li><a href="../index.html#blog" class="nav-link active">Blogs</a></li>
+        </ul>
+        <div class="nav-actions">
+             <a href="../index.html#contact" class="btn btn-primary nav-btn">Let's Talk</a>
+             <!-- Hamburger Menu Toggle (Mobile Only) -->
+            <button class="nav-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="nav-overlay"></div>
+
+    <div class="article-container">
+        <div style="margin-top: 120px; margin-bottom: 20px; padding: 0 2rem;">
+            <a href="../blogs.html" class="back-link">← Back to All Blogs</a>
+        </div>
+    </div>
+
+    <div class="blog-layout">
+        <!-- Main Article Content -->
+        <main class="blog-content">
+            <header class="article-header">
+                <h1>RAG Systems in Production: From 40% Accuracy to 95% with LangSmith</h1>
+                <div class="blog-meta article-meta">
+                    <span><i class="far fa-calendar"></i> Feb 13, 2026</span>
+                    <span><i class="far fa-clock"></i> 20 min read</span>
+                    <span><i class="far fa-user"></i> Yash Maheshwari</span>
+                </div>
+            </header>
+
+            <article class="article-content">
+            <p class="lead" style="font-size: 1.25rem; color: #a0a0a0; margin-bottom: 2rem;">
+                How to trace, evaluate, and optimize Retrieval-Augmented Generation pipelines for production deployment. Learn to transform RAG systems from demo magic to battle-tested production systems with LangSmith.
+            </p>
+
+            <img src="../assets/images-rag-langsmith/cover_image_rag.png" alt="RAG LangSmith Cover" style="max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0;">
+
+            <h2 id="rag-gap">The RAG Performance Gap: Demo vs. Reality</h2>
+
+            <p>You build a RAG chatbot for your company's documentation.</p>
+
+            <p><strong>Demo day:</strong> "What's our refund policy?" → Perfect answer</p>
+            <p><strong>Week 1 production:</strong> "How do I cancel my subscription?" → Hallucinated garbage</p>
+            <p><strong>Week 2:</strong> Users stop using it</p>
+
+            <p><strong>What went wrong?</strong></p>
+
+            <p>RAG demos look great when you cherry-pick examples. Production reveals the harsh truth: 40-60% accuracy in real-world scenarios. You have no visibility into WHY failures happen. You can't systematically improve because you're flying blind.</p>
+
+            <p>This is where most teams get stuck. They have a working RAG system but no way to debug it, measure it, or improve it.</p>
+
+            <p><strong>The solution?</strong> LangSmith transforms RAG from "demo magic" to production systems through trace-level observability, systematic evaluation, and data-driven optimization.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="rag-101">RAG 101: What You Actually Need to Know</h2>
+
+            <p><strong>The three failure modes of RAG systems:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Failure Type</th>
+                    <th style="padding: 1rem; text-align: left;">What Happens</th>
+                    <th style="padding: 1rem; text-align: left;">Example</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Retrieval Failure</strong></td>
+                    <td style="padding: 1rem;">Wrong docs retrieved</td>
+                    <td style="padding: 1rem;">Query: "pricing" → Gets "privacy policy"</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Context Failure</strong></td>
+                    <td style="padding: 1rem;">Right docs, bad ranking</td>
+                    <td style="padding: 1rem;">Relevant info on page 5 of 10 docs</td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;"><strong>Generation Failure</strong></td>
+                    <td style="padding: 1rem;">LLM ignores context</td>
+                    <td style="padding: 1rem;">Has answer in docs, hallucinates anyway</td>
+                </tr>
+            </table>
+
+            <p><strong>Why this matters:</strong> You can't fix what you can't see. Traditional logging shows inputs and outputs. LangSmith shows the ENTIRE pipeline—every step, every decision, every failure point.</p>
+
+            <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
+                <div class="mermaid" role="img" aria-label="Diagram showing the RAG pipeline components">
+graph LR
+    Q["User Query"] --> E["Embedding Model"]
+    E --> V["Vector Search"]
+    V --> D["Retrieved Docs"]
+    D --> R["Rank/Reorder"]
+    R --> P["Prompt + Context"]
+    P --> L["LLM"]
+    L --> A["Answer"]
+    
+    style Q fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style E fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style V fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style D fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
+    style R fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+    style L fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style A fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
+                </div>
+            </div>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="observability-problem">The Observability Problem: Flying Blind</h2>
+
+            <p><strong>Traditional approach—the black box:</strong></p>
+
+<pre><code class="language-python">def rag_query(question: str) -> str:
+    docs = retriever.get_relevant_docs(question)
+    answer = llm.generate(question, docs)
+    return answer  # Why did it fail?</code></pre>
+
+            <p><strong>What you can't see:</strong></p>
+
+            <ul>
+                <li>Which embedding model was actually used</li>
+                <li>What similarity scores were returned for each doc</li>
+                <li>Which chunks were retrieved vs. ignored</li>
+                <li>How the prompt was constructed before sending to LLM</li>
+                <li>Token usage and latency per step</li>
+                <li>Why the LLM chose to hallucinate instead of use context</li>
+            </ul>
+
+            <p><strong>Production horror stories from the wild:</strong></p>
+
+            <ul>
+                <li><strong>Changed embedding model →</strong> accuracy dropped 30% (took 2 weeks to diagnose)</li>
+                <li><strong>Chunk size optimization →</strong> broke on edge cases (discovered via angry user complaints)</li>
+                <li><strong>Prompt engineering →</strong> improved 80% of cases, broke 20% (no systematic way to test)</li>
+                <li><strong>Vector DB migration →</strong> silently degraded quality by 15% (nobody noticed for a month)</li>
+            </ul>
+
+            <p>The common thread? <strong>No observability.</strong> No way to trace what's happening at each step. No way to compare versions. No data-driven decisions—just guessing and hoping.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="why-langsmith">Why LangSmith? (And Not Just Logging)</h2>
+
+            <p>You might be thinking: "Can't I just add logging and call it a day?"</p>
+
+            <p><strong>Short answer:</strong> No. Here's why LangSmith exists.</p>
+
+            <p><strong>What Basic Logging Gives You:</strong></p>
+
+<pre><code class="language-python">import logging
+
+logging.info(f"Query: {question}")
+logging.info(f"Retrieved docs: {len(docs)}")
+logging.info(f"Answer: {answer}")
+logging.info(f"Latency: {latency}ms")</code></pre>
+
+            <p><strong>What You Still Don't Have:</strong></p>
+
+            <ul>
+                <li>Nested execution traces (what happened inside each step?)</li>
+                <li>Automatic cost tracking (how much did this query cost?)</li>
+                <li>Evaluation datasets (is this getting better or worse?)</li>
+                <li>Comparison across experiments (which prompt performed better?)</li>
+                <li>Production monitoring dashboards (are we hitting SLAs?)</li>
+            </ul>
+
+            <p><strong>LangSmith vs Alternatives:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.9rem;">
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03);">
+                    <th style="padding: 1rem; text-align: left;"><strong>Feature</strong></th>
+                    <th style="padding: 1rem; text-align: center;"><strong>LangSmith</strong></th>
+                    <th style="padding: 1rem; text-align: center;"><strong>Weights & Biases</strong></th>
+                    <th style="padding: 1rem; text-align: center;"><strong>Custom Logging</strong></th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Nested Traces</strong></td>
+                    <td style="padding: 1rem; text-align: center;">✅ Full depth</td>
+                    <td style="padding: 1rem; text-align: center;">⚠️ Limited</td>
+                    <td style="padding: 1rem; text-align: center;">❌ Manual</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Auto Token Tracking</strong></td>
+                    <td style="padding: 1rem; text-align: center;">✅ Built-in</td>
+                    <td style="padding: 1rem; text-align: center;">❌ Manual</td>
+                    <td style="padding: 1rem; text-align: center;">❌ Manual</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Evaluation Datasets</strong></td>
+                    <td style="padding: 1rem; text-align: center;">✅ Native</td>
+                    <td style="padding: 1rem; text-align: center;">⚠️ Manual</td>
+                    <td style="padding: 1rem; text-align: center;">❌ None</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>LangChain Integration</strong></td>
+                    <td style="padding: 1rem; text-align: center;">✅ Native</td>
+                    <td style="padding: 1rem; text-align: center;">⚠️ Adapter</td>
+                    <td style="padding: 1rem; text-align: center;">❌ None</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Setup Time</strong></td>
+                    <td style="padding: 1rem; text-align: center;">5 min</td>
+                    <td style="padding: 1rem; text-align: center;">30 min</td>
+                    <td style="padding: 1rem; text-align: center;">Hours</td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;"><strong>Cost</strong></td>
+                    <td style="padding: 1rem; text-align: center;">$</td>
+                    <td style="padding: 1rem; text-align: center;">$$</td>
+                    <td style="padding: 1rem; text-align: center;">$ (infra)</td>
+                </tr>
+            </table>
+
+            <p><strong>LangSmith's Unique Features:</strong></p>
+
+            <p><strong>1. Zero-Code Tracing</strong> - Just set one environment variable and every LangChain call is automatically traced.</p>
+
+            <p><strong>2. Automatic Cost Tracking</strong> - LangSmith calculates token costs in every trace automatically. No manual calculation needed.</p>
+
+            <p><strong>3. Human Feedback Loop</strong> - Collect user feedback in production and convert failed traces into test datasets instantly.</p>
+
+            <p><strong>4. Datasets from Production</strong> - Export production failures as test cases to systematically improve your system.</p>
+
+            <p>This level of integration and automation is impossible with basic logging.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="langsmith-architecture">LangSmith Architecture: How It Actually Works</h2>
+
+            <p><strong>LangSmith has three key components:</strong></p>
+
+            <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
+                <div class="mermaid" role="img" aria-label="Diagram showing LangSmith architecture with tracing, storage, and evaluation">
+graph TB
+    subgraph "Your Application"
+        App["RAG Pipeline"]
+        Trace["@traceable decorator"]
+        App --> Trace
+    end
+    
+    subgraph "LangSmith Backend"
+        Collector["Trace Collector"]
+        Store["Trace Storage"]
+        UI["LangSmith Dashboard"]
+        
+        Collector --> Store
+        Store --> UI
+    end
+    
+    subgraph "Evaluation Engine"
+        Dataset["Test Datasets"]
+        Eval["Evaluators"]
+        Metrics["Metrics & Scores"]
+        
+        Dataset --> Eval
+        Eval --> Metrics
+    end
+    
+    Trace -.->|async, non-blocking| Collector
+    UI --> Dataset
+    Metrics --> UI
+    
+    style Trace fill:#50c878,stroke:#fff,stroke-width:2px,color:#fff
+    style Collector fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
+    style Eval fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
+                </div>
+            </div>
+
+            <p><strong>Key insight:</strong> LangSmith runs asynchronously. Zero latency added to your production app. You get full visibility without paying a performance cost.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="tracing-setup">Setting Up Tracing: The 5-Minute Integration</h2>
+
+            <p><strong>Step 1: Install & Configure</strong></p>
+
+<pre><code class="language-bash">pip install langsmith langchain-openai</code></pre>
+
+<pre><code class="language-python">import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "lsv2_pt_..."  # from langsmith.com
+os.environ["LANGCHAIN_PROJECT"] = "rag-production"</code></pre>
+
+            <p><strong>Step 2: Add @traceable Decorator</strong></p>
+
+<pre><code class="language-python">from langsmith import traceable
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+
+@traceable  # ← This one line enables tracing
+def rag_query(question: str) -> dict:
+    # Embedding (auto-traced by LangChain)
+    embeddings = OpenAIEmbeddings()
+    
+    # Retrieval (auto-traced)
+    vectorstore = FAISS.load_local("./db", embeddings)
+    docs = vectorstore.similarity_search(question, k=5)
+    
+    # LLM call (auto-traced)
+    llm = ChatOpenAI(model="gpt-4", temperature=0)
+    context = "\n".join([d.page_content for d in docs])
+    
+    prompt = f"""Answer based on context only.
+    
+Context: {context}
+
+Question: {question}"""
+    
+    answer = llm.invoke(prompt)
+    
+    return {
+        "answer": answer.content,
+        "sources": [d.metadata for d in docs]
+    }
+
+# Step 3: Run it
+result = rag_query("What's the refund policy?")
+print(result["answer"])</code></pre>
+
+            <p><strong>What you see in LangSmith:</strong></p>
+
+            <ul>
+                <li>Full execution trace with timing per step</li>
+                <li>Inputs and outputs for embedding, retrieval, and LLM</li>
+                <li>Token usage and costs per component</li>
+                <li>Latency breakdown</li>
+                <li>Links to actual API calls for debugging</li>
+            </ul>
+
+            <p>All automatically captured. No extra code needed.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="understanding-traces">Understanding Traces: The Anatomy</h2>
+
+            <p><strong>A Real Production Trace:</strong></p>
+
+<pre><code class="language-text">Trace: rag_query
+├─ Duration: 2,347ms
+├─ Cost: $0.0234
+├─ Status: Success
+│
+├─ [Step 1] OpenAIEmbeddings.embed_query
+│   ├─ Input: "What's the refund policy?"
+│   ├─ Model: text-embedding-3-small
+│   ├─ Tokens: 8
+│   ├─ Latency: 45ms
+│   └─ Output: [768-dim vector]
+│
+├─ [Step 2] FAISS.similarity_search
+│   ├─ Query Vector: [0.123, -0.456, ...]
+│   ├─ Top K: 5
+│   ├─ Similarity Scores: [0.89, 0.87, 0.85, 0.82, 0.79]
+│   ├─ Retrieved Docs: [5 documents]
+│   └─ Latency: 12ms
+│
+└─ [Step 3] ChatOpenAI.invoke
+    ├─ Input Prompt: "Answer based on context only..."
+    ├─ Context Length: 1,234 tokens
+    ├─ Model: gpt-4
+    ├─ Temperature: 0
+    ├─ Response: "You can request a refund within 30 days..."
+    ├─ Input Tokens: 1,234
+    ├─ Output Tokens: 89
+    ├─ Cost: $0.0221
+    └─ Latency: 2,290ms</code></pre>
+
+            <p><strong>What This Reveals:</strong></p>
+            <ul>
+                <li>✅ Retrieval working (0.89 top score is strong)</li>
+                <li>✅ LLM got the right context</li>
+                <li>⚠️ But 2.3s latency is slow (optimization target)</li>
+                <li>✅ Cost per query: $0.023 (acceptable)</li>
+            </ul>
+
+            <img src="../assets/images-rag-langsmith/accuracy.png" alt="Trace Anatomy Breakdown showing nested trace structure" style="max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0;">
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="building-datasets">Building Evaluation Datasets</h2>
+
+            <p><strong>The Problem:</strong> Manual testing doesn't scale. You need systematic evaluation.</p>
+
+            <p><strong>Solution: Create Test Datasets</strong></p>
+
+<pre><code class="language-python">from langsmith import Client
+
+client = Client()
+
+# Create dataset
+dataset = client.create_dataset(
+    dataset_name="rag-refund-policy",
+    description="Test cases for refund policy queries"
+)
+
+# Add examples
+examples = [
+    {
+        "inputs": {"question": "What's your refund policy?"},
+        "outputs": {"answer": "Full refund within 30 days of purchase."}
+    },
+    {
+        "inputs": {"question": "How long to request a refund?"},
+        "outputs": {"answer": "30 days from purchase."}
+    },
+    {
+        "inputs": {"question": "Do I need a receipt?"},
+        "outputs": {"answer": "Yes, proof of purchase required."}
+    }
+]
+
+for example in examples:
+    client.create_example(
+        dataset_id=dataset.id,
+        inputs=example["inputs"],
+        outputs=example["outputs"]
+    )</code></pre>
+
+            <p><strong>Dataset Best Practices:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Dataset Type</th>
+                    <th style="padding: 1rem; text-align: center;">Size</th>
+                    <th style="padding: 1rem; text-align: left;">Use Case</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Golden Set</strong></td>
+                    <td style="padding: 1rem; text-align: center;">10-20</td>
+                    <td style="padding: 1rem;">Core functionality, regression testing</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Edge Cases</strong></td>
+                    <td style="padding: 1rem; text-align: center;">20-50</td>
+                    <td style="padding: 1rem;">Ambiguous queries, rare scenarios</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Production Sample</strong></td>
+                    <td style="padding: 1rem; text-align: center;">100-500</td>
+                    <td style="padding: 1rem;">Representative real-world queries</td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;"><strong>Adversarial</strong></td>
+                    <td style="padding: 1rem; text-align: center;">20-50</td>
+                    <td style="padding: 1rem;">Jailbreak attempts, hallucination triggers</td>
+                </tr>
+            </table>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="evaluators">The Four Critical Evaluators</h2>
+
+            <p><strong>1. Correctness — Answer vs Reference</strong></p>
+
+<pre><code class="language-python">from langsmith.evaluation import LangChainStringEvaluator
+
+def correctness_evaluator(run, example):
+    """Does the answer match the expected output?"""
+    answer = run.outputs["answer"]
+    expected = example.outputs["expected_answer"]
+    return {"score": 1 if answer.lower()== expected.lower() else 0}</code></pre>
+
+            <p><strong>2. Relevance — Answer vs Question</strong></p>
+
+<pre><code class="language-python">def relevance_evaluator(run, example):
+    """Is the answer relevant and helpful?"""
+    evaluator_llm = ChatOpenAI(model="gpt-4")
+    score = evaluator_llm.invoke(f"""
+    Question: {example.inputs['question']}
+    Answer: {run.outputs['answer']}
+    Is this answer relevant? (yes/no)
+    """)
+    return {"score": 1 if "yes" in score.content.lower() else 0}</code></pre>
+
+            <p><strong>3. Groundedness — Answer vs Retrieved Docs</strong></p>
+
+<pre><code class="language-python">def groundedness_evaluator(run, example):
+    """Check if answer stays within retrieved documents"""
+    answer = run.outputs["answer"]
+    docs = run.outputs.get("sources", [])
+    
+    evaluator_llm = ChatOpenAI(model="gpt-4")
+    prompt = f"""Does this answer only use information from the provided documents?
+
+Answer: {answer}
+
+Documents: {docs}
+
+Respond with YES or NO."""
+    
+    result = evaluator_llm.invoke(prompt)
+    return {"score": 1 if "YES" in result.content else 0}</code></pre>
+
+            <p><strong>4. Retrieval Quality — Retrieved Docs vs Question</strong></p>
+
+<pre><code class="language-python">def retrieval_evaluator(run, example):
+    """Check if right documents were retrieved"""
+    question = example.inputs["question"]
+    docs = run.outputs.get("sources", [])
+    
+    # Check if expected keywords appear in docs
+    expected_keywords = ["refund", "30 days", "policy"]
+    doc_text = " ".join([str(d) for d in docs]).lower()
+    
+    matches = sum(1 for kw in expected_keywords if kw in doc_text)
+    score = matches / len(expected_keywords)
+    
+    return {"score": score}</code></pre>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="running-evaluations">Running Evaluations</h2>
+
+            <p><strong>Complete Evaluation Pipeline:</strong></p>
+
+<pre><code class="language-python">from langsmith import Client
+from langsmith.evaluation import evaluate
+
+client = Client()
+
+# Define all evaluators
+evaluators = [
+    correctness_evaluator,
+    relevance_evaluator,
+    groundedness_evaluator,
+    retrieval_evaluator
+]
+
+# Run evaluation against your test dataset
+results = evaluate(
+    lambda inputs: rag_query(inputs["question"]),
+    data="rag-refund-policy",
+    evaluators=evaluators,
+    experiment_prefix="rag-v1-baseline",
+    metadata={
+        "model": "gpt-4",
+        "embedding": "text-embedding-3-small",
+        "chunk_size": 512,
+        "retrieval_k": 5
+    }
+)
+
+# View results
+print(results.to_pandas())</code></pre>
+
+            <p><strong>Output Example:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0; font-size: 0.9rem;">
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Evaluator</th>
+                    <th style="padding: 1rem; text-align: center;">Mean</th>
+                    <th style="padding: 1rem; text-align: center;">Median</th>
+                    <th style="padding: 1rem; text-align: center;">Min</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Correctness</strong></td>
+                    <td style="padding: 1rem; text-align: center;">0.75</td>
+                    <td style="padding: 1rem; text-align: center;">0.80</td>
+                    <td style="padding: 1rem; text-align: center;">0.40</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Relevance</strong></td>
+                    <td style="padding: 1rem; text-align: center;">0.85</td>
+                    <td style="padding: 1rem; text-align: center;">0.90</td>
+                    <td style="padding: 1rem; text-align: center;">0.60</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Groundedness</strong></td>
+                    <td style="padding: 1rem; text-align: center;">0.90</td>
+                    <td style="padding: 1rem; text-align: center;">1.00</td>
+                    <td style="padding: 1rem; text-align: center;">0.60</td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;"><strong>Retrieval Quality</strong></td>
+                    <td style="padding: 1rem; text-align: center;">0.65</td>
+                    <td style="padding: 1rem; text-align: center;">0.70</td>
+                    <td style="padding: 1rem; text-align: center;">0.33</td>
+                </tr>
+            </table>
+
+            <p><strong>Interpretation:</strong></p>
+            <ul>
+                <li>✅ Groundedness is high (low hallucination)</li>
+                <li>⚠️ Retrieval quality is weak (wrong docs being retrieved)</li>
+                <li>🎯 Focus optimization on the retrieval layer</li>
+            </ul>
+
+            <img src="../assets/images-rag-langsmith/evalution.png" alt="Evaluation Results Heatmap showing metric progression" style="max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0;">
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="evaluation">Evaluation: From Gut Feeling to Data-Driven Decisions</h2>
+
+            <p>Now you can see what's happening. But how do you know if it's GOOD?</p>
+
+            <p>That's where evaluation comes in. LangSmith lets you define evaluators that automatically score your RAG output on metrics that matter:</p>
+
+<pre><code class="language-python">from langsmith import evaluate
+
+def is_correct(run, example):
+    """Does the answer match the expected answer?"""
+    return run.outputs["answer"] == example.outputs["expected_answer"]
+
+def has_source(run, example):
+    """Did the answer cite sources?"""
+    return len(run.outputs["sources"]) > 0
+
+def is_relevant(run, example):
+    """Is the retrieved context actually relevant?"""
+    # Use an evaluator LLM
+    evaluator_llm = ChatOpenAI(model="gpt-4")
+    score = evaluator_llm.invoke(f"""
+    Question: {example.inputs['question']}
+    Retrieved docs: {run.outputs['sources']}
+    Are these docs relevant? (yes/no)
+    """)
+    return "yes" in score.content.lower()
+
+# Run evaluation against test dataset
+results = evaluate(
+    rag_query,
+    data="my-test-dataset",
+    evaluators=[is_correct, has_source, is_relevant]
+)
+
+# See metrics breakdown
+print(f"Correctness: {results['is_correct']}")
+print(f"Source citation: {results['has_source']}")
+print(f"Relevance: {results['is_relevant']}")</code></pre>
+
+            <p>When you make changes to your RAG pipeline, you run the same evaluation again and compare side-by-side. You can see exactly which change improved what metric.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="optimization">Optimization: From 40% to 95% Accuracy</h2>
+
+            <p>With traces and evaluation scores, you now have the data to optimize systematically. Here are the high-impact changes in order:</p>
+
+            <h3>Optimization Iterations: From 75% to 95%</h3>
+
+            <p><strong>Iteration 1: Baseline (75% Accuracy)</strong></p>
+
+<pre><code class="language-python"># chunk_size=512, k=5, no reranking
+Accuracy: 75%
+Retrieval Quality: 0.65
+Latency: 2.3s
+Cost: $0.023/query</code></pre>
+
+            <p><strong>Iteration 2: Increase Retrieval K (78% +3%)</strong></p>
+
+<pre><code class="language-python">vectorstore.similarity_search(question, k=10)  # was k=5
+# More docs = better coverage
+
+Accuracy: 78% (+3%)
+Retrieval Quality: 0.72 (+0.07)
+Cost: +15% (more tokens to LLM)</code></pre>
+
+            <p><strong>Iteration 3: Add Reranking (85% +7%)</strong></p>
+
+<pre><code class="language-python">from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainExtractor
+
+compressor = LLMChainExtractor.from_llm(llm)
+retriever = ContextualCompressionRetriever(
+    base_compressor=compressor,
+    base_retriever=vectorstore.as_retriever(search_kwargs={"k": 10})
+)
+
+Accuracy: 85% (+7%)
+Retrieval Quality: 0.81 (+0.09)
+Cost: +8% (reranking overhead)</code></pre>
+
+            <p><strong>Iteration 4: Optimize Chunk Size (92% +7%)</strong></p>
+
+<pre><code class="language-python"># chunk_size=256 (was 512)
+# Smaller chunks = more precise matches
+
+Accuracy: 92% (+7%)
+Retrieval Quality: 0.88 (+0.07)
+Latency: 1.9s (improved)
+Cost: $0.024/query</code></pre>
+
+            <p><strong>Iteration 5: Hybrid Search (95% +3%)</strong></p>
+
+<pre><code class="language-python">from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+
+# Add BM25 for keyword matching
+bm25 = BM25Retriever.from_documents(docs)
+ensemble = EnsembleRetriever(
+    retrievers=[vectorstore.as_retriever(), bm25],
+    weights=[0.7, 0.3]  # 70% vector, 30% keyword
+)
+
+Accuracy: 95% (+3%)
+Retrieval Quality: 0.93 (+0.05)
+Latency: 2.1s
+Cost: $0.026/query (+13% vs baseline)</code></pre>
+
+            <img src="../assets/images-rag-langsmith/archicture.png" alt="Optimization Iterations Progress from 75% to 95% accuracy" style="max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0;">
+
+            <p><strong>Final Results:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Metric</th>
+                    <th style="padding: 1rem; text-align: center;">Baseline</th>
+                    <th style="padding: 1rem; text-align: center;">Final</th>
+                    <th style="padding: 1rem; text-align: center;">Improvement</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Accuracy</strong></td>
+                    <td style="padding: 1rem; text-align: center;">75%</td>
+                    <td style="padding: 1rem; text-align: center;">95%</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">+20%</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Retrieval Quality</strong></td>
+                    <td style="padding: 1rem; text-align: center;">0.65</td>
+                    <td style="padding: 1rem; text-align: center;">0.93</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">+43%</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;"><strong>Latency</strong></td>
+                    <td style="padding: 1rem; text-align: center;">2.3s</td>
+                    <td style="padding: 1rem; text-align: center;">2.1s</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">-9%</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;"><strong>Cost/Query</strong></td>
+                    <td style="padding: 1rem; text-align: center;">$0.023</td>
+                    <td style="padding: 1rem; text-align: center;">$0.026</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #ff9500;">+13%</span></td>
+                </tr>
+            </table>
+
+            <p><strong>Production Decision:</strong> +13% cost for +20% accuracy is an excellent trade-off. Deploy to production.</p>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="metadata-filtering">Metadata Filtering: The Underrated Optimization</h2>
+
+            <p>Most RAG tutorials skip metadata filtering. That's a critical mistake. It's the <strong>highest-ROI optimization</strong> you can make.</p>
+
+            <p><strong>The Problem:</strong></p>
+
+<pre><code class="language-python"># Without filtering: Search everything
+question = "What's our refund policy for 2024?"
+docs = vectorstore.similarity_search(question, k=5)
+
+# Searches 10,000 documents:
+# - 2023 policies (outdated)
+# - 2022 policies (outdated)
+# - Blog posts about refunds (not official)
+# - Customer complaints (not policy)
+# - 2024 policy (what we want)
+
+# Result: Maybe gets 2024 policy, maybe doesn't</code></pre>
+
+            <p><strong>The Solution:</strong></p>
+
+<pre><code class="language-python"># With filtering: Pre-filter, then search
+docs = vectorstore.similarity_search(
+    question,
+    k=5,
+    filter={
+        "document_type": "policy",
+        "year": 2024,
+        "category": "refund"
+    }
+)
+
+# Searches only 50 documents (2024 refund policies)
+# Result: Always gets the right policy</code></pre>
+
+            <p><strong>Real Impact of Metadata Filtering:</strong></p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 2rem 0;">
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Metric</th>
+                    <th style="padding: 1rem; text-align: center;">Without Filter</th>
+                    <th style="padding: 1rem; text-align: center;">With Filter</th>
+                    <th style="padding: 1rem; text-align: center;">Improvement</th>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;">Search Space</td>
+                    <td style="padding: 1rem; text-align: center;">10,000 docs</td>
+                    <td style="padding: 1rem; text-align: center;">50 docs</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">99.5% reduction</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;">Retrieval Latency</td>
+                    <td style="padding: 1rem; text-align: center;">120ms</td>
+                    <td style="padding: 1rem; text-align: center;">15ms</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">87.5% faster</span></td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem;">Accuracy</td>
+                    <td style="padding: 1rem; text-align: center;">78%</td>
+                    <td style="padding: 1rem; text-align: center;">91%</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">+13%</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 1rem;">Cost</td>
+                    <td style="padding: 1rem; text-align: center;">$0.026</td>
+                    <td style="padding: 1rem; text-align: center;">$0.024</td>
+                    <td style="padding: 1rem; text-align: center;"><span style="color: #50c878;">8% cheaper</span></td>
+                </tr>
+            </table>
+
+            <p><strong>Why It Works:</strong></p>
+
+            <ol>
+                <li><strong>Reduces noise:</strong> Fewer irrelevant documents to search</li>
+                <li><strong>Improves precision:</strong> Semantic search works better on focused dataset</li>
+                <li><strong>Faster retrieval:</strong> Smaller search space = faster queries</li>
+                <li><strong>Lower cost:</strong> Fewer tokens sent to LLM</li>
+            </ol>
+
+            <p><strong>Common Metadata Strategies:</strong></p>
+
+<pre><code class="language-python"># Strategy 1: Time-based filtering
+filter = {"created_date": {"$gte": "2024-01-01"}}
+
+# Strategy 2: Source-based filtering
+filter = {"source": {"$in": ["docs", "official_blog"]}}
+
+# Strategy 3: Category-based filtering
+filter = {"category": {"$in": ["billing", "refund"]}}
+
+# Strategy 4: User-context filtering
+filter = {"access_level": user.subscription_tier}
+
+# Strategy 5: Multi-dimensional filtering
+filter = {
+    "document_type": "api_docs",
+    "sdk": "python",
+    "version": {"$gte": "3.0"}
+}</code></pre>
+
+            <img src="../assets/images-rag-langsmith/filterting.png" alt="Metadata Filtering Impact showing before/after search space reduction" style="max-width: 100%; height: auto; border-radius: 12px; margin: 2rem 0;">
+
+            <p><strong>Metadata Filtering Checklist:</strong></p>
+
+            <ul>
+                <li><input type="checkbox" disabled checked> Documents have 3-5 metadata fields</li>
+                <li><input type="checkbox" disabled checked> Metadata is validated during ingestion</li>
+                <li><input type="checkbox" disabled checked> Vector store supports metadata filtering</li>
+                <li><input type="checkbox" disabled checked> Filters are indexed for performance</li>
+                <li><input type="checkbox" disabled checked> Filter logic tested with evaluation dataset</li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="production-monitoring">Production Monitoring & Alerts</h2>
+
+            <p><strong>Monitor Three Key Dashboards:</strong></p>
+
+            <p><strong>1. Performance Dashboard</strong></p>
+            <ul>
+                <li>Latency (P50, P95, P99)</li>
+                <li>Cost per query</li>
+                <li>Error rate</li>
+                <li>Throughput (queries/min)</li>
+            </ul>
+
+            <p><strong>2. Quality Dashboard</strong></p>
+            <ul>
+                <li>User feedback scores</li>
+                <li>Groundedness (anti-hallucination)</li>
+                <li>Retrieval quality</li>
+                <li>Answer relevance</li>
+            </ul>
+
+            <p><strong>3. Alerts & Anomalies</strong></p>
+            <ul>
+                <li>Latency spike (>3s)</li>
+                <li>Cost spike (>$0.05/query)</li>
+                <li>Quality drop (<80% accuracy)</li>
+                <li>Error rate (>5%)</li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="advanced-patterns">Advanced Patterns</h2>
+
+            <p><strong>Pattern 1: A/B Testing Prompts</strong></p>
+
+<pre><code class="language-python">from langsmith.evaluation import evaluate
+
+# Test two prompt variations
+results_a = evaluate(
+    lambda inputs: rag_query_v1(inputs["question"]),
+    data="test-dataset",
+    experiment_prefix="prompt-A-formal"
+)
+
+results_b = evaluate(
+    lambda inputs: rag_query_v2(inputs["question"]),
+    data="test-dataset",
+    experiment_prefix="prompt-B-casual"
+)
+
+# Compare results:
+# Prompt A: 87% accuracy
+# Prompt B: 92% accuracy
+# Winner: Prompt B</code></pre>
+
+            <p><strong>Pattern 2: Production-to-Dataset</strong></p>
+
+<pre><code class="language-python"># Export failed production runs as test cases
+client.create_dataset_from_runs(
+    dataset_name="production-failures-feb-2026",
+    run_ids=failed_run_ids
+)
+
+# Now you can regression test fixes</code></pre>
+
+            <p><strong>Pattern 3: Multi-Model Evaluation</strong></p>
+
+<pre><code class="language-python">models = ["gpt-4", "gpt-4-turbo", "claude-3-opus"]
+
+for model in models:
+    evaluate(
+        lambda inputs: rag_query(inputs["question"], model=model),
+        data="test-dataset",
+        experiment_prefix=f"model-{model}"
+    )
+
+# Compare results across models and choose the best</code></pre>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="common-pitfalls">Common Pitfalls & Solutions</h2>
+
+            <p><strong>Pitfall 1: Evaluation Dataset Drift</strong></p>
+            <ul>
+                <li><strong>Problem:</strong> Test on old data, deploy to new queries</li>
+                <li><strong>Solution:</strong> Monthly dataset refresh from production traces</li>
+            </ul>
+
+            <p><strong>Pitfall 2: Overfitting to Evaluators</strong></p>
+            <ul>
+                <li><strong>Problem:</strong> Optimize for LLM-as-judge, ignore user satisfaction</li>
+                <li><strong>Solution:</strong> Mix automated + human feedback</li>
+            </ul>
+
+            <p><strong>Pitfall 3: Ignoring Cost</strong></p>
+            <ul>
+                <li><strong>Problem:</strong> 99% accuracy costs $1/query</li>
+                <li><strong>Solution:</strong> Set cost budget, optimize within constraints</li>
+            </ul>
+
+            <p><strong>Pitfall 4: No Regression Testing</strong></p>
+            <ul>
+                <li><strong>Problem:</strong> New optimization breaks old functionality</li>
+                <li><strong>Solution:</strong> Maintain golden dataset, always test before deploy</li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="key-takeaways">Key Takeaways</h2>
+
+            <p><strong>RAG without LangSmith:</strong></p>
+            <ul>
+                <li>Demo works, production fails</li>
+                <li>No visibility into failures</li>
+                <li>Can't systematically improve</li>
+                <li>Manual testing doesn't scale</li>
+            </ul>
+
+            <p><strong>RAG with LangSmith:</strong></p>
+            <ul>
+                <li>Trace every step (embedding → retrieval → generation)</li>
+                <li>Systematic evaluation (datasets + automated evaluators)</li>
+                <li>Data-driven optimization (A/B test, compare, deploy)</li>
+                <li>Production monitoring (catch regressions early)</li>
+            </ul>
+
+            <p><strong>The Numbers:</strong></p>
+            <ul>
+                <li><strong>Baseline:</strong> 40-60% accuracy (typical RAG demo)</li>
+                <li><strong>With evaluation:</strong> 80-85% accuracy</li>
+                <li><strong>With optimization:</strong> 90-95% accuracy</li>
+                <li><strong>Production-ready:</strong> 95%+ with monitoring</li>
+            </ul>
+
+            <p><strong>Time Investment:</strong></p>
+            <ul>
+                <li>Setup tracing: 5 minutes</li>
+                <li>Build dataset: 2-4 hours</li>
+                <li>First evaluation: 30 minutes</li>
+                <li>Optimization cycles: 1-2 days per iteration</li>
+                <li>Production monitoring: 15 min/day</li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="production-checklist">Production Readiness Checklist</h2>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="resources">Resources & Further Learning</h2>
+
+            <p><strong>Official Documentation:</strong></p>
+
+            <ul>
+                <li><a href="https://docs.smith.langchain.com" style="color: #4a90e2; text-decoration: none;">LangSmith Documentation</a> - Official guides and API reference</li>
+                <li><a href="https://docs.langchain.com/langsmith/evaluate-rag-tutorial" style="color: #4a90e2; text-decoration: none;">RAG Evaluation Guide</a> - Step-by-step tutorial</li>
+                <li><a href="https://github.com/langchain-ai/langsmith-cookbook" style="color: #4a90e2; text-decoration: none;">LangSmith Cookbook</a> - Production examples</li>
+            </ul>
+
+            <p><strong>Community:</strong></p>
+
+            <ul>
+                <li><a href="https://discord.gg/langchain" style="color: #4a90e2; text-decoration: none;">LangChain Discord</a> - Real-time help from community</li>
+                <li><a href="https://github.com/langchain-ai/langsmith-sdk" style="color: #4a90e2; text-decoration: none;">LangSmith GitHub</a> - Issues, discussions, code</li>
+            </ul>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 3rem 0;">
+
+            <h2 id="closing">The Difference It Makes</h2>
+
+            <p><strong>Without LangSmith:</strong> You ship a RAG system. Hope it works. Debug in the dark when it doesn't. Take months to incrementally improve.</p>
+
+            <p><strong>With LangSmith:</strong> You have full visibility into every decision. You measure impact of every change. You optimize systematically. You go from 40% to 95% accuracy in weeks, not months.</p>
+
+            <p>The gap between demo and production isn't about magic. It's about observability, measurement, and systematic optimization.</p>
+
+            <p>LangSmith is the tool that lets you do all three.</p>
+
+            </article>
+        </main>
+
+        <!-- Sidebar (Table of Contents) -->
+        <aside class="toc-sidebar">
+            <div class="toc-sticky">
+                <h3>Table of Contents</h3>
+                <ul class="toc-list">
+                    <li><a href="#rag-gap" class="toc-link">The RAG Performance Gap</a></li>
+                    <li><a href="#rag-101" class="toc-link">RAG 101: What You Actually Need to Know</a></li>
+                    <li><a href="#observability-problem" class="toc-link">The Observability Problem</a></li>
+                    <li><a href="#why-langsmith" class="toc-link">Why LangSmith?</a></li>
+                    <li><a href="#langsmith-architecture" class="toc-link">LangSmith Architecture</a></li>
+                    <li><a href="#tracing-setup" class="toc-link">Setting Up Tracing</a></li>
+                    <li><a href="#understanding-traces" class="toc-link">Understanding Traces</a></li>
+                    <li><a href="#building-datasets" class="toc-link">Building Datasets</a></li>
+                    <li><a href="#evaluators" class="toc-link">Four Critical Evaluators</a></li>
+                    <li><a href="#running-evaluations" class="toc-link">Running Evaluations</a></li>
+                    <li><a href="#optimization" class="toc-link">Optimization Cycle</a></li>
+                    <li><a href="#metadata-filtering" class="toc-link">Metadata Filtering</a></li>
+                    <li><a href="#production-monitoring" class="toc-link">Production Monitoring</a></li>
+                    <li><a href="#advanced-patterns" class="toc-link">Advanced Patterns</a></li>
+                    <li><a href="#common-pitfalls" class="toc-link">Common Pitfalls</a></li>
+                    <li><a href="#key-takeaways" class="toc-link">Key Takeaways</a></li>
+                    <li><a href="#resources" class="toc-link">Resources</a></li>
+                    <li><a href="#closing" class="toc-link">The Difference It Makes</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-content" style="text-align: center; padding: 2rem;">
+            <div class="footer-logo">&lt;/&gt; Yash Maheshwari</div>
+            <p class="copyright">&copy; 2026 Built by Yash Maheshwari</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="../js/core.js" defer></script>
+    <script src="../js/blog.js" defer></script>
+</body>
+</html>

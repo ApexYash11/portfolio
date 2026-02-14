@@ -97,6 +97,170 @@ def rag_query(question: str) -> str:
 
 ---
 
+### 3.5. Why LangSmith? (And Not Just Logging)
+
+You might be thinking: "Can't I just add logging and call it a day?"
+
+**Short answer:** No. Here's why LangSmith exists.
+
+**What Basic Logging Gives You:**
+
+```python
+import logging
+
+logging.info(f"Query: {question}")
+logging.info(f"Retrieved docs: {len(docs)}")
+logging.info(f"Answer: {answer}")
+logging.info(f"Latency: {latency}ms")
+```
+
+**What You Still Don't Have:**
+- Nested execution traces (what happened inside each step?)
+- Automatic cost tracking (how much did this query cost?)
+- Evaluation datasets (is this getting better or worse?)
+- Comparison across experiments (which prompt performed better?)
+- Production monitoring dashboards (are we hitting SLAs?)
+
+**LangSmith vs Alternatives:**
+
+| Feature | LangSmith | W&B | Arize Phoenix | Custom Logging |
+|---------|-----------|-----|---------------|----------------|
+| **Nested Traces** | ✅ Full depth | ⚠️ Limited | ✅ Good | ❌ Manual |
+| **Auto Token Tracking** | ✅ Built-in | ❌ Manual | ✅ Built-in | ❌ Manual |
+| **Evaluation Datasets** | ✅ Native | ⚠️ Manual | ⚠️ Manual | ❌ None |
+| **LLM-as-Judge Evals** | ✅ Pre-built | ❌ Custom | ⚠️ Limited | ❌ None |
+| **Production Monitoring** | ✅ Real-time | ✅ Excellent | ✅ Excellent | ⚠️ Custom |
+| **A/B Testing** | ✅ Built-in | ✅ Good | ⚠️ Limited | ❌ Manual |
+| **LangChain Integration** | ✅ Native | ⚠️ Adapter | ⚠️ Adapter | ❌ None |
+| **Setup Time** | 5 minutes | 30 minutes | 15 minutes | Hours/Days |
+| **Cost** | $ | $$ | $ (OSS) | $ (infra) |
+| **Learning Curve** | Easy | Medium | Medium | High |
+
+**LangSmith's Unique Features:**
+
+**1. Zero-Code Tracing**
+```python
+# That's it. One environment variable.
+import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+
+# Every LangChain call is now traced automatically
+```
+
+**2. Automatic Cost Tracking**
+```
+Trace: rag_query
+├─ OpenAI Embedding: $0.0002
+├─ FAISS Search: $0 (local)
+└─ GPT-4 Generation: $0.0232
+Total: $0.0234
+```
+
+You don't calculate this. LangSmith does.
+
+**3. Prompt Playground**
+- Edit prompts in UI
+- Test on real production traces
+- Compare outputs side-by-side
+- Deploy winning prompts instantly
+
+**4. Human Feedback Loop**
+```python
+# In production
+trace_id = get_current_trace_id()
+
+# User clicks thumbs down
+client.create_feedback(
+    trace_id,
+    key="user_rating",
+    score=0,
+    comment="Answer was wrong"
+)
+
+# Later: Create dataset from low-rated traces
+low_rated = client.list_runs(
+    filter="feedback.user_rating == 0"
+)
+```
+
+**5. Datasets from Production**
+```python
+# Export failed production traces as test cases
+client.create_dataset_from_runs(
+    dataset_name="production-failures-jan-2026",
+    run_ids=failed_run_ids
+)
+```
+
+This is impossible with basic logging.
+
+**6. Collaborative Debugging**
+- Share trace URL with teammates
+- Comment on specific steps
+- Tag traces for review
+- Async debugging (no screen sharing needed)
+
+**When to Use Each Tool:**
+
+**Use LangSmith when:**
+- Building with LangChain/LangGraph (native integration)
+- Need quick setup (5-minute onboarding)
+- Want evaluation datasets built-in
+- Iterating fast on prompts
+- Small to medium team (<50 people)
+
+**Use Weights & Biases when:**
+- Already using W&B for ML training
+- Need advanced experiment tracking
+- Multi-modal models (images, audio, video)
+- Large enterprise with W&B contract
+
+**Use Arize Phoenix when:**
+- Open-source requirement (self-hosted)
+- Custom embedding models
+- Need full data ownership
+- Budget-conscious (free tier generous)
+
+**Use Custom Logging when:**
+- Simple use case (single LLM call, no RAG)
+- Non-LangChain stack
+- Existing logging infrastructure
+- Compliance requires on-prem everything
+
+**LangSmith's Killer Combo:**
+
+```
+Tracing (observe)
+    ↓
+Datasets (collect)
+    ↓
+Evaluation (measure)
+    ↓
+Comparison (decide)
+    ↓
+Deploy (ship)
+    ↓
+Monitor (watch)
+    ↓
+Feedback (learn)
+    ↓
+Repeat
+```
+
+All in one platform. This is why LangSmith exists.
+
+**The Bottom Line:**
+
+You *can* build this yourself with logging + Postgres + Grafana + custom eval scripts.
+
+**Time investment:** 2-4 weeks
+**Maintenance burden:** Ongoing
+**LangSmith alternative:** 5 minutes setup, $49/month
+
+For most teams, LangSmith is the obvious choice. You're building AI apps, not observability platforms.
+
+---
+
 ### 4. LangSmith Architecture: How It Actually Works
 
 **The Three Components:**

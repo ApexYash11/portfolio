@@ -198,3 +198,113 @@ window.addEventListener('resize', () => {
     const activeLink = document.querySelector('.nav-link.active');
     if (activeLink) updateNavIndicator(activeLink);
 });
+// home-featured-blogs-loader-logic
+document.addEventListener('DOMContentLoaded', async () => {
+    const container = document.getElementById('featured-articles-container');
+    if (!container) return;
+
+    try {
+        const response = await fetch('./data/blogs.json');
+        if (!response.ok) throw new Error('Failed to fetch blogs');
+        
+        const blogs = await response.json();
+        
+        // Filter featured blogs
+        const featuredBlogs = blogs.filter(blog => blog.featured);
+        
+        // Clear loader
+        container.innerHTML = '';
+
+        if (featuredBlogs.length === 0) {
+            container.innerHTML = '<div class="span-12" style="text-align: center; color: #9ca3af; padding: 2rem;">No featured articles available.</div>';
+            return;
+        }
+
+        // Render featured blogs (up to 3)
+        featuredBlogs.slice(0, 3).forEach((blog, index) => {
+            const article = document.createElement('div');
+            article.className = 'span-4 article-card reveal-img';
+            article.style.transitionDelay = `${index * 0.1}s`;
+            
+            const link = document.createElement('a');
+            link.href = blog.link;
+            link.style.cssText = 'text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%;';
+            
+            const thumbDiv = document.createElement('div');
+            thumbDiv.className = 'article-thumb';
+            const img = document.createElement('img');
+            img.src = blog.image;
+            img.alt = blog.title;
+            img.loading = 'lazy';
+            thumbDiv.appendChild(img);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'article-content';
+            
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'article-meta';
+            metaDiv.innerHTML = `
+                <span><i class="far fa-calendar"></i> ${blog.date}</span>
+                <span><i class="far fa-clock"></i> ${blog.readTime}</span>
+            `;
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = blog.title;
+            
+            const p = document.createElement('p');
+            p.textContent = blog.excerpt;
+            
+            const readLink = document.createElement('div');
+            readLink.className = 'article-link';
+            readLink.innerHTML = 'Read Article <i class="fas fa-arrow-right"></i>';
+            
+            contentDiv.appendChild(metaDiv);
+            contentDiv.appendChild(h3);
+            contentDiv.appendChild(p);
+            contentDiv.appendChild(readLink);
+            
+            link.appendChild(thumbDiv);
+            link.appendChild(contentDiv);
+            article.appendChild(link);
+            
+            container.appendChild(article);
+        });
+
+        // Add "Coming Soon" if less than 3 articles
+        if (featuredBlogs.length < 3) {
+            const comingSoon = document.createElement('div');
+            comingSoon.className = 'span-4 article-card reveal-img coming-soon-card';
+            comingSoon.style.cssText = `
+                transition-delay: ${featuredBlogs.length * 0.1}s;
+                position: relative;
+                overflow: hidden;
+                border-radius: 12px;
+                border: 1px dashed rgba(255,255,255,0.1);
+                min-height: 400px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #0a0a0a;
+            `;
+            comingSoon.innerHTML = `
+                <div class="article-meta" style="margin: 0; display: flex; align-items: center; gap: 0.5rem; color: #4a9eff; font-weight: 600; font-size: 1.1rem;">
+                    <i class="far fa-calendar"></i> Coming Soon
+                </div>
+            `;
+            container.appendChild(comingSoon);
+        }
+
+        // Re-trigger scroll reveal for new elements
+        if (typeof window.triggerReveal === 'function') {
+            window.triggerReveal();
+        }
+
+    } catch (error) {
+        console.error('Error loading featured blogs:', error);
+        container.innerHTML = `
+            <div class="span-12" style="text-align: center; padding: 2rem; color: #ef4444;">
+                <p>Error loading articles. Please try again later.</p>
+            </div>
+        `;
+    }
+});
