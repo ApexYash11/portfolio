@@ -79,7 +79,7 @@
             <header class="article-header">
                 <h1>RAG Systems in Production: From 40% Accuracy to 95% with LangSmith</h1>
                 <div class="blog-meta article-meta">
-                    <span><i class="far fa-calendar"></i> Feb 13, 2026</span>
+                    <span><i class="far fa-calendar"></i> 16 Feb, 2026</span>
                     <span><i class="far fa-clock"></i> 20 min read</span>
                     <span><i class="far fa-user"></i> Yash Maheshwari</span>
                 </div>
@@ -139,24 +139,25 @@
 
             <p><strong>Why this matters:</strong> You can't fix what you can't see. Traditional logging shows inputs and outputs. LangSmith shows the ENTIRE pipeline—every step, every decision, every failure point.</p>
 
-            <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center;">
+            <div class="mermaid-section" style="margin: 2rem 0; display: flex; flex-direction: column; align-items: center; padding: 2rem; background: rgba(10, 10, 10, 0.8); border-radius: 12px;">
                 <div class="mermaid" role="img" aria-label="Diagram showing the RAG pipeline components">
 graph LR
-    Q["User Query"] --> E["Embedding Model"]
-    E --> V["Vector Search"]
-    V --> D["Retrieved Docs"]
-    D --> R["Rank/Reorder"]
-    R --> P["Prompt + Context"]
-    P --> L["LLM"]
-    L --> A["Answer"]
+    Q["<b>User Query</b>"] --> E["<b>Embedding<br/>Model</b>"]
+    E --> V["<b>Vector<br/>Search</b>"]
+    V --> D["<b>Retrieved<br/>Docs</b>"]
+    D --> R["<b>Rank/<br/>Reorder</b>"]
+    R --> P["<b>Prompt +<br/>Context</b>"]
+    P --> L["<b>LLM</b>"]
+    L --> A["<b>Answer</b>"]
     
-    style Q fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
-    style E fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
-    style V fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
-    style D fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:#fff
-    style R fill:#ff9500,stroke:#fff,stroke-width:2px,color:#fff
-    style L fill:#4a90e2,stroke:#fff,stroke-width:2px,color:#fff
-    style A fill:#50c878,stroke:#fff,stroke-width:3px,color:#fff
+    style Q fill:#2563eb,stroke:#fff,stroke-width:3px,color:#000,font-size:14px,font-weight:bold
+    style E fill:#f59e0b,stroke:#fff,stroke-width:3px,color:#000,font-size:14px,font-weight:bold
+    style V fill:#ef4444,stroke:#fff,stroke-width:3px,color:#fff,font-size:14px,font-weight:bold
+    style D fill:#ef4444,stroke:#fff,stroke-width:3px,color:#fff,font-size:14px,font-weight:bold
+    style R fill:#f59e0b,stroke:#fff,stroke-width:3px,color:#000,font-size:14px,font-weight:bold
+    style P fill:#8b5cf6,stroke:#fff,stroke-width:3px,color:#fff,font-size:14px,font-weight:bold
+    style L fill:#2563eb,stroke:#fff,stroke-width:3px,color:#fff,font-size:14px,font-weight:bold
+    style A fill:#10b981,stroke:#fff,stroke-width:4px,color:#fff,font-size:14px,font-weight:bold
                 </div>
             </div>
 
