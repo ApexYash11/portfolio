@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockIQ Case Study | Yash Maheshwari</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+    <div class="cursor"></div>
+
+    <nav class="floating-nav">
+        <div class="nav-logo">
+            <a href="index.html">
+                <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+                    <path d="M0 0H10V20L20 30L30 20V0H40V40H30V25L20 35L10 25V40H0V0Z" fill="#EAEAEA"/>
+                </svg>
+            </a>
+        </div>
+        <ul class="nav-links-container">
+            <li><a href="index.html#projects" class="nav-link">Back to Projects</a></li>
+        </ul>
+    </nav>
+
+    <main class="grid-wrapper">
+        <header class="project-info-header span-12">
+            <p class="section-subtitle">CASE STUDY</p>
+            <h1>STOCKIQ</h1>
+            <p class="lead" style="max-width: 800px; font-size: 1.5rem; margin-top: 1rem; color: #888;">
+                End-to-end inventory, forecasting, and demand intelligence for D2C businesses. Converting uncertainty into deterministic, explainable business actions.
+            </p>
+        </header>
+
+        <section class="project-info-grid grid-12">
+            <div class="span-6">
+                <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">PROJECT OVERVIEW</h2>
+                <p style="margin-bottom: 1.5rem;">StockIQ is a production-ready intelligence system that transforms raw operational data (orders, inventory events, vendors, campaigns) into probabilistic demand forecasts, optimized multi-warehouse inventory decisions, and constraint-aware reorder recommendations.</p>
+                <p>The system goes beyond traditional demand forecasting—it converts uncertainty into deterministic, explainable business actions: exactly how much to reorder, where to place inventory, and whether to allow Cash-on-Delivery (COD) based on Return-to-Origin (RTO) risk assessment.</p>
+            </div>
+            <div class="span-6" style="display: flex; align-items: center; justify-content: center;">
+                <img src="./assets/stockiq.png" alt="StockIQ Detail" style="width: 100%; border: 1px solid var(--border-color);">
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); text-align: center; margin-bottom: 4rem;">CORE CHALLENGES & SOLUTIONS</h2>
+            <div class="grid-12" style="gap: 2rem;">
+                <div class="challenge-card span-3">
+                    <span class="challenge-number">01</span>
+                    <h4>DEMAND FORECASTING</h4>
+                    <p>Moving beyond point estimates to probabilistic forecasts (P10/P50/P90) that capture uncertainty and enable asymmetric reorder decisions.</p>
+                </div>
+                <div class="challenge-card span-3">
+                    <span class="challenge-number">02</span>
+                    <h4>MULTI-WAREHOUSE ALLOCATION</h4>
+                    <p>Intelligently splitting demand across warehouses using stable shares and invariants to avoid demand multiplication while respecting risk floors.</p>
+                </div>
+                <div class="challenge-card span-3">
+                    <span class="challenge-number">03</span>
+                    <h4>CONSTRAINT-AWARE REORDERING</h4>
+                    <p>Converting forecasts into actionable reorders that respect lead times, minimum order quantities (MOQ), and safety stock policies.</p>
+                </div>
+                <div class="challenge-card span-3">
+                    <span class="challenge-number">04</span>
+                    <h4>COD/RTO INTELLIGENCE</h4>
+                    <p>Assessing return-to-origin risk and translating it into explainable, policy-driven COD eligibility decisions that reduce logistics waste.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">SYSTEM ARCHITECTURE</h2>
+            <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; margin-bottom: 2rem; overflow-x: auto;">
+                <pre style="margin: 0; font-size: 0.9rem; color: #aaa;">
+<strong>Data Inputs</strong>
+├── Orders (demand signals)
+├── Inventory Events (stock movements)
+├── Vendors (lead times, MOQ)
+└── Campaigns (external demand signals)
+        ↓
+<strong>Orchestration Layer</strong>
+├── Input Validation & Schema Hygiene
+├── Pipeline Management
+└── Progress Monitoring
+        ↓
+<strong>Decision Intelligence Engine</strong>
+├── Demand Forecasting (SARIMAX)
+│   └── P10/P50/P90 quantiles
+├── SKU Routing & Fallbacks
+│   └── Dynamic strategy selection
+├── Multi-Warehouse Allocation
+│   └── Share normalization & risk floors
+└── Reorder Logic + COD Intelligence
+    └── Lead time, MOQ, safety stock
+        ↓
+<strong>API-Ready Outputs</strong>
+├── Reorder Recommendations
+├── COD Risk Assessment
+└── Audit Artifacts (CSV/JSON)</pre>
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">KEY FEATURES</h2>
+            <div class="grid-12" style="gap: 2rem;">
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">Probabilistic Demand Forecasting</h3>
+                    <p>SARIMAX-based time-series forecasting with quantile outputs (P10/P50/P90) instead of point estimates, enabling uncertainty-aware planning.</p>
+                </div>
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">SKU Routing & Fallbacks</h3>
+                    <p>Intelligent routing that chooses forecasting strategy per SKU and gracefully falls back to simpler baselines when data is sparse.</p>
+                </div>
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">Multi-Warehouse Optimization</h3>
+                    <p>Event-sourced inventory modeling across multiple warehouses with stable allocation shares and risk floor enforcement.</p>
+                </div>
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">MOQ-Aware Reorder Logic</h3>
+                    <p>Converts forecasts into reorder decisions that respect vendor constraints (lead time, MOQ) and service-level policies.</p>
+                </div>
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">COD & RTO Intelligence</h3>
+                    <p>Rule-based, explainable COD risk assessment based on historical RTO rates and delivery stability, with clear policy actions.</p>
+                </div>
+                <div style="padding: 2rem; border: 1px solid var(--border-color); border-radius: 8px;">
+                    <h3 style="margin-bottom: 1rem;">Production-Ready Artifacts</h3>
+                    <p>API-ready decision tables and audit CSVs suitable for serving via REST APIs or integration with downstream systems.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">TECH STACK</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Core Language</p>
+                    <p style="color: #aaa;">Python</p>
+                </div>
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Data Processing</p>
+                    <p style="color: #aaa;">Pandas, NumPy</p>
+                </div>
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Forecasting</p>
+                    <p style="color: #aaa;">Statsmodels (SARIMAX)</p>
+                </div>
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Backend (Planned)</p>
+                    <p style="color: #aaa;">FastAPI</p>
+                </div>
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Dashboard (Planned)</p>
+                    <p style="color: #aaa;">Streamlit</p>
+                </div>
+                <div style="padding: 1.5rem; background: var(--bg-secondary); border-radius: 8px;">
+                    <p style="font-weight: 600; margin-bottom: 0.5rem;">Utilities</p>
+                    <p style="color: #aaa;">Faker, tqdm, python-dateutil</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">DECISION FLOW EXAMPLE</h2>
+            <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 8px; color: #aaa; line-height: 1.8;">
+                <p><strong style="color: #eee;">For SKU123 across Warehouse W1:</strong></p>
+                <p>
+                    <strong>1. Demand Forecasting:</strong> SARIMAX generates weekly demand quantiles: P10=80, P50=120, P90=170 units
+                </p>
+                <p>
+                    <strong>2. Inventory State:</strong> Current stock position is 90 units; vendor lead time is 2 weeks; MOQ is 200
+                </p>
+                <p>
+                    <strong>3. Reorder Decision:</strong> Plan demand at P90 (higher service level) → lead-time demand ≈ 2 × 170 = 340. MOQ constraint forces recommended order to be at least 200 units.
+                </p>
+                <p>
+                    <strong>4. COD Risk Assessment:</strong> Historical analysis shows HIGH RTO risk → policy action becomes DISABLE_COD to reduce logistics waste.
+                </p>
+                <p>
+                    <strong>5. Final Output:</strong> Reorder recommendation: 200 units; COD Policy: DISABLE_COD
+                </p>
+            </div>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">WHY THIS IS PRODUCTION-READY</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);"><strong>✓ Deterministic Logic:</strong> Routing, fallbacks, reorder constraints, and COD policies are explicit and testable.</li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);"><strong>✓ Explainable Decisions:</strong> Quantiles + policy thresholds make the reasoning legible to stakeholders.</li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);"><strong>✓ Model Serialization:</strong> SARIMAX models can be saved/loaded for reproducible inference.</li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--border-color);"><strong>✓ API-Ready Outputs:</strong> Decisions are structured as flat records suitable for JSON and downstream systems.</li>
+                <li style="padding: 1rem 0;"><strong>✓ Offline/Online Separation:</strong> Forecasting runs offline; serving is a thin layer reading the latest artifacts.</li>
+            </ul>
+        </section>
+
+        <section class="span-12" style="border-top: 1px solid var(--border-color); padding: 4rem 2rem;">
+            <h2 style="font-family: var(--font-heading); margin-bottom: 2rem;">SKILLS DEMONSTRATED</h2>
+            <ul style="list-style: none; padding: 0; columns: 2; column-gap: 3rem;">
+                <li style="padding: 0.5rem 0;"><strong>Time-series forecasting</strong> (SARIMAX) & uncertainty quantification (P10/P50/P90)</li>
+                <li style="padding: 0.5rem 0;"><strong>Inventory optimization</strong> under constraints (MOQ, lead time, service level)</li>
+                <li style="padding: 0.5rem 0;"><strong>Decision intelligence</strong> (policy + model outputs → deterministic actions)</li>
+                <li style="padding: 0.5rem 0;"><strong>Multi-warehouse allocation</strong> with invariant enforcement</li>
+                <li style="padding: 0.5rem 0;"><strong>Backend/API readiness</strong> via stable schemas and explainable outputs</li>
+                <li style="padding: 0.5rem 0;"><strong>Product/system thinking</strong> and pipeline design with auditability</li>
+            </ul>
+        </section>
+
+        <footer class="site-footer grid-12" style="border-top: 1px solid var(--border-color);">
+            <div class="footer-content span-12" style="padding: 4rem 2rem; text-align: center;">
+                <a href="https://github.com/ApexYash11/StockIQ" class="btn btn-submit" target="_blank">VIEW ON GITHUB</a>
+            </div>
+        </footer>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

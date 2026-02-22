@@ -113,6 +113,15 @@ if (modal && viewProjectBtns.length) {
             document.getElementById('modal-img').src = projectItem.dataset.image;
             document.getElementById('modal-github').href = projectItem.dataset.github;
             
+            // Set the case study link dynamically
+            const moreLink = document.getElementById('modal-more');
+            if (projectItem.dataset.link) {
+                moreLink.href = projectItem.dataset.link;
+                moreLink.style.display = 'inline-block';
+            } else {
+                moreLink.style.display = 'none';
+            }
+            
             const techContainer = document.getElementById('modal-tech');
             techContainer.innerHTML = '';
             projectItem.dataset.tech?.split(',').forEach(tech => {
