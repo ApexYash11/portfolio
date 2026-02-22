@@ -3,21 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn how to build, trace, evaluate, and optimize RAG systems in production. Transform RAG from demo magic to battle-tested systems achieving 95%+ accuracy with LangSmith.">
     <title>RAG Systems in Production with LangSmith - Yash Maheshwari</title>
     <link rel="stylesheet" href="../css/shared.css">
     <link rel="stylesheet" href="../css/blog.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVJkEZSMUkrQ6usls8k3Wka8CsRks6rqsPG5OU9fixGW8egNPtZL3RH6qDjlnK30nqsenJbIlQA==" crossorigin="anonymous">
     <!-- PrismJS for Syntax Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" integrity="sha512-vswe+cgvic/fmkeclKJlQQeSEsXvzSnvWGRQdL0K1BnRu+IeeQmqNCx44zXQzVfvWtzhwagvT+wWAPntqKK1vQ==" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js" integrity="sha512-4oOHgJLlN6XDJ4d9YLYmC7FqsJsoHHvbOX+lT6FvDLLWQEPh33h5iLNsXM5gTdLj4Kst+7nqLGvbg0w7LJHhgQ==" crossorigin="anonymous"></script>
     <script>
         mermaid.initialize({
             startOnLoad: true,
             theme: 'dark',
-            securityLevel: 'loose',
+            securityLevel: 'antiscript',
             themeVariables: {
                 primaryColor: '#00d9ff',
                 primaryTextColor: '#fff',
@@ -515,7 +516,7 @@ def correctness_evaluator(run, example):
     """Does the answer match the expected output?"""
     answer = run.outputs["answer"]
     expected = example.outputs["expected_answer"]
-    return {"score": 1 if answer.lower()== expected.lower() else 0}</code></pre>
+    return {"score": 1 if answer.lower() == expected.lower() else 0}</code></pre>
 
             <p><strong>2. Relevance — Answer vs Question</strong></p>
 
@@ -1125,9 +1126,9 @@ for model in models:
     </footer>
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-I6qVh30JqLSnB2K2XYH8LqnNV5+7MN8eeqR2oKxQf3eMAGfRb3BfBs3SXcZJ0PG0XPh5DPPOE9VQEZ8dh3xaKg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" integrity="sha512-DVTlVrX+GSCwRMlFOWKLNMEOuPgJE6w0sAMPlK1Bc35dCqeJU2i8LoqVG4lHR+4fPdFLMPEZuTsRZP7KBWqWwg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-vlqDGTZ6qRYd0YI3KqH8sR6IKwWBxOWQhKLeB6gDBH/8KKQSP+vgDkQ8P1f0B6QLzBKh8YHwjG4v9dWoZhTKnQ==" crossorigin="anonymous"></script>
     <script src="../js/core.js" defer></script>
     <script src="../js/blog.js" defer></script>
 </body>

@@ -115,11 +115,13 @@ if (modal && viewProjectBtns.length) {
             
             // Set the case study link dynamically
             const moreLink = document.getElementById('modal-more');
-            if (projectItem.dataset.link) {
-                moreLink.href = projectItem.dataset.link;
-                moreLink.style.display = 'inline-block';
-            } else {
-                moreLink.style.display = 'none';
+            if (moreLink !== null) {
+                if (projectItem.dataset.link) {
+                    moreLink.href = projectItem.dataset.link;
+                    moreLink.style.display = 'inline-block';
+                } else {
+                    moreLink.style.display = 'none';
+                }
             }
             
             const techContainer = document.getElementById('modal-tech');

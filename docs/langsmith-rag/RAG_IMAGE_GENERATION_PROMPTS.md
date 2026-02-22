@@ -1,25 +1,31 @@
 # IMAGE GENERATION PROMPTS FOR RAG LANGSMITH BLOG
 
 ## Overview
+
 These are detailed, professional image generation prompts for the RAG LangSmith blog. Use with DALL-E 3, Midjourney, Ideogram, or similar AI image generators.
 
 **Color Palette Reference:**
+
 - Dark background: `#0a0a0a`
 - Cyan accent: `#00d9ff`
 - Orange accent: `#ff9500`
 - Green accent: `#50c878`
 - Blue accent: `#4a90e2`
+- Red accent: `#e74c3c`
+- Yellow accent: `#f39c12`
 
 ---
 
 ## 1. HERO/COVER IMAGE ✅
+
 **Location:** Line 91 (after intro, before "RAG 101" section)  
 **Filename:** `cover.png`  
 **Resolution:** 1200×800px (16:9)
 
 ### Prompt:
+
 ```
-Create a professional technical hero illustration for a blog about RAG (Retrieval-Augmented Generation) 
+Create a professional technical hero illustration for a blog about RAG (Retrieval-Augmented Generation)
 systems and LangSmith optimization. Show a complete RAG pipeline flow:
 
 - Left side: User query entering the system (speech bubble or query icon)
@@ -43,11 +49,13 @@ Additional details:
 ---
 
 ## 2. TRACE ANATOMY BREAKDOWN
+
 **Location:** After line 390 (after "Understanding Traces: The Anatomy" heading)  
 **Filename:** `trace-anatomy.png`  
 **Resolution:** 1000×700px
 
 ### Prompt:
+
 ```
 Create a visual representation of a nested trace tree structure showing RAG execution hierarchy:
 
@@ -100,23 +108,25 @@ Style:
 ---
 
 ## 3. EVALUATION RESULTS HEATMAP
+
 **Location:** After line 566 (after "Running Evaluations" section, before code example)  
 **Filename:** `evaluation-heatmap.png`  
 **Resolution:** 1000×600px
 
 ### Prompt:
+
 ```
 Create a professional heatmap matrix visualization showing evaluation progression across metrics:
 
 Grid Structure:
 - 5 rows × 4 columns
-- Rows (top to bottom): 
+- Rows (top to bottom):
   * Baseline (Initial evaluation)
   * After 1st Check (First round of checks)
   * After 2nd Check (Second iteration)
   * After Tuning (Parameter optimization)
   * Final (Latest results)
-  
+
 - Columns (left to right):
   * Correctness
   * Relevance
@@ -152,11 +162,13 @@ Style:
 ---
 
 ## 4. OPTIMIZATION ITERATIONS PROGRESS
+
 **Location:** After line 687 (after "Optimization: From 40% to 95% Accuracy" heading)  
 **Filename:** `optimization-progress.png`  
 **Resolution:** 1100×700px
 
 ### Prompt:
+
 ```
 Create an optimization progress chart showing 5 iterations improving accuracy from 75% to 95%.
 
@@ -228,11 +240,13 @@ Style:
 ---
 
 ## 5. METADATA FILTERING IMPACT
+
 **Location:** After line 791 (after "Metadata Filtering: The Underrated Optimization" heading)  
 **Filename:** `metadata-filtering.png`  
 **Resolution:** 1100×500px
 
 ### Prompt:
+
 ```
 Create a before/after comparison diagram showing metadata filtering impact on search space:
 
@@ -286,13 +300,13 @@ Style:
 
 ### ✅ GENERATE THESE 5 IMAGES (CORE)
 
-| # | Image Name | Section ID | File Name | Resolution | Line Reference |
-|---|---|---|---|---|---|
-| 1 | Hero/Cover | RAG Gap | cover.png | 1200×800 | Line 91 |
-| 2 | Trace Anatomy | Understanding Traces | trace-anatomy.png | 1000×700 | After Line 390 |
-| 3 | Evaluation Heatmap | Running Evaluations | evaluation-heatmap.png | 1000×600 | After Line 566 |
-| 4 | Optimization Progress | Optimization Iterations | optimization-progress.png | 1100×700 | After Line 687 |
-| 5 | Metadata Filtering | Metadata Filtering | metadata-filtering.png | 1100×500 | After Line 791 |
+| #   | Image Name            | Section ID              | File Name                 | Resolution | Line Reference |
+| --- | --------------------- | ----------------------- | ------------------------- | ---------- | -------------- |
+| 1   | Hero/Cover            | RAG Gap                 | cover.png                 | 1200×800   | Line 91        |
+| 2   | Trace Anatomy         | Understanding Traces    | trace-anatomy.png         | 1000×700   | After Line 390 |
+| 3   | Evaluation Heatmap    | Running Evaluations     | evaluation-heatmap.png    | 1000×600   | After Line 566 |
+| 4   | Optimization Progress | Optimization Iterations | optimization-progress.png | 1100×700   | After Line 687 |
+| 5   | Metadata Filtering    | Metadata Filtering      | metadata-filtering.png    | 1100×500   | After Line 791 |
 
 ### ❌ SKIP THIS IMAGE (Conflicts with mermaid)
 
@@ -315,13 +329,14 @@ Style:
    - Ideogram
    - Adobe Firefly
 
-3. **Save images** to: `c:\Users\ACER\OneDrive\Documents\GitHub\portfolio\assets\images-rag-langsmith\`
+3. **Save images** to: `./assets/images-rag-langsmith/` (relative to project root)
 
 4. **File naming:** Use exact filenames from the summary table above
 
 ### Step 2: Quality Check
 
 Ensure each generated image matches:
+
 - Dark theme (#0a0a0a) with specified accent colors
 - Technical professional style (no cartoonish AI artifacts)
 - Clean, readable text/labels (if present)

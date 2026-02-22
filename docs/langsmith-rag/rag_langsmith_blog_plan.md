@@ -17,6 +17,7 @@
 ### 1. Opening Hook: "The RAG Performance Gap"
 
 **Problem Story:**
+
 ```
 You build a RAG chatbot for your company's documentation.
 
@@ -28,6 +29,7 @@ What went wrong?
 ```
 
 **The Issue:**
+
 - RAG demos look great (cherry-picked examples)
 - Production reveals: 40-60% accuracy
 - No visibility into WHY failures happen
@@ -35,6 +37,7 @@ What went wrong?
 
 **The Solution Preview:**
 LangSmith transforms RAG from "demo magic" to production systems through:
+
 - Trace-level observability
 - Systematic evaluation
 - Data-driven optimization
@@ -53,18 +56,18 @@ graph LR
     D --> P[Prompt + Context]
     P --> L[LLM]
     L --> A[Answer]
-    
+
     style V fill:#ff6b6b
     style L fill:#4a90e2
 ```
 
 **The Three Failure Modes:**
 
-| Failure | What Happens | Example |
-|---------|--------------|---------|
-| **Retrieval Failure** | Wrong docs retrieved | Query: "pricing" → Gets "privacy policy" |
-| **Context Failure** | Right docs, bad ranking | Relevant info on page 5 of 10 docs |
-| **Generation Failure** | LLM ignores context | Has answer in docs, hallucinates anyway |
+| Failure                | What Happens            | Example                                  |
+| ---------------------- | ----------------------- | ---------------------------------------- |
+| **Retrieval Failure**  | Wrong docs retrieved    | Query: "pricing" → Gets "privacy policy" |
+| **Context Failure**    | Right docs, bad ranking | Relevant info on page 5 of 10 docs       |
+| **Generation Failure** | LLM ignores context     | Has answer in docs, hallucinates anyway  |
 
 **Why This Matters:**
 You can't fix what you can't see. Traditional logging shows inputs/outputs. LangSmith shows the ENTIRE pipeline.
@@ -84,6 +87,7 @@ def rag_query(question: str) -> str:
 ```
 
 **What You Can't See:**
+
 - Which embedding model was used
 - What similarity scores were returned
 - Which chunks were retrieved vs ignored
@@ -91,6 +95,7 @@ def rag_query(question: str) -> str:
 - Token usage and latency per step
 
 **Production Horror Stories:**
+
 - Changed embedding model → accuracy dropped 30% (took 2 weeks to find)
 - Chunk size optimization → broke on edge cases (discovered via user complaints)
 - Prompt engineering → improved 80% of cases, broke 20% (no systematic testing)
@@ -115,6 +120,7 @@ logging.info(f"Latency: {latency}ms")
 ```
 
 **What You Still Don't Have:**
+
 - Nested execution traces (what happened inside each step?)
 - Automatic cost tracking (how much did this query cost?)
 - Evaluation datasets (is this getting better or worse?)
@@ -123,22 +129,23 @@ logging.info(f"Latency: {latency}ms")
 
 **LangSmith vs Alternatives:**
 
-| Feature | LangSmith | W&B | Arize Phoenix | Custom Logging |
-|---------|-----------|-----|---------------|----------------|
-| **Nested Traces** | ✅ Full depth | ⚠️ Limited | ✅ Good | ❌ Manual |
-| **Auto Token Tracking** | ✅ Built-in | ❌ Manual | ✅ Built-in | ❌ Manual |
-| **Evaluation Datasets** | ✅ Native | ⚠️ Manual | ⚠️ Manual | ❌ None |
-| **LLM-as-Judge Evals** | ✅ Pre-built | ❌ Custom | ⚠️ Limited | ❌ None |
-| **Production Monitoring** | ✅ Real-time | ✅ Excellent | ✅ Excellent | ⚠️ Custom |
-| **A/B Testing** | ✅ Built-in | ✅ Good | ⚠️ Limited | ❌ Manual |
-| **LangChain Integration** | ✅ Native | ⚠️ Adapter | ⚠️ Adapter | ❌ None |
-| **Setup Time** | 5 minutes | 30 minutes | 15 minutes | Hours/Days |
-| **Cost** | $ | $$ | $ (OSS) | $ (infra) |
-| **Learning Curve** | Easy | Medium | Medium | High |
+| Feature                   | LangSmith     | W&B          | Arize Phoenix | Custom Logging |
+| ------------------------- | ------------- | ------------ | ------------- | -------------- |
+| **Nested Traces**         | ✅ Full depth | ⚠️ Limited   | ✅ Good       | ❌ Manual      |
+| **Auto Token Tracking**   | ✅ Built-in   | ❌ Manual    | ✅ Built-in   | ❌ Manual      |
+| **Evaluation Datasets**   | ✅ Native     | ⚠️ Manual    | ⚠️ Manual     | ❌ None        |
+| **LLM-as-Judge Evals**    | ✅ Pre-built  | ❌ Custom    | ⚠️ Limited    | ❌ None        |
+| **Production Monitoring** | ✅ Real-time  | ✅ Excellent | ✅ Excellent  | ⚠️ Custom      |
+| **A/B Testing**           | ✅ Built-in   | ✅ Good      | ⚠️ Limited    | ❌ Manual      |
+| **LangChain Integration** | ✅ Native     | ⚠️ Adapter   | ⚠️ Adapter    | ❌ None        |
+| **Setup Time**            | 5 minutes     | 30 minutes   | 15 minutes    | Hours/Days     |
+| **Cost**                  | $             | $$           | $ (OSS)       | $ (infra)      |
+| **Learning Curve**        | Easy          | Medium       | Medium        | High           |
 
 **LangSmith's Unique Features:**
 
 **1. Zero-Code Tracing**
+
 ```python
 # That's it. One environment variable.
 import os
@@ -148,6 +155,7 @@ os.environ["LANGCHAIN_TRACING_V2"] = "true"
 ```
 
 **2. Automatic Cost Tracking**
+
 ```
 Trace: rag_query
 ├─ OpenAI Embedding: $0.0002
@@ -159,13 +167,17 @@ Total: $0.0234
 You don't calculate this. LangSmith does.
 
 **3. Prompt Playground**
+
 - Edit prompts in UI
 - Test on real production traces
 - Compare outputs side-by-side
 - Deploy winning prompts instantly
 
 **4. Human Feedback Loop**
+
 ```python
+from langsmith import get_current_trace_id
+
 # In production
 trace_id = get_current_trace_id()
 
@@ -184,6 +196,7 @@ low_rated = client.list_runs(
 ```
 
 **5. Datasets from Production**
+
 ```python
 # Export failed production traces as test cases
 client.create_dataset_from_runs(
@@ -195,6 +208,7 @@ client.create_dataset_from_runs(
 This is impossible with basic logging.
 
 **6. Collaborative Debugging**
+
 - Share trace URL with teammates
 - Comment on specific steps
 - Tag traces for review
@@ -203,6 +217,7 @@ This is impossible with basic logging.
 **When to Use Each Tool:**
 
 **Use LangSmith when:**
+
 - Building with LangChain/LangGraph (native integration)
 - Need quick setup (5-minute onboarding)
 - Want evaluation datasets built-in
@@ -210,18 +225,21 @@ This is impossible with basic logging.
 - Small to medium team (<50 people)
 
 **Use Weights & Biases when:**
+
 - Already using W&B for ML training
 - Need advanced experiment tracking
 - Multi-modal models (images, audio, video)
 - Large enterprise with W&B contract
 
 **Use Arize Phoenix when:**
+
 - Open-source requirement (self-hosted)
 - Custom embedding models
 - Need full data ownership
 - Budget-conscious (free tier generous)
 
 **Use Custom Logging when:**
+
 - Simple use case (single LLM call, no RAG)
 - Non-LangChain stack
 - Existing logging infrastructure
@@ -251,7 +269,7 @@ All in one platform. This is why LangSmith exists.
 
 **The Bottom Line:**
 
-You *can* build this yourself with logging + Postgres + Grafana + custom eval scripts.
+You _can_ build this yourself with logging + Postgres + Grafana + custom eval scripts.
 
 **Time investment:** 2-4 weeks
 **Maintenance burden:** Ongoing
@@ -272,29 +290,29 @@ graph TB
         Trace[@traceable decorator]
         App --> Trace
     end
-    
+
     subgraph "LangSmith Backend"
         Collector[Trace Collector]
         Store[Trace Storage]
         UI[LangSmith Dashboard]
-        
+
         Collector --> Store
         Store --> UI
     end
-    
+
     subgraph "Evaluation Engine"
         Dataset[Test Datasets]
         Eval[Evaluators]
         Metrics[Metrics & Scores]
-        
+
         Dataset --> Eval
         Eval --> Metrics
     end
-    
+
     Trace -.->|async, non-blocking| Collector
     UI --> Dataset
     Metrics --> UI
-    
+
     style Trace fill:#50c878
     style Collector fill:#4a90e2
     style Eval fill:#ff9500
@@ -330,23 +348,23 @@ from langchain_community.vectorstores import FAISS
 def rag_query(question: str) -> dict:
     # Embedding (auto-traced by LangChain)
     embeddings = OpenAIEmbeddings()
-    
+
     # Retrieval (auto-traced)
     vectorstore = FAISS.load_local("./db", embeddings)
     docs = vectorstore.similarity_search(question, k=5)
-    
+
     # LLM call (auto-traced)
     llm = ChatOpenAI(model="gpt-4", temperature=0)
     context = "\n".join([d.page_content for d in docs])
-    
+
     prompt = f"""Answer based on context only.
-    
+
 Context: {context}
 
 Question: {question}"""
-    
+
     answer = llm.invoke(prompt)
-    
+
     return {
         "answer": answer.content,
         "sources": [d.metadata for d in docs]
@@ -369,20 +387,20 @@ sequenceDiagram
     participant Embed
     participant Vector
     participant LLM
-    
+
     User->>RAG: "What's refund policy?"
     RAG->>Embed: Generate embedding
     Note over Embed: model: text-embedding-3-small<br/>tokens: 8<br/>latency: 45ms
     Embed-->>RAG: [0.123, -0.456, ...]
-    
+
     RAG->>Vector: Similarity search
     Note over Vector: Retrieved 5 docs<br/>Top score: 0.89<br/>latency: 12ms
     Vector-->>RAG: [doc1, doc2, doc3, doc4, doc5]
-    
+
     RAG->>LLM: Generate answer
     Note over LLM: model: gpt-4<br/>input tokens: 1,234<br/>output tokens: 89<br/>latency: 2.1s
     LLM-->>RAG: "You can request refund..."
-    
+
     RAG-->>User: Final answer
 ```
 
@@ -430,6 +448,7 @@ Trace: rag_query
 ```
 
 **What This Reveals:**
+
 - ✅ Retrieval working (0.89 top score is strong)
 - ✅ LLM got the right context
 - ⚠️ But 2.3s latency is slow (optimization target)
@@ -485,12 +504,12 @@ for example in examples:
 
 **Dataset Best Practices:**
 
-| Dataset Type | Size | Use Case |
-|--------------|------|----------|
-| **Golden Set** | 10-20 | Core functionality, regression testing |
-| **Edge Cases** | 20-50 | Ambiguous queries, rare scenarios |
-| **Production Sample** | 100-500 | Representative real-world queries |
-| **Adversarial** | 20-50 | Jailbreak attempts, hallucination triggers |
+| Dataset Type          | Size    | Use Case                                   |
+| --------------------- | ------- | ------------------------------------------ |
+| **Golden Set**        | 10-20   | Core functionality, regression testing     |
+| **Edge Cases**        | 20-50   | Ambiguous queries, rare scenarios          |
+| **Production Sample** | 100-500 | Representative real-world queries          |
+| **Adversarial**       | 20-50   | Jailbreak attempts, hallucination triggers |
 
 ---
 
@@ -535,7 +554,7 @@ def groundedness_evaluator(run, example):
     """Check if answer is grounded in retrieved documents"""
     answer = run.outputs["answer"]
     docs = run.outputs.get("sources", [])
-    
+
     # LLM-as-judge
     prompt = f"""Does this answer only use information from the provided documents?
 
@@ -544,7 +563,7 @@ Answer: {answer}
 Documents: {docs}
 
 Respond with YES or NO."""
-    
+
     result = llm.invoke(prompt)
     return {"score": 1 if "YES" in result.content else 0}
 ```
@@ -558,14 +577,14 @@ def retrieval_evaluator(run, example):
     """Check if the right documents were retrieved"""
     question = run.inputs["question"]
     docs = run.outputs.get("sources", [])
-    
+
     # Check if expected keywords appear in retrieved docs
     expected_keywords = ["refund", "30 days", "purchase"]
     doc_text = " ".join([str(d) for d in docs]).lower()
-    
+
     matches = sum(1 for kw in expected_keywords if kw in doc_text)
     score = matches / len(expected_keywords)
-    
+
     return {"score": score}
 ```
 
@@ -626,6 +645,7 @@ Overall Accuracy: 75%
 ```
 
 **Interpretation:**
+
 - ✅ Groundedness is high (low hallucination)
 - ⚠️ Retrieval quality is weak (wrong docs)
 - 🎯 Focus optimization on retrieval layer
@@ -648,7 +668,7 @@ graph LR
     G --> H[Monitor Production]
     H --> I[Create Dataset from<br/>Production Failures]
     I --> B
-    
+
     style A fill:#ff6b6b
     style G fill:#50c878
     style C fill:#ff9500
@@ -657,6 +677,7 @@ graph LR
 **Real Optimization Example:**
 
 **Iteration 1: Baseline**
+
 ```python
 # chunk_size=512, k=5, no reranking
 Accuracy: 75%
@@ -664,6 +685,7 @@ Retrieval Quality: 0.65
 ```
 
 **Iteration 2: Increase Retrieval K**
+
 ```python
 vectorstore.similarity_search(question, k=10)  # was k=5
 # More docs = better coverage
@@ -674,6 +696,7 @@ Cost: +15% (more tokens)
 ```
 
 **Iteration 3: Add Reranking**
+
 ```python
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
@@ -690,6 +713,7 @@ Cost: +8% (reranking overhead)
 ```
 
 **Iteration 4: Optimize Chunk Size**
+
 ```python
 # chunk_size=256 (was 512)
 # Smaller chunks = more precise matches
@@ -700,6 +724,7 @@ Latency: -200ms (smaller context)
 ```
 
 **Iteration 5: Hybrid Search**
+
 ```python
 # Add BM25 for keyword matching
 from langchain.retrievers import EnsembleRetriever
@@ -718,12 +743,12 @@ Final Cost: +12% vs baseline
 
 **Final Results:**
 
-| Metric | Baseline | Final | Change |
-|--------|----------|-------|--------|
-| Accuracy | 75% | 95% | +20% |
-| Retrieval Quality | 0.65 | 0.93 | +43% |
-| Latency | 2.3s | 2.1s | -9% |
-| Cost/Query | $0.023 | $0.026 | +13% |
+| Metric            | Baseline | Final  | Change |
+| ----------------- | -------- | ------ | ------ |
+| Accuracy          | 75%      | 95%    | +20%   |
+| Retrieval Quality | 0.65     | 0.93   | +43%   |
+| Latency           | 2.3s     | 2.1s   | -9%    |
+| Cost/Query        | $0.023   | $0.026 | +13%   |
 
 **Production Decision:** +13% cost for +20% accuracy = Worth it
 
@@ -770,12 +795,12 @@ docs = vectorstore.similarity_search(
 
 **Real Impact:**
 
-| Metric | Without Filter | With Filter | Improvement |
-|--------|----------------|-------------|-------------|
-| Search Space | 10,000 docs | 50 docs | 99.5% reduction |
-| Retrieval Latency | 120ms | 15ms | 87.5% faster |
-| Accuracy | 78% | 91% | +13% |
-| Cost | $0.026 | $0.024 | 8% cheaper |
+| Metric            | Without Filter | With Filter | Improvement     |
+| ----------------- | -------------- | ----------- | --------------- |
+| Search Space      | 10,000 docs    | 50 docs     | 99.5% reduction |
+| Retrieval Latency | 120ms          | 15ms        | 87.5% faster    |
+| Accuracy          | 78%            | 91%         | +13%            |
+| Cost              | $0.026         | $0.024      | 8% cheaper      |
 
 **Why It Works:**
 
@@ -855,14 +880,14 @@ def smart_retrieval(question: str, user_context: dict):
         time_filter = {"year": 2024}
     else:
         time_filter = {}
-    
+
     # Combine with user context
     filter_dict = {
         **time_filter,
         "region": user_context.get("region", "US"),
         "language": user_context.get("language", "en")
     }
-    
+
     return vectorstore.similarity_search(
         question,
         k=5,
@@ -879,10 +904,10 @@ graph LR
     C --> D[Filtered Dataset<br/>500 docs]
     C --> E[Filtered Dataset<br/>50 docs]
     C --> F[Filtered Dataset<br/>2000 docs]
-    
+
     D & E & F --> G[Semantic Search]
     G --> H[Top K Results]
-    
+
     style B fill:#ff9500
     style G fill:#4a90e2
     style H fill:#50c878
@@ -936,18 +961,21 @@ Metadata filtering is the rare optimization that improves **accuracy, speed, AND
 **The Three Dashboards:**
 
 **1. Performance Dashboard**
+
 - Latency (P50, P95, P99)
 - Cost per query
 - Error rate
 - Throughput (queries/min)
 
 **2. Quality Dashboard**
+
 - User feedback scores
 - Groundedness (anti-hallucination)
 - Retrieval quality
 - Answer relevance
 
 **3. Alerts & Anomalies**
+
 - Latency spike (>3s)
 - Cost spike (>$0.05/query)
 - Quality drop (<80% accuracy)
@@ -1025,18 +1053,22 @@ for model in models:
 ### 13. Common Pitfalls & Solutions
 
 **Pitfall 1: Evaluation Dataset Drift**
+
 - **Problem:** Test on old data, deploy to new queries
 - **Solution:** Monthly dataset refresh from production traces
 
 **Pitfall 2: Overfitting to Evaluators**
+
 - **Problem:** Optimize for LLM-as-judge, ignore user satisfaction
 - **Solution:** Mix automated + human feedback
 
 **Pitfall 3: Ignoring Cost**
+
 - **Problem:** 99% accuracy costs $1/query
 - **Solution:** Set cost budget, optimize within constraints
 
 **Pitfall 4: No Regression Testing**
+
 - **Problem:** New optimization breaks old functionality
 - **Solution:** Golden dataset, always test before deploy
 
@@ -1045,6 +1077,7 @@ for model in models:
 ### 14. Production Deployment Checklist
 
 **Pre-Launch:**
+
 - [ ] Baseline evaluation (>80% accuracy)
 - [ ] Cost analysis (<$0.10/query)
 - [ ] Latency check (<3s P95)
@@ -1052,12 +1085,14 @@ for model in models:
 - [ ] Edge case coverage (50+ adversarial examples)
 
 **Launch:**
+
 - [ ] LangSmith tracing enabled
 - [ ] Monitoring dashboards configured
 - [ ] Alerts set up (latency, cost, quality)
 - [ ] Gradual rollout (10% → 50% → 100%)
 
 **Post-Launch:**
+
 - [ ] Daily quality checks
 - [ ] Weekly dataset updates
 - [ ] Monthly model evaluations
@@ -1068,24 +1103,28 @@ for model in models:
 ### 15. Key Takeaways
 
 **RAG without LangSmith:**
+
 - Demo works, production fails
 - No visibility into failures
 - Can't systematically improve
 - Manual testing doesn't scale
 
 **RAG with LangSmith:**
+
 - Trace every step (embedding → retrieval → generation)
 - Systematic evaluation (datasets + automated evaluators)
 - Data-driven optimization (A/B test, compare, deploy)
 - Production monitoring (catch regressions early)
 
 **The Numbers:**
+
 - Baseline: 40-60% accuracy (typical RAG demo)
 - With evaluation: 80-85% accuracy
 - With optimization: 90-95% accuracy
 - Production-ready: 95%+ with monitoring
 
 **Time Investment:**
+
 - Setup tracing: 5 minutes
 - Build dataset: 2-4 hours
 - First evaluation: 30 minutes
@@ -1093,6 +1132,7 @@ for model in models:
 - Production monitoring: 15 min/day
 
 **ROI:**
+
 - Faster debugging (hours → minutes)
 - Higher quality (75% → 95% accuracy)
 - Lower costs (eliminate wasteful iterations)
@@ -1103,17 +1143,20 @@ for model in models:
 ### 16. Resources
 
 **Official:**
+
 - [LangSmith Documentation](https://docs.smith.langchain.com)
 - [RAG Evaluation Guide](https://docs.langchain.com/langsmith/evaluate-rag-tutorial)
 - [LangSmith Cookbook](https://github.com/langchain-ai/langsmith-cookbook)
 
 **Code Examples:**
+
 - Complete RAG pipeline with tracing
 - Custom evaluators library
 - Production monitoring setup
 - A/B testing framework
 
 **Community:**
+
 - [LangChain Discord](https://discord.gg/langchain)
 - [LangSmith GitHub Discussions](https://github.com/langchain-ai/langsmith-sdk/discussions)
 
