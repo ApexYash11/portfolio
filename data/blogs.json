@@ -24,7 +24,7 @@
     {
         "id": "rag-langsmith",
         "title": "RAG Systems in Production: From 40% Accuracy to 95% with LangSmith",
-        "date": "16 Feb, 2026",
+        "date": "Feb 16, 2026",
         "readTime": "20 min read",
         "excerpt": "How to trace, evaluate, and optimize Retrieval-Augmented Generation pipelines for production deployment. Learn to transform RAG systems from demo magic to battle-tested production systems.",
         "image": "./assets/images-rag-langsmith/cover_image_rag.png",
