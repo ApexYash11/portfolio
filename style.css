@@ -2704,10 +2704,14 @@ section.grid-12 {
     overflow: hidden;
 }
 
-/* Featured / Current Experience Accent */
-.experience-card:first-of-type .experience-content-wrapper {
-    border-left: 4px solid var(--accent-color);
-    background: linear-gradient(90deg, rgba(74, 158, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+/* Badge-State Experience Accent */
+.experience-card:has(.status-current) .experience-content-wrapper {
+    border-left: 2px solid #378ADD;
+    background: rgba(55, 138, 221, 0.04);
+}
+
+.experience-card:has(.status-completed) .experience-content-wrapper {
+    opacity: 0.85;
 }
 
 /* Hover Effect: Glow & Lift */
@@ -2864,10 +2868,7 @@ section.grid-12 {
 }
 
 .experience-summary {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.05rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
+    display: none;
 }
 
 .experience-bullets {
@@ -2935,9 +2936,31 @@ section.grid-12 {
     font-size: 0.9rem;
 }
 
+.tech-pill:has(i.devicon-fastapi-plain),
+.tech-pill:has(i.fa-brain),
+.tech-pill:has(i.fa-database),
+.tech-pill:has(i.fa-network-wired),
+.tech-pill:has(i.devicon-langgraph-plain),
+.tech-pill:has(i.fa-project-diagram) {
+    background: rgba(55, 138, 221, 0.12);
+    color: #378ADD;
+    border-color: rgba(55, 138, 221, 0.3);
+}
+
 .experience-card:hover .tech-pill {
     background: rgba(74, 158, 255, 0.15);
     border-color: rgba(74, 158, 255, 0.4);
+}
+
+.experience-card:hover .tech-pill:has(i.devicon-fastapi-plain),
+.experience-card:hover .tech-pill:has(i.fa-brain),
+.experience-card:hover .tech-pill:has(i.fa-database),
+.experience-card:hover .tech-pill:has(i.fa-network-wired),
+.experience-card:hover .tech-pill:has(i.devicon-langgraph-plain),
+.experience-card:hover .tech-pill:has(i.fa-project-diagram) {
+    background: rgba(55, 138, 221, 0.12);
+    color: #378ADD;
+    border-color: rgba(55, 138, 221, 0.3);
 }
 
 /* Mobile Adjustments */
