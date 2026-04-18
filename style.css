@@ -646,10 +646,10 @@ section.grid-12 {
 .hero-section h1 {
     font-family: var(--font-heading);
     font-size: clamp(2.5rem, 8vw + 1rem, 12rem);
-    line-height: 0.85;
+    line-height: 0.92;
     text-transform: uppercase;
     font-weight: 700;
-    margin-bottom: -1rem;
+    margin-bottom: 0;
     color: #ffffff;
     word-break: break-word;
     overflow-wrap: break-word;
@@ -681,10 +681,6 @@ section.grid-12 {
     font-family: var(--font-heading);
     font-size: clamp(1rem, 2vw + 0.5rem, 1.5rem);
     letter-spacing: 2px;
-    color: #c9d1d9;
-}
-
-.static-text {
     color: #8b949e;
 }
 
@@ -798,7 +794,8 @@ section.grid-12 {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 150px;
+    min-height: 150px;
+    height: auto;
 }
 
 .info-item .label {
@@ -1395,14 +1392,14 @@ section.grid-12 {
 
 .form-group input,
 .form-group textarea {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.01);
     border: none;
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
     color: var(--text-color);
     font-family: var(--font-body);
     font-size: clamp(0.95rem, 2vw + 0.25rem, 1.1rem);
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     border-radius: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -1427,6 +1424,8 @@ section.grid-12 {
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 0 var(--accent-color);
 }
 
 .btn-submit {
@@ -1666,7 +1665,7 @@ section.grid-12 {
 .filter-btn {
     background: transparent;
     border: 1px solid var(--border-color);
-    color: #888;
+    color: #b6beca;
     padding: 0.8rem 1.5rem;
     font-family: var(--font-body);
     font-size: 0.9rem;
@@ -1680,11 +1679,9 @@ section.grid-12 {
 
 .filter-btn:hover,
 .filter-btn.active {
-    background-color: #1a1a1a;
-    /* Darker background for active */
+    background-color: rgba(255, 255, 255, 0.08);
     color: var(--text-color);
-    border-color: #3b82f6;
-    /* Blue accent color like in image */
+    border-color: #7b8598;
 }
 
 .filter-btn.active {
@@ -1808,6 +1805,15 @@ section.grid-12 {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+
+    .marquee-content {
+        animation: none !important;
+        transform: none !important;
+    }
+
+    .info-item:nth-child(3) .value {
+        animation: none !important;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -1900,8 +1906,8 @@ section.grid-12 {
 
     .hero-title h1 {
         font-size: clamp(2.2rem, 11vw, 5rem);
-        margin-bottom: -0.5rem;
-        line-height: 1.1;
+        margin-bottom: 0;
+        line-height: 1.05;
     }
 
     .section-header {
@@ -2082,13 +2088,13 @@ section.grid-12 {
 }
 
 [data-theme="light"] .filter-btn {
-    color: #555;
+    color: #4a5565;
     border-color: var(--border-color);
 }
 
 [data-theme="light"] .filter-btn:hover {
     color: var(--text-color);
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="light"] .filter-btn.active {
@@ -2114,6 +2120,12 @@ section.grid-12 {
 [data-theme="light"] .form-group textarea {
     color: var(--text-color);
     border-color: var(--border-color);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group textarea:focus {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 [data-theme="light"] .form-group input::placeholder,
