@@ -14,17 +14,19 @@ export default function SupportSection() {
           architecture, and scaling research. Your support fuels the serious
           infrastructure work behind intelligence.
         </p>
-        <Link
-          href="https://buymeacoffee.com/ApexYash11"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="pt-2"
+        <Button
+          asChild
+          className="gap-2 h-11 rounded-xl text-sm font-medium px-6 pt-2"
         >
-          <Button className="gap-2 h-11 rounded-xl text-sm font-medium px-6">
+          <Link
+            href="https://buymeacoffee.com/ApexYash11"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Coffee className="size-4" />
             Support My Work
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );
