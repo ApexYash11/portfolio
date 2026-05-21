@@ -7,6 +7,10 @@ import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { extractToc, readMarkdownFile } from "@/lib/article-markdown";
+import { MarkdownRenderer } from "@/components/mdx/markdown-renderer";
+import { TableOfContents } from "@/components/blog/table-of-contents";
+import { join } from "path";
 
 function getSortedPosts() {
   return [...allPosts].sort((a, b) => {
@@ -92,6 +96,13 @@ export default async function Blog({
 
   const previousPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+  const isDeepAgentsPost = slug === "deep-agents";
+  const deepAgentsMarkdown = isDeepAgentsPost
+    ? readMarkdownFile(
+        join(process.cwd(), "old-site", "docs", "deepagents", "deep_agents_complete.md")
+      )
+    : "";
+  const tocItems = isDeepAgentsPost ? extractToc(deepAgentsMarkdown) : [];
 
   const getSlug = (post: (typeof sortedPosts)[0]) =>
     post._meta.path.replace(/\.mdx$/, "");
@@ -113,45 +124,100 @@ export default async function Blog({
     },
   }).replace(/</g, "\\u003c");
 
+  const blogShellClassName = isDeepAgentsPost
+    ? "relative left-1/2 w-screen -translate-x-1/2 px-6 sm:px-8"
+    : "";
+
+  const blogInnerClassName = isDeepAgentsPost
+    ? "mx-auto w-full max-w-6xl"
+    : "";
+
   return (
     <section id="blog">
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: jsonLdContent,
-        }}
-      />
-      <div className="flex justify-start gap-4 items-center">
-        <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-6 group" aria-label="Back to Blog">
-          <ChevronLeft className="size-3 group-hover:-translate-x-px transition-transform" />
-          Back to Blog
-        </Link>
-      </div>
-      <div className="flex flex-col gap-4">
-        <h1 className="title font-semibold text-3xl md:text-4xl tracking-tighter leading-tight">
-          {post.title}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {formatDate(post.publishedAt)}
-        </p>
-      </div>
-      <div className="my-6 flex w-full items-center">
-        <div
-          className="flex-1 h-px bg-border"
-          style={{
-            maskImage:
-              "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
-          }}
-        />
-      </div>
-      <article className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-        <MDXContent code={post.mdx} components={mdxComponents} />
-      </article>
+      <div className={blogShellClassName}>
+        <div className={blogInnerClassName}>
+          <script
+            type="application/ld+json"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: jsonLdContent,
+            }}
+          />
+          <div className="flex justify-start gap-4 items-center">
+            <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-6 group" aria-label="Back to Blog">
+              <ChevronLeft className="size-3 group-hover:-translate-x-px transition-transform" />
+              Back to Blog
+            </Link>
+          </div>
+          <div className="flex flex-col gap-4">
+            <h1 className="title font-semibold text-3xl md:text-4xl tracking-tighter leading-tight">
+              {post.title}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {formatDate(post.publishedAt)}
+            </p>
+          </div>
+          <div className="my-6 flex w-full items-center">
+            <div
+              className="flex-1 h-px bg-border"
+              style={{
+                maskImage:
+                  "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
+                WebkitMaskImage:
+                  "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
+              }}
+            />
+          </div>
+          {isDeepAgentsPost ? (
+        <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
+          <div className="min-w-0">
+            {tocItems.length > 0 && (
+              <details className="group lg:hidden rounded-2xl border border-border bg-background/80 p-4 backdrop-blur-sm">
+                <summary className="cursor-pointer list-none text-sm font-medium text-foreground">
+                  On this page
+                </summary>
+                <nav aria-label="Table of contents" className="mt-4">
+                  <ol className="space-y-2 text-sm leading-6">
+                    {tocItems.map((item) => (
+                      <li
+                        key={`${item.id}-mobile-${item.level}`}
+                        className={item.level === 3 ? "pl-4" : item.level === 4 ? "pl-8" : ""}
+                      >
+                        <a
+                          href={`#${item.id}`}
+                          className="text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              </details>
+            )}
+            <article className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
+              <MarkdownRenderer markdown={deepAgentsMarkdown} />
+            </article>
+          </div>
 
-      <nav className="mt-12 pt-8 max-w-2xl">
+          {tocItems.length > 0 && (
+            <aside className="hidden lg:block lg:pl-2">
+              <div className="sticky top-24 flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden rounded-2xl border border-border bg-background/80 p-5 backdrop-blur-sm animate-in fade-in-0 slide-in-from-right-4 duration-700">
+                <div className="mb-4 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                  On this page
+                </div>
+                <TableOfContents items={tocItems} className="min-h-0 flex-1 overflow-y-auto pr-2" />
+              </div>
+            </aside>
+          )}
+        </div>
+      ) : (
+        <article className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
+          <MDXContent code={post.mdx} components={mdxComponents} />
+        </article>
+      )}
+
+          <nav className="mt-12 pt-8 max-w-2xl">
         <div className="flex flex-col sm:flex-row justify-between gap-4">
           {previousPost ? (
             <Link
@@ -187,7 +253,9 @@ export default async function Blog({
             <div className="hidden sm:block flex-1" />
           )}
         </div>
-      </nav>
+          </nav>
+        </div>
+      </div>
     </section>
   );
 }

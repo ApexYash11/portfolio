@@ -76,7 +76,6 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           });
         })
         .catch((error) => {
-          console.error("Failed to render Mermaid diagram:", error);
           setMermaidHtml("");
         });
       return;
