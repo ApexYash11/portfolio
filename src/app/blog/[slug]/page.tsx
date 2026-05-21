@@ -12,6 +12,12 @@ import { MarkdownRenderer } from "@/components/mdx/markdown-renderer";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { join } from "path";
 
+const DOC_BACKED_BLOGS: Record<string, string> = {
+  "deep-agents": join("old-site", "docs", "deepagents", "deep_agents_complete.md"),
+  "mcp": join("old-site", "docs", "mcp", "mcp_blog_plan.md"),
+  "rag-langsmith": join("old-site", "docs", "langsmith-rag", "rag_langsmith_blog_plan.md"),
+};
+
 function getSortedPosts() {
   return [...allPosts].sort((a, b) => {
     if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
@@ -96,13 +102,12 @@ export default async function Blog({
 
   const previousPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
-  const isDeepAgentsPost = slug === "deep-agents";
-  const deepAgentsMarkdown = isDeepAgentsPost
-    ? readMarkdownFile(
-        join(process.cwd(), "old-site", "docs", "deepagents", "deep_agents_complete.md")
-      )
+  const docsRelativePath = DOC_BACKED_BLOGS[slug];
+  const isDocBackedPost = Boolean(docsRelativePath);
+  const docBackedMarkdown = isDocBackedPost
+    ? readMarkdownFile(join(process.cwd(), docsRelativePath))
     : "";
-  const tocItems = isDeepAgentsPost ? extractToc(deepAgentsMarkdown) : [];
+  const tocItems = isDocBackedPost ? extractToc(docBackedMarkdown) : [];
 
   const getSlug = (post: (typeof sortedPosts)[0]) =>
     post._meta.path.replace(/\.mdx$/, "");
@@ -124,11 +129,11 @@ export default async function Blog({
     },
   }).replace(/</g, "\\u003c");
 
-  const blogShellClassName = isDeepAgentsPost
+  const blogShellClassName = isDocBackedPost
     ? "relative left-1/2 w-screen -translate-x-1/2 px-6 sm:px-8"
     : "";
 
-  const blogInnerClassName = isDeepAgentsPost
+  const blogInnerClassName = isDocBackedPost
     ? "mx-auto w-full max-w-6xl"
     : "";
 
@@ -168,7 +173,7 @@ export default async function Blog({
               }}
             />
           </div>
-          {isDeepAgentsPost ? (
+          {isDocBackedPost ? (
         <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
           <div className="min-w-0">
             {tocItems.length > 0 && (
@@ -196,7 +201,7 @@ export default async function Blog({
               </details>
             )}
             <article className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-              <MarkdownRenderer markdown={deepAgentsMarkdown} />
+              <MarkdownRenderer markdown={docBackedMarkdown} />
             </article>
           </div>
 

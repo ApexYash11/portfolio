@@ -1,5 +1,7 @@
 # Model Context Protocol: The USB-C Port for AI
 
+![MCP Hero](/images-mcp/connection.png)
+
 ## The Integration Nightmare
 
 You build an AI chatbot. You want it to read files from Google Drive, query your PostgreSQL database, search the web, send Slack messages, and access GitHub repos.
@@ -12,7 +14,7 @@ This is the N×M problem. And it's exhausting.
 
 ```
 Your AI App → Custom GitHub integration
-Your AI App → Custom Drive integration  
+Your AI App → Custom Drive integration
 Your AI App → Custom Postgres integration
 Your AI App → Custom Slack integration
 Your AI App → Custom everything integration
@@ -29,12 +31,14 @@ MCP is an open protocol that standardizes how AI applications connect to externa
 **The USB-C analogy is accurate:** Just as USB-C provides a standard connector for devices, MCP provides a standard protocol for AI-to-data connections.
 
 **What MCP actually is:**
+
 - A communication protocol (like HTTP, WebSocket, or gRPC)
 - A standard for capability discovery
 - A session lifecycle specification
 - JSON-RPC based message format
 
 **What MCP is NOT:**
+
 - A framework or library
 - An LLM reasoning system
 - A prompt engineering tool
@@ -54,7 +58,7 @@ graph LR
         A2 --> D2[Drive Client]
         A2 --> P2[Postgres Client]
     end
-    
+
     subgraph "With MCP (N+M)"
         B1[AI App 1] --> MC1[MCP Client]
         B2[AI App 2] --> MC2[MCP Client]
@@ -66,9 +70,13 @@ graph LR
     end
 ```
 
+![N×M to N+M Visual](/images-mcp/comparison%20diagram.png)
+
 Write each MCP server once. Every MCP-compatible client can use it. N applications + M servers = N+M implementations.
 
 ## Architecture: The Three Players
+
+![MCP Three-Layer Architecture](/images-mcp/layerd-arch.png)
 
 MCP follows a strict three-layer architecture. Understanding this is critical.
 
@@ -77,12 +85,14 @@ MCP follows a strict three-layer architecture. Understanding this is critical.
 The AI application your users interact with.
 
 **Examples:**
+
 - Claude Desktop
 - VS Code with MCP extension
 - Cursor IDE
 - Your custom AI chatbot
 
 **What hosts do:**
+
 - Display UI to users
 - Run the LLM (Claude, GPT-4, etc.)
 - Manage multiple MCP clients
@@ -95,16 +105,16 @@ class MCPHost:
     def __init__(self):
         self.clients = []  # Multiple clients
         self.llm = ClaudeModel()
-    
+
     def handle_user_message(self, message):
         # LLM decides what tools are needed
         tools_needed = self.llm.analyze(message)
-        
+
         # Execute via appropriate clients
         for tool in tools_needed:
             client = self.find_client_for_tool(tool)
             result = client.call_tool(tool.name, tool.args)
-        
+
         return self.llm.format_response(results)
 ```
 
@@ -116,14 +126,15 @@ The mandatory intermediary. This is crucial: **hosts never talk directly to serv
 
 **Why this matters:**
 
-| Benefit | Explanation |
-|---------|-------------|
-| **Fault isolation** | Server crash doesn't affect other connections |
+| Benefit                 | Explanation                                      |
+| ----------------------- | ------------------------------------------------ |
+| **Fault isolation**     | Server crash doesn't affect other connections    |
 | **Security boundaries** | Each client-server pair has isolated permissions |
-| **Parallel execution** | Independent request handling per server |
-| **State encapsulation** | No shared state, no cross-tool interference |
+| **Parallel execution**  | Independent request handling per server          |
+| **State encapsulation** | No shared state, no cross-tool interference      |
 
 **What clients do:**
+
 - Speak the MCP protocol
 - Convert host requests → MCP JSON-RPC messages
 - Convert MCP responses → host-usable data
@@ -137,13 +148,13 @@ class MCPClient:
         self.connection = server_connection
         self.capabilities = None
         self.tools = []
-    
+
     async def initialize(self):
         # Mandatory handshake
         response = await self.send_initialize()
         self.capabilities = response["capabilities"]
         self.tools = await self.discover_tools()
-    
+
     async def call_tool(self, name, arguments):
         # Convert to MCP format
         request = {
@@ -161,12 +172,14 @@ The program that exposes capabilities and does actual work.
 **Focused responsibility:** Each server handles one domain (GitHub, files, databases, etc.)
 
 **What servers do:**
+
 - Advertise capabilities (tools, resources, prompts)
 - Execute tool requests
 - Access data (local files, remote APIs, databases)
 - Return structured responses
 
 **Example servers:**
+
 - `filesystem-server`: Read/write local files
 - `github-server`: Access GitHub API
 - `postgres-server`: Query databases
@@ -211,11 +224,11 @@ sequenceDiagram
     participant Client as MCP Client
     participant Server as MCP Server<br/>(GitHub)
     participant Data as GitHub API
-    
+
     User->>Host: "Show my open PRs"
     Note over Host: LLM identifies need<br/>for GitHub tool
     Host->>Client: Call list_prs()
-    
+
     rect rgb(200, 220, 240)
         Note over Client,Server: MCP Protocol Communication
         Client->>Server: tools/call(list_prs)
@@ -223,7 +236,7 @@ sequenceDiagram
         Data-->>Server: PR data
         Server-->>Client: Structured response
     end
-    
+
     Client-->>Host: Translated result
     Note over Host: LLM formats response
     Host-->>User: "You have 3 open PRs:..."
@@ -243,6 +256,8 @@ sequenceDiagram
 
 ## Protocol Lifecycle: Three Phases
 
+![MCP Protocol Lifecycle](/images-mcp/phases.png)
+
 MCP sessions follow a strict lifecycle. Understanding this prevents debugging hell.
 
 ### Phase 1: Initialization (The Handshake)
@@ -253,25 +268,26 @@ MCP sessions follow a strict lifecycle. Understanding this prevents debugging he
 sequenceDiagram
     participant Client
     participant Server
-    
+
     Note over Client,Server: Phase 1: Initialization
     Client->>Server: initialize<br/>{protocolVersion, capabilities}
     Server-->>Client: Capabilities & server info
     Client->>Server: initialized (notification)
     Note over Client,Server: ✅ Session established
-    
+
     Note over Client,Server: Phase 2: Normal Operation
     Client->>Server: tools/list
     Server-->>Client: Available tools
     Client->>Server: tools/call(add_expense)
     Server-->>Client: Success response
-    
+
     Note over Client,Server: Phase 3: Shutdown
     Client->>Server: Close connection
     Note over Client,Server: ❌ Session terminated
 ```
 
 **Initialization message:**
+
 ```json
 // Client → Server
 {
@@ -310,6 +326,7 @@ sequenceDiagram
 ```
 
 **What's negotiated:**
+
 - Protocol version (both must agree)
 - Capabilities (what each side supports)
 - Implementation metadata (names, versions)
@@ -321,6 +338,7 @@ sequenceDiagram
 This is where actual work happens:
 
 **Tool discovery:**
+
 ```json
 // Client: What can you do?
 {"method": "tools/list"}
@@ -343,6 +361,7 @@ This is where actual work happens:
 ```
 
 **Tool execution:**
+
 ```json
 // Client: Execute this
 {
@@ -368,6 +387,7 @@ This is where actual work happens:
 ```
 
 **Resource access:**
+
 ```json
 // Client: Give me this resource
 {
@@ -395,18 +415,21 @@ Session ends when either side terminates. Connection closes. To use the server a
 
 ## Tools vs Resources: Critical Distinction
 
+![Tools vs Resources](/images-mcp/layers.png)
+
 MCP defines two types of capabilities. Choosing the right one matters.
 
-| Aspect | Tool | Resource |
-|--------|------|----------|
-| **Side effects** | Yes (modifies state) | No (read-only) |
-| **Invocation** | Active (explicit call) | Passive (data retrieval) |
-| **Use case** | Actions | Context/Information |
-| **Example** | `add_expense`, `send_email` | `read_file`, `get_profile` |
-| **Caching** | Unsafe | Safe |
-| **Idempotency** | Often not idempotent | Idempotent |
+| Aspect           | Tool                        | Resource                   |
+| ---------------- | --------------------------- | -------------------------- |
+| **Side effects** | Yes (modifies state)        | No (read-only)             |
+| **Invocation**   | Active (explicit call)      | Passive (data retrieval)   |
+| **Use case**     | Actions                     | Context/Information        |
+| **Example**      | `add_expense`, `send_email` | `read_file`, `get_profile` |
+| **Caching**      | Unsafe                      | Safe                       |
+| **Idempotency**  | Often not idempotent        | Idempotent                 |
 
 **Tool example (side effects):**
+
 ```python
 @server.tool()
 async def send_slack_message(channel: str, text: str):
@@ -416,6 +439,7 @@ async def send_slack_message(channel: str, text: str):
 ```
 
 **Resource example (read-only):**
+
 ```python
 @server.resource("file:///{path}")
 async def read_file(path: str):
@@ -429,6 +453,7 @@ async def read_file(path: str):
 ```
 
 **Why this matters:**
+
 - LLMs can aggressively cache resource responses
 - Tools must be called fresh each time
 - Resources enable efficient context loading
@@ -440,15 +465,19 @@ Transport is orthogonal to MCP protocol semantics. Same protocol, different deli
 
 ### STDIO Transport (Local Servers)
 
+![Transport Comparison](/images-mcp/side-by-side.png)
+
 **What it is:** Standard input/output pipes between processes.
 
 **When to use:**
+
 - Local development
 - Desktop applications
 - Single-machine deployments
 - Maximum security (never leaves your computer)
 
 **How it works:**
+
 ```
 ┌─────────────────┐    stdin/stdout    ┌─────────────────┐
 │   Claude        │◄──────────────────►│  Your Server    │
@@ -459,6 +488,7 @@ Transport is orthogonal to MCP protocol semantics. Same protocol, different deli
 ```
 
 **Configuration:**
+
 ```json
 // claude_desktop_config.json
 {
@@ -472,6 +502,7 @@ Transport is orthogonal to MCP protocol semantics. Same protocol, different deli
 ```
 
 **Code:**
+
 ```python
 from mcp.server.stdio import stdio_server
 
@@ -485,12 +516,14 @@ async def main():
 ```
 
 **Pros:**
+
 - ✅ Ultra-low latency (<1ms)
 - ✅ No network configuration
 - ✅ Maximum security (local-only)
 - ✅ Simple setup
 
 **Cons:**
+
 - ❌ Server must run on same machine
 - ❌ Can't share across team
 - ❌ Harder to scale
@@ -500,11 +533,13 @@ async def main():
 **What it is:** HTTP for requests, Server-Sent Events for streaming responses.
 
 **When to use:**
+
 - Remote/cloud servers
 - Team collaboration
 - Long-running operations with progress updates
 
 **How it works:**
+
 ```
 ┌─────────────────┐    HTTP/SSE      ┌─────────────────┐
 │   Claude        │◄───────────────►│  Your Server    │
@@ -513,6 +548,7 @@ async def main():
 ```
 
 **Code:**
+
 ```python
 from mcp.server.sse import SseServerTransport
 from starlette.applications import Starlette
@@ -523,14 +559,15 @@ sse = SseServerTransport("/messages")
 @app.route("/sse")
 async def handle_sse(request):
     async with sse.connect_sse(
-        request.scope, 
-        request.receive, 
+        request.scope,
+        request.receive,
         request._send
     ) as streams:
         await server.run(streams[0], streams[1], init_options)
 ```
 
 **Configuration:**
+
 ```json
 {
   "mcpServers": {
@@ -543,11 +580,13 @@ async def handle_sse(request):
 ```
 
 **Pros:**
+
 - ✅ Remote access
 - ✅ Real-time streaming
 - ✅ Multiple clients simultaneously
 
 **Cons:**
+
 - ❌ Requires hosted server (AWS, Render, etc.)
 - ❌ Network latency (20-100ms)
 - ❌ More complex setup
@@ -557,19 +596,21 @@ async def handle_sse(request):
 **What it is:** HTTP requests with streaming responses, designed for serverless platforms.
 
 **When to use:**
+
 - Vercel, Cloudflare Workers, AWS Lambda
 - Production APIs
 - No long-running server needed
 
 **Code (Vercel example):**
+
 ```typescript
 // api/mcp.ts
-import { Server } from '@modelcontextprotocol/sdk/server';
-import { StreamableHTTPTransport } from '@modelcontextprotocol/sdk/server/http';
+import { Server } from "@modelcontextprotocol/sdk/server";
+import { StreamableHTTPTransport } from "@modelcontextprotocol/sdk/server/http";
 
-export const config = { runtime: 'edge' };
+export const config = { runtime: "edge" };
 
-const server = new Server({name: 'serverless-mcp', version: '1.0.0'});
+const server = new Server({ name: "serverless-mcp", version: "1.0.0" });
 
 export default async function handler(req: Request) {
   const transport = new StreamableHTTPTransport();
@@ -578,6 +619,7 @@ export default async function handler(req: Request) {
 ```
 
 **Configuration:**
+
 ```json
 {
   "mcpServers": {
@@ -589,29 +631,32 @@ export default async function handler(req: Request) {
 ```
 
 **Pros:**
+
 - ✅ Serverless-friendly
 - ✅ Auto-scaling
 - ✅ Simple URL-based config
 
 **Cons:**
+
 - ❌ Cold start latency (50-200ms)
 - ❌ Stateless (each request independent)
 
 **Comparison:**
 
-| Feature | STDIO | HTTP+SSE | Streamable HTTP |
-|---------|-------|----------|-----------------|
-| Latency | <1ms | 20-100ms | 50-200ms |
-| Location | Local only | Remote | Remote |
-| Deployment | Simple | Medium | Simple |
-| Serverless | ❌ | ❌ | ✅ |
-| Best for | Development | Team tools | Production |
+| Feature    | STDIO       | HTTP+SSE   | Streamable HTTP |
+| ---------- | ----------- | ---------- | --------------- |
+| Latency    | <1ms        | 20-100ms   | 50-200ms        |
+| Location   | Local only  | Remote     | Remote          |
+| Deployment | Simple      | Medium     | Simple          |
+| Serverless | ❌          | ❌         | ✅              |
+| Best for   | Development | Team tools | Production      |
 
 ## Local vs Remote: Deployment Patterns
 
 **Local servers** run on the same machine as the host. **Remote servers** run on external infrastructure.
 
 **Local Server Pattern:**
+
 ```python
 # server.py
 from mcp.server import Server
@@ -636,6 +681,7 @@ if __name__ == "__main__":
 ```
 
 **Remote Server Pattern:**
+
 ```python
 # server.py (same logic, different transport)
 from mcp.server import Server
@@ -778,50 +824,50 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         }
         expenses.append(expense)
         save_expenses(expenses)
-        
+
         return [TextContent(
             type="text",
             text=f"✅ Added expense: ${expense['amount']} ({expense['category']})"
         )]
-    
+
     elif name == "list_expenses":
         expenses = load_expenses()
         category = arguments.get("category")
-        
+
         if category:
             expenses = [e for e in expenses if e["category"] == category]
-        
+
         if not expenses:
             return [TextContent(
                 type="text",
                 text="No expenses found."
             )]
-        
+
         result = "\n".join([
             f"• ${e['amount']} - {e['category']} - {e.get('description', 'N/A')}"
             for e in expenses
         ])
-        
+
         return [TextContent(
             type="text",
             text=f"Your expenses:\n{result}"
         )]
-    
+
     elif name == "total_expenses":
         expenses = load_expenses()
         category = arguments.get("category")
-        
+
         if category:
             expenses = [e for e in expenses if e["category"] == category]
-        
+
         total = sum(e["amount"] for e in expenses)
-        
+
         msg = f"Total: ${total:.2f}"
         if category:
             msg += f" ({category})"
-        
+
         return [TextContent(type="text", text=msg)]
-    
+
     raise ValueError(f"Unknown tool: {name}")
 
 async def main():
@@ -848,6 +894,7 @@ notepad %APPDATA%\Claude\claude_desktop_config.json
 ```
 
 Add your server:
+
 ```json
 {
   "mcpServers": {
@@ -897,7 +944,7 @@ graph TD
     H --> I[Client translates result]
     I --> J[LLM formats natural language]
     J --> K[You see: Added expense]
-    
+
     style E fill:#50c878
     style G fill:#ff6b6b
     style B fill:#4a90e2
@@ -934,7 +981,7 @@ async def handle_list_tools() -> list[types.Tool]:
 
 @server.call_tool()
 async def handle_call_tool(
-    name: str, 
+    name: str,
     arguments: dict | None
 ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
     # Handle tool call
@@ -974,6 +1021,7 @@ def my_tool(param: str) -> str:
 ```
 
 **Evolution:**
+
 1. MCP protocol released (Nov 2024)
 2. MCP SDK introduced (verbose, boilerplate-heavy)
 3. FastMCP created independently
@@ -981,6 +1029,7 @@ def my_tool(param: str) -> str:
 5. FastMCP v2 now independent library
 
 **Analogy:**
+
 - MCP SDK ≈ WSGI (protocol implementation)
 - FastMCP ≈ Flask (developer-friendly wrapper)
 
@@ -991,17 +1040,20 @@ def my_tool(param: str) -> str:
 Manually configuring servers in `claude_desktop_config.json` works but is tedious. **Connectors** solve this.
 
 **What connectors are:**
+
 - Host-provided wrappers around popular MCP servers
 - Pre-configured authentication
 - One-click setup
 - Curated for reliability
 
 **Example:** Claude Desktop connectors:
+
 - Google Drive (pre-configured OAuth)
 - GitHub (managed API keys)
 - Slack (automatic workspace detection)
 
 **How they work:**
+
 ```
 User clicks "Add Google Drive connector"
     ↓
@@ -1014,19 +1066,21 @@ User can now ask: "Summarize my latest Drive doc"
 
 **Manual vs Connector:**
 
-| Aspect | Manual Config | Connector |
-|--------|---------------|-----------|
-| Setup | JSON config file | One-click UI |
-| Auth | You handle | Automatic |
-| Updates | Manual | Auto-updated |
-| Availability | Any server | Curated only |
+| Aspect       | Manual Config    | Connector    |
+| ------------ | ---------------- | ------------ |
+| Setup        | JSON config file | One-click UI |
+| Auth         | You handle       | Automatic    |
+| Updates      | Manual           | Auto-updated |
+| Availability | Any server       | Curated only |
 
 **When to use manual config:**
+
 - Custom/internal servers
 - Development/testing
 - Servers without connectors
 
 **When to use connectors:**
+
 - Popular services (Drive, GitHub, Slack)
 - Production use
 - Non-technical users
@@ -1047,21 +1101,21 @@ async def main():
         command="python",
         args=["server.py"]
     ) as (read, write):
-        
+
         async with Client(read, write) as client:
             # Initialize
             await client.initialize()
-            
+
             # List available tools
             tools = await client.list_tools()
             print(f"Available tools: {[t.name for t in tools]}")
-            
+
             # Call a tool
             result = await client.call_tool(
                 "add_expense",
                 arguments={"amount": 50, "category": "food"}
             )
-            
+
             print(f"Result: {result.content[0].text}")
 
 import asyncio
@@ -1080,26 +1134,26 @@ from mcp.client.http import http_client
 class MultiServerClient:
     def __init__(self):
         self.servers = {}
-    
+
     async def add_server(self, name, connection):
         """Add a new server connection"""
         async with Client(*connection) as client:
             await client.initialize()
             tools = await client.list_tools()
-            
+
             self.servers[name] = {
                 "client": client,
                 "tools": {t.name: t for t in tools}
             }
-    
+
     async def call_tool(self, server_name, tool_name, arguments):
         """Route tool call to correct server"""
         if server_name not in self.servers:
             raise ValueError(f"Unknown server: {server_name}")
-        
+
         client = self.servers[server_name]["client"]
         return await client.call_tool(tool_name, arguments)
-    
+
     def list_all_tools(self):
         """Get all tools from all servers"""
         all_tools = {}
@@ -1110,33 +1164,33 @@ class MultiServerClient:
 # Usage
 async def main():
     multi_client = MultiServerClient()
-    
+
     # Add local expense tracker
     await multi_client.add_server(
         "expenses",
         stdio_client(command="python", args=["expense-server.py"])
     )
-    
+
     # Add remote GitHub server
     await multi_client.add_server(
         "github",
         http_client(url="https://mcp-github.com/sse")
     )
-    
+
     # List all available tools
     print(multi_client.list_all_tools())
     # {
     #   "expenses": ["add_expense", "list_expenses"],
     #   "github": ["create_issue", "list_repos"]
     # }
-    
+
     # Call tool on specific server
     await multi_client.call_tool(
         "expenses",
         "add_expense",
         {"amount": 30, "category": "food"}
     )
-    
+
     await multi_client.call_tool(
         "github",
         "create_issue",
@@ -1174,9 +1228,12 @@ agent = create_openai_functions_agent(llm, tools)
 
 ## Real-World Pattern: AI-Powered Expense Tracker
 
+![MCP Expense Tracker Flow](/images-mcp/simple-analogy.png)
+
 Let's see how MCP enables natural language interfaces for data management.
 
 **Traditional approach:**
+
 - Build a web form
 - Create API endpoints
 - Handle authentication
@@ -1184,6 +1241,7 @@ Let's see how MCP enables natural language interfaces for data management.
 - Maintain separate mobile app
 
 **MCP approach:**
+
 - Build one MCP server
 - Expose tools via protocol
 - Any MCP host can use it
@@ -1199,37 +1257,37 @@ graph TB
         Phone[Claude Mobile]
         Custom[Custom Chatbot]
     end
-    
+
     subgraph "MCP Layer"
         Client1[MCP Client]
         Client2[MCP Client]
         Client3[MCP Client]
     end
-    
+
     subgraph "Business Logic"
         Server[Expense Tracker<br/>MCP Server]
     end
-    
+
     subgraph "Data Layer"
         DB[(PostgreSQL)]
         Cache[(Redis Cache)]
     end
-    
+
     User --> CD
     User --> Phone
     User --> Custom
-    
+
     CD --> Client1
     Phone --> Client2
     Custom --> Client3
-    
+
     Client1 --> Server
     Client2 --> Server
     Client3 --> Server
-    
+
     Server --> DB
     Server --> Cache
-    
+
     style Server fill:#50c878
     style DB fill:#4a90e2
 ```
@@ -1237,6 +1295,7 @@ graph TB
 ### Benefits
 
 **User experience:**
+
 ```
 User: "How much did I spend on food last month?"
 AI: "You spent $342.50 on food in December."
@@ -1247,19 +1306,21 @@ AI: "✅ Added $4.50 coffee expense."
 User: "Show me all transport expenses over $20"
 AI: "Found 3 transport expenses over $20:
 • Uber - $25.00
-• Train ticket - $45.00  
+• Train ticket - $45.00
 • Airport shuttle - $30.00"
 ```
 
 No forms. No clicking. Just natural language.
 
 **Developer experience:**
+
 - Write server once
 - Works with Claude Desktop, mobile, web
 - No UI code needed
 - Protocol handles everything
 
 **System properties:**
+
 - **Decoupled:** Server logic independent of UI
 - **Scalable:** Deploy server remotely, handle multiple clients
 - **Testable:** Test server without UI
@@ -1305,6 +1366,7 @@ if __name__ == "__main__":
 ```
 
 **Deploy:**
+
 ```bash
 # Render
 git push origin main
@@ -1333,6 +1395,7 @@ fastmcp deploy server.py
 ```
 
 **Benefits:**
+
 - Free tier available
 - Auto-generated URL
 - GitHub integration
@@ -1352,6 +1415,7 @@ fastmcp deploy server.py
 ```
 
 Now your server is accessible:
+
 - From anywhere
 - By multiple users
 - Across devices
@@ -1362,32 +1426,38 @@ Now your server is accessible:
 MCP provides specific technical guarantees:
 
 **1. Protocol-driven:**
+
 - Standardized message format (JSON-RPC 2.0)
 - Versioned protocol
 - Capability negotiation
 - Language-agnostic
 
 **2. Decoupled architecture:**
+
 - Host ≠ Client ≠ Server
 - Each component replaceable
 - Clear boundaries
 
 **3. Fault isolation:**
+
 - One server crash doesn't affect others
 - 1:1 client-server relationship
 - Independent error handling
 
 **4. Horizontal scalability:**
+
 - Add servers without modifying clients
 - Add clients without modifying servers
 - Parallel execution
 
 **5. Tool standardization:**
+
 - JSON Schema for inputs
 - Structured outputs
 - Consistent error handling
 
 **6. Transport flexibility:**
+
 - Same protocol, multiple transports
 - Deploy anywhere (local, cloud, serverless)
 - Choose based on requirements
@@ -1399,6 +1469,7 @@ MCP provides specific technical guarantees:
 ### ✅ Good Patterns
 
 **Single responsibility servers:**
+
 ```python
 # Good: Focused server
 github_server = Server("github")
@@ -1410,6 +1481,7 @@ async def list_repos(...): pass
 ```
 
 **Clear capability boundaries:**
+
 ```python
 # Good: Resource for reading, tool for writing
 @server.resource("file:///{path}")
@@ -1420,6 +1492,7 @@ async def write_file(path, content): pass  # Side effects
 ```
 
 **Error handling:**
+
 ```python
 @server.tool()
 async def add_expense(amount, category):
@@ -1437,6 +1510,7 @@ async def add_expense(amount, category):
 ### ❌ Anti-Patterns
 
 **God servers (don't do this):**
+
 ```python
 # Bad: One server doing everything
 mega_server = Server("everything")
@@ -1455,6 +1529,7 @@ async def search_web(...): pass
 ```
 
 **Mixing concerns:**
+
 ```python
 # Bad: Tool that should be a resource
 @server.tool()
@@ -1464,6 +1539,7 @@ async def get_user_profile(user_id):
 ```
 
 **Ignoring initialization:**
+
 ```python
 # Bad: Skipping initialization phase
 client = Client(read, write)
@@ -1479,41 +1555,43 @@ tools = await client.list_tools()  # Now works
 
 **MCP vs Function Calling:**
 
-| Aspect | MCP | Function Calling |
-|--------|-----|------------------|
-| Scope | Protocol for tool access | LLM feature |
-| Standardization | Universal protocol | Provider-specific |
-| Discovery | Runtime capability discovery | Static definitions |
-| Transport | Multiple (STDIO, HTTP, etc.) | N/A (in-process) |
-| Use case | External systems | LLM tool use |
+| Aspect          | MCP                          | Function Calling   |
+| --------------- | ---------------------------- | ------------------ |
+| Scope           | Protocol for tool access     | LLM feature        |
+| Standardization | Universal protocol           | Provider-specific  |
+| Discovery       | Runtime capability discovery | Static definitions |
+| Transport       | Multiple (STDIO, HTTP, etc.) | N/A (in-process)   |
+| Use case        | External systems             | LLM tool use       |
 
 **MCP vs REST APIs:**
 
-| Aspect | MCP | REST APIs |
-|--------|-----|-----------|
-| Purpose | AI tool integration | General data access |
-| Discovery | Automatic | Manual documentation |
-| Schema | JSON Schema built-in | OpenAPI (separate) |
-| Streaming | Native (SSE) | Requires custom implementation |
-| AI-optimized | Yes | No |
+| Aspect       | MCP                  | REST APIs                      |
+| ------------ | -------------------- | ------------------------------ |
+| Purpose      | AI tool integration  | General data access            |
+| Discovery    | Automatic            | Manual documentation           |
+| Schema       | JSON Schema built-in | OpenAPI (separate)             |
+| Streaming    | Native (SSE)         | Requires custom implementation |
+| AI-optimized | Yes                  | No                             |
 
 **MCP vs LangChain Tools:**
 
-| Aspect | MCP | LangChain Tools |
-|--------|-----|------------------|
-| Scope | Protocol + transport | Python functions |
-| Language | Any | Python only |
-| Reusability | Across any MCP host | LangChain only |
-| Deployment | Local or remote | In-process |
-| Standardization | Protocol-level | Framework-level |
+| Aspect          | MCP                  | LangChain Tools  |
+| --------------- | -------------------- | ---------------- |
+| Scope           | Protocol + transport | Python functions |
+| Language        | Any                  | Python only      |
+| Reusability     | Across any MCP host  | LangChain only   |
+| Deployment      | Local or remote      | In-process       |
+| Standardization | Protocol-level       | Framework-level  |
 
 **When to use MCP:**
+
 - Building reusable tool servers
 - Multi-client scenarios
 - Cross-language requirements
 - Production AI applications
 
 **When NOT to use MCP:**
+
 - Simple in-process function calls
 - Prototyping (overkill)
 - Single-use scripts
@@ -1523,6 +1601,7 @@ tools = await client.list_tools()  # Now works
 **Common issues:**
 
 **1. Server not connecting:**
+
 ```bash
 # Check if server process starts
 python server.py
@@ -1536,6 +1615,7 @@ python server.py
 ```
 
 **2. Tools not appearing:**
+
 ```python
 # Ensure tools are registered BEFORE server.run()
 @server.list_tools()
@@ -1548,6 +1628,7 @@ tools = await client.list_tools()
 ```
 
 **3. Transport errors:**
+
 ```python
 # STDIO: Check process spawning
 # HTTP: Check server is running and reachable
@@ -1555,6 +1636,7 @@ tools = await client.list_tools()
 ```
 
 **4. JSON-RPC errors:**
+
 ```json
 // Invalid request (missing id)
 {"method": "tools/call"}  // ❌
@@ -1564,6 +1646,7 @@ tools = await client.list_tools()
 ```
 
 **Debugging tools:**
+
 - MCP Inspector (official debugging UI)
 - Server logs (add logging statements)
 - Client-side error handlers
@@ -1580,12 +1663,14 @@ MCP solves a specific technical problem: standardizing AI-to-tool communication.
 5. **1:1 client-server model:** Isolation and fault containment
 
 **What MCP enables:**
+
 - Write tool servers once, use everywhere
 - N+M instead of N×M integrations
 - Natural language interfaces for data
 - Decoupled, scalable AI systems
 
 **What MCP doesn't do:**
+
 - Make your LLM smarter
 - Handle prompt engineering
 - Provide reasoning logic
@@ -1596,27 +1681,32 @@ MCP is infrastructure. Use it when you need AI to reliably access external syste
 ## Resources
 
 **Official:**
+
 - [MCP Documentation](https://modelcontextprotocol.io/docs)
 - [MCP GitHub](https://github.com/modelcontextprotocol)
 - [MCP Specification](https://modelcontextprotocol.io/specification)
 
 **SDKs:**
+
 - Python: `pip install mcp`
 - TypeScript: `@modelcontextprotocol/sdk`
 - FastMCP: `pip install fastmcp`
 
 **Video Series:**
+
 - [CampusX MCP Playlist](https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0) - Architecture, servers, clients, deployment
 
 **Tools:**
+
 - MCP Inspector (debugging UI)
 - Official server registry
 - Community servers (GitHub, Notion, Linear, Slack)
 
 **Community:**
+
 - GitHub Discussions
 - Discord (linked from docs)
 
 ---
 
-*MCP is infrastructure, not magic. Build servers. Connect clients. Ship capable AI applications.*
+_MCP is infrastructure, not magic. Build servers. Connect clients. Ship capable AI applications._
