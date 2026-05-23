@@ -26,7 +26,7 @@ export const DATA = {
     "AI/ML Engineer building agentic AI systems, backend infrastructure, and production-ready RAG workflows.",
   summary:
     "I build agentic AI systems that plan, reason, and execute reliably in real workflows. My focus is AI infrastructure: scalable backend services, orchestration pipelines, and production-ready RAG systems built for speed, reliability, and growth.",
-  avatarUrl: "/me.png",
+  avatarUrl: "/profile-pic-new.jpg",
   skills: [
     { name: "Python", icon: Python, color: "#3776AB" },
     { name: "Java", icon: Java, color: "#F89820" },
@@ -104,8 +104,9 @@ export const DATA = {
       title: "Backend Engineer (Intern)",
       logoUrl: "/ordyle image.jpg",
       start: "Jan 2026",
+      end:"Apr 2026",
       description:
-        "Building a next-generation AI-powered cloud IDE, focusing on high-performance backend systems and intelligent code assistance. • Building an AI-powered cloud IDE by integrating intelligent code completion, contextual suggestions, and semantic search using RAG and vector indexing. • Architected async backend systems for real-time code analysis, indexing, and retrieval using FastAPI and PostgreSQL. • Implemented distributed workflow execution with checkpointing and WebSocket streaming for enhanced collaboration. • Improved backend reliability and throughput by 30% through optimized async design patterns and modular architecture.",
+        "Built backend systems for an AI-powered cloud IDE focused on speed and developer productivity. • Integrated intelligent code completion, contextual suggestions, and semantic retrieval with RAG pipelines. • Architected asynchronous services for indexing, code analysis, and low-latency query handling with FastAPI and PostgreSQL. • Implemented distributed workflow execution with checkpointing and WebSocket streaming for real-time collaboration. • Improved backend reliability and throughput by 30% through async optimization and modular service design.",
     },
     {
       company: "devx AI labs",
@@ -113,14 +114,21 @@ export const DATA = {
       badges: [],
       location: "",
       title: "AI/ML Intern",
-      logoUrl: "",
+      logoUrl: "/devx.jpg",
       start: "Dec 2025",
       end: "Jan 2026",
       description:
-        "Spearheaded the development of a demand forecasting engine, bridging the gap between theoretical ML models and production-grade backend logic. • Engineered a hybrid forecasting system (Time-Series + Heuristic) for D2C inventory, boosting accuracy by ~70%. • Implemented probabilistic inference (P10/P50/P90) to handle supply chain uncertainty and safety stock optimization. • Deployed FastAPI inference endpoints, enabling real-time model serving with sub-100ms latency.",
+        "Built a production-ready demand forecasting engine connecting ML models with scalable backend APIs. • Engineered a hybrid forecasting approach (time-series plus heuristic modeling) for D2C inventory planning. • Improved forecast accuracy by around 70% with better feature design and model calibration. • Implemented probabilistic inference (P10/P50/P90) for safer inventory decisions under uncertainty. • Deployed FastAPI inference endpoints for real-time predictions with sub-100ms latency.",
     },
   ],
-  education: [],
+  education: [] as Array<{
+    school: string;
+    href: string;
+    degree: string;
+    logoUrl: string;
+    start: string;
+    end: string;
+  }>,
   projects: [
     {
       title: "CLAIMWISE",
