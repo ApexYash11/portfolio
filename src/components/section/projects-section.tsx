@@ -46,8 +46,9 @@ export default function ProjectsSection() {
                                 dates={project.dates}
                                 tags={project.technologies}
                                 image={project.image}
-                                video={project.video}
+                                mediaAspectRatio={project.mediaAspectRatio}
                                 links={project.links}
+                                className="h-full"
                             />
                         </BlurFade>
                     ))}

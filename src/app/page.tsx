@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
+import { Marquee } from "@/components/magicui/marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
@@ -12,6 +13,9 @@ import WorkSection from "@/components/section/work-section";
 import { ArrowUpRight } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
+const SKILL_SPLIT_INDEX = Math.ceil(DATA.skills.length / 2);
+const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
+const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
 
 export default function Page() {
   return (
@@ -122,21 +126,44 @@ export default function Page() {
           <BlurFade delay={BLUR_FADE_DELAY * 9}>
             <h2 className="text-xl font-bold">Skills</h2>
           </BlurFade>
-          <div className="flex flex-wrap gap-2">
-            {DATA.skills.map((skill, id) => (
-              <BlurFade key={skill.name} delay={BLUR_FADE_DELAY * 10 + id * 0.05}>
-                <div className="border border-border/70 bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-sm ring-1 ring-white/10 rounded-xl h-8 w-fit px-4 flex items-center gap-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-                  {skill.icon && (
-                    <skill.icon
-                      className="size-4 rounded overflow-hidden object-contain"
-                      style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
-                    />
-                  )}
-                  <span className="text-foreground text-sm font-medium">{skill.name}</span>
-                </div>
-              </BlurFade>
-            ))}
-          </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 10}>
+            <div className="relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/35 p-3">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-linear-to-r from-background to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-linear-to-l from-background to-transparent" />
+              <Marquee duration={26}>
+                {SKILL_ROW_ONE.map((skill) => (
+                  <div
+                    key={`row1-${skill.name}`}
+                    className="border border-border/70 bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-sm ring-1 ring-white/10 rounded-xl h-8 w-fit px-4 flex items-center gap-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]"
+                  >
+                    {skill.icon && (
+                      <skill.icon
+                        className="size-4 rounded overflow-hidden object-contain"
+                        style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
+                      />
+                    )}
+                    <span className="text-foreground text-sm font-medium">{skill.name}</span>
+                  </div>
+                ))}
+              </Marquee>
+              <Marquee reverse duration={30}>
+                {SKILL_ROW_TWO.map((skill) => (
+                  <div
+                    key={`row2-${skill.name}`}
+                    className="border border-border/70 bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-sm ring-1 ring-white/10 rounded-xl h-8 w-fit px-4 flex items-center gap-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]"
+                  >
+                    {skill.icon && (
+                      <skill.icon
+                        className="size-4 rounded overflow-hidden object-contain"
+                        style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
+                      />
+                    )}
+                    <span className="text-foreground text-sm font-medium">{skill.name}</span>
+                  </div>
+                ))}
+              </Marquee>
+            </div>
+          </BlurFade>
         </div>
       </section>
       <section id="projects">

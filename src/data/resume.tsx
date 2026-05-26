@@ -131,40 +131,6 @@ export const DATA = {
   }>,
   projects: [
     {
-      title: "CLAIMWISE",
-      href: "https://github.com/ApexYash11/Claimwise",
-      dates: "",
-      active: false,
-      description:
-        "An end-to-end automated platform for insurance claim processing using advanced NLP and computer vision. Reduces manual verification time by 80% through intelligent document analysis and fraud detection algorithms.",
-      technologies: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
-      links: [
-        {
-          type: "Source",
-          href: "https://github.com/ApexYash11/Claimwise",
-          icon: <Icons.github className="size-3" />,
-        },
-      ],
-      image: "/claimwise.jpeg",
-    },
-    {
-      title: "WEALTHIFY",
-      href: "https://github.com/ApexYash11/Wealthify",
-      dates: "",
-      active: false,
-      description:
-        "Wealthify is a personal finance management tool that uses machine learning to categorize expenses and provide personalized saving recommendations. It features seamless bank integration and multi-currency support.",
-      technologies: ["Node.js", "MongoDB", "React Native", "Plaid API"],
-      links: [
-        {
-          type: "Source",
-          href: "https://github.com/ApexYash11/Wealthify",
-          icon: <Icons.github className="size-3" />,
-        },
-      ],
-      image: "/wealthify.png",
-    },
-    {
       title: "JASPER FINANCE",
       href: "https://github.com/ApexYash11/jasper",
       dates: "",
@@ -185,6 +151,7 @@ export const DATA = {
         },
       ],
       image: "/jasper.png",
+      mediaAspectRatio: "17 / 8",
     },
     {
       title: "STOCKIQ",
@@ -207,6 +174,43 @@ export const DATA = {
         },
       ],
       image: "/stock_IQ.png",
+      mediaAspectRatio: "16 / 9",
+    },
+    {
+      title: "CLAIMWISE",
+      href: "https://github.com/ApexYash11/Claimwise",
+      dates: "",
+      active: false,
+      description:
+        "An end-to-end automated platform for insurance claim processing using advanced NLP and computer vision. Reduces manual verification time by 80% through intelligent document analysis and fraud detection algorithms.",
+      technologies: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/ApexYash11/Claimwise",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "",
+      mediaAspectRatio: "16 / 9",
+    },
+    {
+      title: "WEALTHIFY",
+      href: "https://github.com/ApexYash11/Wealthify",
+      dates: "",
+      active: false,
+      description:
+        "A smarter personal finance app for tracking spending, categorizing transactions with ML, and surfacing practical savings insights. The latest repo updates lean into a cleaner dashboard, AI-powered insights, and a more polished money-management workflow with bank integration and multi-currency support.",
+      technologies: ["Next.js", "FastAPI", "Supabase"],
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/ApexYash11/Wealthify",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/wealthify.png",
+      mediaAspectRatio: "16 / 9",
     },
   ],
   hackathons: [],
