@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { motion } from "motion/react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 const GITHUB_USERNAME = "ApexYash11";
 
@@ -51,37 +51,71 @@ export default function GithubStatsCard() {
   );
 }
 
+function useImageLoader(src: string) {
+  const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => { if (!cancelled) setState("loaded"); };
+    img.onerror = () => { if (!cancelled) setState("error"); };
+    img.src = src;
+    return () => { cancelled = true; };
+  }, [src]);
+
+  const retry = useCallback(() => {
+    setState("loading");
+    const img = new Image();
+    img.onload = () => setState("loaded");
+    img.onerror = () => setState("error");
+    img.src = src;
+  }, [src]);
+
+  return { state, retry };
+}
+
 function StatCard({ label, src, alt }: { label: string; src: string; alt: string }) {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
+  const { state, retry } = useImageLoader(src);
 
   return (
     <div className="flex flex-col gap-1 rounded-lg border border-border/40 bg-black/[0.03] dark:bg-white/[0.03] p-3 overflow-hidden relative min-h-[80px]">
       <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider relative z-10">{label}</span>
-      {error ? (
-        <div className="flex-1 flex items-center justify-center text-[10px] text-muted-foreground/60 py-2">
-          Unable to load
-        </div>
-      ) : (
-        <>
-          {!loaded && (
-            <div className="absolute inset-0 p-3 pt-6">
-              <div className="w-full h-full rounded animate-pulse bg-muted/30" />
-            </div>
-          )}
-          <motion.img
-            src={src}
-            alt={alt}
-            className="w-full h-auto relative z-10"
-            loading="lazy"
-            onLoad={() => setLoaded(true)}
-            onError={() => { setLoaded(true); setError(true); }}
-            initial={false}
-            animate={{ opacity: loaded ? 1 : 0 }}
-            transition={{ duration: 0.4 }}
-          />
-        </>
-      )}
+
+      <AnimatePresence mode="wait">
+        {state === "error" ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex-1 flex flex-col items-center justify-center gap-1 py-2"
+          >
+            <span className="text-[10px] text-muted-foreground/50">Failed to load</span>
+            <button onClick={retry} className="text-[10px] text-primary/60 hover:text-primary/80 transition-colors underline underline-offset-2">
+              Retry
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="image"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex-1 flex items-center"
+          >
+            {state === "loading" && (
+              <div className="absolute inset-0 p-3 pt-6">
+                <div className="w-full h-full rounded animate-pulse bg-muted/20" />
+              </div>
+            )}
+            <img
+              src={src}
+              alt={alt}
+              className="w-full h-auto relative z-10"
+              loading="lazy"
+              style={{ opacity: state === "loaded" ? 1 : 0 }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -97,35 +131,45 @@ function ContributionCount() {
 }
 
 function ContributionGraph() {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
+  const src = `https://ghchart.rshah.org/${GITHUB_USERNAME}`;
+  const { state, retry } = useImageLoader(src);
 
   return (
     <div className="rounded-lg border border-border/40 bg-black/[0.03] dark:bg-white/[0.03] p-3 overflow-hidden relative min-h-[60px]">
-      {error ? (
-        <div className="flex items-center justify-center text-xs text-muted-foreground/60 py-4">
-          Contribution graph unavailable
-        </div>
-      ) : (
-        <>
-          {!loaded && (
-            <div className="absolute inset-0 p-3">
-              <div className="w-full h-full rounded animate-pulse bg-muted/30" />
-            </div>
-          )}
-          <motion.img
-            src={`https://ghchart.rshah.org/${GITHUB_USERNAME}`}
-            alt="GitHub Contribution Graph"
-            className="w-full h-auto relative z-10"
-            loading="lazy"
-            onLoad={() => setLoaded(true)}
-            onError={() => { setLoaded(true); setError(true); }}
-            initial={false}
-            animate={{ opacity: loaded ? 1 : 0 }}
-            transition={{ duration: 0.4 }}
-          />
-        </>
-      )}
+      <AnimatePresence mode="wait">
+        {state === "error" ? (
+          <motion.div
+            key="error"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-center gap-2 py-4"
+          >
+            <span className="text-xs text-muted-foreground/50">Graph unavailable</span>
+            <button onClick={retry} className="text-xs text-primary/60 hover:text-primary/80 transition-colors underline underline-offset-2">
+              Retry
+            </button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="image"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {state === "loading" && (
+              <div className="absolute inset-0 p-3">
+                <div className="w-full h-full rounded animate-pulse bg-muted/20" />
+              </div>
+            )}
+            <img
+              src={src}
+              alt="GitHub Contribution Graph"
+              className="w-full h-auto relative z-10"
+              loading="lazy"
+              style={{ opacity: state === "loaded" ? 1 : 0 }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
