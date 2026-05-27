@@ -1,10 +1,10 @@
- 
+
 
 import { ImageResponse } from "next/og";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { allPosts } from "content-collections";
 import { DATA } from "@/data/resume";
-
-export const runtime = "edge";
 
 export const alt = "Blog Post";
 export const size = {
@@ -15,20 +15,9 @@ export const contentType = "image/png";
 
 const getFontData = async () => {
     try {
-        const [cabinetGrotesk, clashDisplay] = await Promise.all([
-            fetch(
-                new URL(
-                    "../../../../public/fonts/CabinetGrotesk-Medium.ttf",
-                    import.meta.url
-                )
-            ).then((res) => res.arrayBuffer()),
-            fetch(
-                new URL(
-                    "../../../../public/fonts/ClashDisplay-Semibold.ttf",
-                    import.meta.url
-                )
-            ).then((res) => res.arrayBuffer()),
-        ]);
+        const fontDir = join(process.cwd(), "public/fonts");
+        const cabinetGrotesk = readFileSync(join(fontDir, "CabinetGrotesk-Medium.ttf"));
+        const clashDisplay = readFileSync(join(fontDir, "ClashDisplay-Semibold.ttf"));
         return { cabinetGrotesk, clashDisplay };
     } catch (error) {
         console.error("Failed to load fonts:", error);
@@ -133,6 +122,7 @@ export default async function Image({
         const imageUrl = DATA.avatarUrl
             ? new URL(DATA.avatarUrl, DATA.url).toString()
             : undefined;
+        const showAvatar = imageUrl && !imageUrl.startsWith("http://localhost");
 
         if (!post) {
             return new ImageResponse(
@@ -140,9 +130,9 @@ export default async function Image({
                     <div style={styles.outerWrapper}>
                         <div style={styles.middleWrapper}>
                             <div style={styles.wrapper}>
-                                {imageUrl && (
+                                {showAvatar && (
                                     <div style={styles.imageSection}>
-                                        <img src={imageUrl} alt="Blog Post" style={styles.image} />
+                                        <img src={imageUrl} alt="Blog Post" style={styles.image} width={140} height={140} />
                                     </div>
                                 )}
                                 <div style={styles.mainContainer}>
@@ -184,9 +174,9 @@ export default async function Image({
                 <div style={styles.outerWrapper}>
                     <div style={styles.middleWrapper}>
                         <div style={styles.wrapper}>
-                            {imageUrl && (
+                            {showAvatar && (
                                 <div style={styles.imageSection}>
-                                    <img src={imageUrl} alt={title} style={styles.image} />
+                                    <img src={imageUrl} alt={title} style={styles.image} width={140} height={140} />
                                 </div>
                             )}
                             <div style={styles.mainContainer}>
@@ -236,5 +226,3 @@ export default async function Image({
         );
     }
 }
-
-
