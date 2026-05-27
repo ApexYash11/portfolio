@@ -1,8 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
+"use client";
+
+import { useEffect } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Marquee } from "@/components/magicui/marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
@@ -10,7 +14,8 @@ import ContactSection from "@/components/section/contact-section";
 import StatsSection from "@/components/section/stats-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
-import { ArrowUpRight } from "lucide-react";
+import { getCalApi } from "@calcom/embed-react";
+import { ArrowUpRight, Calendar, FileText } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 const SKILL_SPLIT_INDEX = Math.ceil(DATA.skills.length / 2);
@@ -18,6 +23,16 @@ const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
 const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
 
 export default function Page() {
+  useEffect(() => {
+    (async function () {
+      const cal = await getCalApi();
+      cal("ui", {
+        theme: "dark",
+        styles: { branding: { brandColor: "#000000" } },
+      });
+    })();
+  }, []);
+
   return (
     <main className="min-h-dvh flex flex-col gap-14 relative">
       <section id="hero">
@@ -35,6 +50,26 @@ export default function Page() {
                 delay={BLUR_FADE_DELAY}
                 text={DATA.description}
               />
+              <BlurFade delay={BLUR_FADE_DELAY * 2} className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  data-cal-link="yash-maheshwari-qklkhu/30min"
+                  data-cal-config={JSON.stringify({ layout: "month_view" })}
+                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6"
+                >
+                  <Calendar className="size-4" />
+                  Schedule a Call
+                </Button>
+                <Button
+                  variant="outline"
+                  asChild
+                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6"
+                >
+                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                    <FileText className="size-4" />
+                    Download Resume
+                  </a>
+                </Button>
+              </BlurFade>
             </div>
             <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2 md:ml-auto">
               <Avatar className="h-40 w-28 md:h-56 md:w-40 border rounded-2xl shadow-lg ring-2 ring-muted/60">
