@@ -1,5 +1,14 @@
 {
   "liveServer.settings.root": "/",
   "liveServer.settings.port": 5500,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  "less.lint.unknownAtRules": "ignore",
+  "tailwindCSS.includeLanguages": {
+    "css": "css",
+    "html": "html",
+    "javascript": "javascript",
+    "typescript": "typescriptreact"
+  }
 }
