@@ -212,6 +212,10 @@ export default function Page() {
           <ContactSection />
         </BlurFade>
       </section>
+
+      <footer className="text-center text-sm text-muted-foreground/60 pb-4">
+        <p>&copy; {new Date().getFullYear()} {DATA.name}. All rights reserved.</p>
+      </footer>
     </main>
   );
 }

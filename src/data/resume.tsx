@@ -101,7 +101,7 @@ export const DATA = {
       href: "#",
       badges: [],
       location: "Remote",
-      title: "Backend Engineer (Intern)",
+      title: "Software Engineer Intern",
       logoUrl: "/ordyle image.jpg",
       start: "Jan 2026",
       end:"Apr 2026",
@@ -121,7 +121,32 @@ export const DATA = {
         "Built a production-ready demand forecasting engine connecting ML models with scalable backend APIs. • Engineered a hybrid forecasting approach (time-series plus heuristic modeling) for D2C inventory planning. • Improved forecast accuracy by around 70% with better feature design and model calibration. • Implemented probabilistic inference (P10/P50/P90) for safer inventory decisions under uncertainty. • Deployed FastAPI inference endpoints for real-time predictions with sub-100ms latency.",
     },
   ],
-  education: [] as Array<{
+  education: [
+    {
+      school: "Manipal University Jaipur",
+      href: "https://jaipur.manipal.edu",
+      degree: "Bachelor of Technology (B.Tech), Computer Science",
+      logoUrl: "/muj.jpg",
+      start: "Aug 2023",
+      end: "Aug 2027",
+    },
+    {
+      school: "Narayana Institute",
+      href: "https://www.narayanagroup.com",
+      degree: "Class 12 – Integrated PCM",
+      logoUrl: "/narayana.jpg",
+      start: "Apr 2021",
+      end: "Jun 2023",
+    },
+    {
+      school: "Maheshwari Vidhya Peeth",
+      href: "",
+      degree: "Class 10",
+      logoUrl: "/mvp.jpg",
+      start: "Apr 2010",
+      end: "Apr 2021",
+    },
+  ] as Array<{
     school: string;
     href: string;
     degree: string;

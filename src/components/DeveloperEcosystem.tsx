@@ -19,8 +19,8 @@ const nodes: NodeConfig[] = [
   { key: "email", label: "Email", ring: "outer", angle: 315 },
 ];
 
-const INNER_RADIUS = 90;
-const OUTER_RADIUS = 140;
+const INNER_RADIUS = 68;
+const OUTER_RADIUS = 105;
 const NODE_SIZE = 48;
 
 export default function DeveloperEcosystem() {
@@ -65,8 +65,7 @@ export default function DeveloperEcosystem() {
             cy={160}
             r={INNER_RADIUS}
             fill="none"
-            stroke="currentColor"
-            className="text-border/30"
+            stroke="rgba(255,255,255,0.18)"
             strokeWidth="1"
             strokeDasharray="6 6"
           />
@@ -75,8 +74,7 @@ export default function DeveloperEcosystem() {
             cy={160}
             r={OUTER_RADIUS}
             fill="none"
-            stroke="currentColor"
-            className="text-border/20"
+            stroke="rgba(255,255,255,0.12)"
             strokeWidth="1"
             strokeDasharray="4 8"
           />
