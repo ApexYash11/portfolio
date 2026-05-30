@@ -1,47 +1,31 @@
-<div align="center">
-<img alt="Portfolio" src="https://github.com/dillionverma/portfolio/assets/16860528/57ffca81-3f0a-4425-b31d-094f61725455" width="90%">
-</div>
+# Portfolio — Yash Maheshwari
 
-# Portfolio [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdillionverma%2Fportfolio)
+AI/ML engineer building agentic AI systems, backend infrastructure, and production-ready RAG workflows.
 
-Built with next.js, [shadcn/ui](https://ui.shadcn.com/), and [magic ui](https://magicui.design/), deployed on Vercel.
+Built with [Next.js](https://nextjs.org/), [shadcn/ui](https://ui.shadcn.com/), [Magic UI](https://magicui.design/), and [Tailwind CSS v4](https://tailwindcss.com/). Deployed on [Vercel](https://vercel.com).
 
-# Features
+## Features
 
-- Setup only takes a few minutes by editing the [single config file](./src/data/resume.tsx)
-- Built using Next.js 14, React, Typescript, Shadcn/UI, TailwindCSS, Framer Motion, Magic UI
-- Includes a blog
-- Responsive for different devices
-- Optimized for Next.js and Vercel
+- Single config file at [`src/data/resume.tsx`](./src/data/resume.tsx) — update everything in one place
+- Next.js 16, React 19, TypeScript, Tailwind CSS v4
+- MDX blog with content-collections, pagination, and syntax highlighting (Shiki dual theme)
+- Dark mode support (`next-themes`)
+- Animated UI: blur-fade, dock navbar, flickering grid, marquee skills
+- SEO: OpenGraph, JSON-LD, auto-generated opengraph images
+- GitHub stats card, daily quote card, Cal.com scheduling integration
+- Fully responsive
 
-# Getting Started Locally
+## Getting Started
 
-1. Clone this repository to your local machine:
+```bash
+pnpm install
+pnpm dev
+```
 
-   ```bash
-   git clone https://github.com/dillionverma/portfolio
-   ```
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-2. Move to the cloned directory
+Edit [`src/data/resume.tsx`](./src/data/resume.tsx) to customize all content.
 
-   ```bash
-   cd portfolio
-   ```
+## License
 
-3. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-4. Start the local Server:
-
-   ```bash
-   pnpm dev
-   ```
-
-5. Open the [Config file](./src/data/resume.tsx) and make changes
-
-# License
-
-Licensed under the [MIT license](https://github.com/dillionverma/portfolio/blob/main/LICENSE.md).
+[MIT](./LICENSE)
