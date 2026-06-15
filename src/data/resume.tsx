@@ -171,7 +171,7 @@ export const DATA = {
         },
         {
           type: "Case Study",
-          href: "/old-site/project-info.html",
+          href: "/case-study/jasper",
           icon: <Icons.notion className="size-3" />,
         },
       ],
@@ -194,7 +194,7 @@ export const DATA = {
         },
         {
           type: "Case Study",
-          href: "/old-site/stockiq-case-study.html",
+          href: "/case-study/stockiq",
           icon: <Icons.notion className="size-3" />,
         },
       ],
@@ -215,6 +215,11 @@ export const DATA = {
           href: "https://github.com/ApexYash11/Claimwise",
           icon: <Icons.github className="size-3" />,
         },
+        {
+          type: "Case Study",
+          href: "/case-study/claimwise",
+          icon: <Icons.notion className="size-3" />,
+        },
       ],
       image: "",
       mediaAspectRatio: "16 / 9",
@@ -232,6 +237,11 @@ export const DATA = {
           type: "Source",
           href: "https://github.com/ApexYash11/Wealthify",
           icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "Case Study",
+          href: "/case-study/wealthify",
+          icon: <Icons.notion className="size-3" />,
         },
       ],
       image: "/wealthify.png",
