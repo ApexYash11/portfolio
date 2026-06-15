@@ -161,7 +161,7 @@ export const DATA = {
       dates: "",
       active: false,
       description:
-        "Jasper is an intelligent CLI tool that revolutionizes software development planning. It analyzes your entire codebase, understands project architecture, and generates detailed implementation plans using advanced AI models via OpenRouter. Features include automatic framework detection, security audits (OWASP Top 10), real-time web search integration with Exa AI, and Model Context Protocol (MCP) for accessing up-to-date library documentation.",
+        "Autonomous financial research agent built on LangGraph — orchestrates multi-step web research, synthesis, and report generation.",
       technologies: ["Python", "LangChain", "OpenAI", "yfinance"],
       links: [
         {
@@ -184,7 +184,7 @@ export const DATA = {
       dates: "",
       active: false,
       description:
-        "StockIQ is a production-ready intelligence system that transforms raw operational data (orders, inventory events, vendors, campaigns) into probabilistic demand forecasts, optimized multi-warehouse inventory decisions, and constraint-aware reorder recommendations. The system goes beyond traditional demand forecasting—it converts uncertainty into deterministic, explainable business actions: exactly how much to reorder, where to place inventory, and whether to allow Cash-on-Delivery (COD) based on Return-to-Origin (RTO) risk assessment.",
+        "Demand forecasting system using SARIMAX — converts raw inventory and order data into reorder recommendations and multi-warehouse decisions.",
       technologies: ["Python", "Pandas", "NumPy", "Statsmodels", "FastAPI", "Streamlit"],
       links: [
         {
@@ -207,7 +207,7 @@ export const DATA = {
       dates: "",
       active: false,
       description:
-        "An end-to-end automated platform for insurance claim processing using advanced NLP and computer vision. Reduces manual verification time by 80% through intelligent document analysis and fraud detection algorithms.",
+        "Insurance claim automation platform using NLP and computer vision — cuts manual verification time by 80%.",
       technologies: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
       links: [
         {
@@ -225,7 +225,7 @@ export const DATA = {
       dates: "",
       active: false,
       description:
-        "A smarter personal finance app for tracking spending, categorizing transactions with ML, and surfacing practical savings insights. The latest repo updates lean into a cleaner dashboard, AI-powered insights, and a more polished money-management workflow with bank integration and multi-currency support.",
+        "Personal finance app with ML-powered transaction categorization, spending insights, and bank integration.",
       technologies: ["Next.js", "FastAPI", "Supabase"],
       links: [
         {
