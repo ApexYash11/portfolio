@@ -7,7 +7,7 @@ const BLUR_FADE_DELAY = 0.04;
 
 export default function StatsSection() {
   return (
-    <section id="stats" className="flex flex-col gap-6">
+    <section id="stats" className="flex flex-col gap-6 w-full">
       <BlurFade delay={BLUR_FADE_DELAY * 13}>
         <GithubStatsCard />
       </BlurFade>

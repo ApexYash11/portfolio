@@ -30,7 +30,7 @@ export default async function Page() {
   const latestPosts = sortedPosts.slice(0, 3);
 
   return (
-    <main className="min-h-dvh flex flex-col gap-14 relative">
+    <main className="min-h-dvh flex flex-col gap-14 relative w-full">
       <CalEmbedInit />
       <section id="hero">
         <div className="mx-auto w-full max-w-4xl space-y-8">
