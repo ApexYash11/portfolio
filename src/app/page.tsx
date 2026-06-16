@@ -1,7 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
-
-import { useEffect } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Marquee } from "@/components/magicui/marquee";
@@ -15,7 +12,9 @@ import SupportSection from "@/components/section/support-section";
 import StatsSection from "@/components/section/stats-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
-import { getCalApi } from "@calcom/embed-react";
+import { allPosts } from "content-collections";
+import { CalEmbedInit } from "@/components/cal-embed-init";
+import { BlogCard } from "@/components/blog/blog-card";
 import { ArrowUpRight, Calendar, FileText } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
@@ -23,19 +22,15 @@ const SKILL_SPLIT_INDEX = Math.ceil(DATA.skills.length / 2);
 const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
 const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
 
-export default function Page() {
-  useEffect(() => {
-    (async function () {
-      const cal = await getCalApi();
-      cal("ui", {
-        theme: "dark",
-        styles: { branding: { brandColor: "#000000" } },
-      });
-    })();
-  }, []);
+export default async function Page() {
+  const sortedPosts = [...allPosts].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+  const latestPosts = sortedPosts.slice(0, 3);
 
   return (
-    <main className="min-h-dvh flex flex-col gap-14 relative">
+    <main className="min-h-dvh flex flex-col gap-14 relative w-full">
+      <CalEmbedInit />
       <section id="hero">
         <div className="mx-auto w-full max-w-4xl space-y-8">
           <div className="gap-2 gap-y-6 flex flex-col md:flex-row md:items-start md:gap-x-10">
@@ -217,6 +212,38 @@ export default function Page() {
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
           <ContactSection />
         </BlurFade>
+      </section>
+
+      <section id="writing">
+        <div className="flex min-h-0 flex-col gap-y-6">
+          <BlurFade delay={BLUR_FADE_DELAY * 17}>
+            <h2 className="text-xl font-bold">Latest Writing</h2>
+          </BlurFade>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {latestPosts.map((post, idx) => {
+              const slug = post._meta.path.replace(/\.mdx$/, "");
+              return (
+                <BlurFade key={slug} delay={BLUR_FADE_DELAY * 18 + idx * 0.05}>
+                  <BlogCard
+                    title={post.title}
+                    summary={post.summary}
+                    readTime={post.readTime}
+                    slug={slug}
+                    className="h-full"
+                  />
+                </BlurFade>
+              );
+            })}
+          </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 21}>
+            <Link
+              href="/blog"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              View all posts <ArrowUpRight className="ml-1 size-3.5" />
+            </Link>
+          </BlurFade>
+        </div>
       </section>
 
       <footer className="text-center text-sm text-muted-foreground/60 pb-4">
