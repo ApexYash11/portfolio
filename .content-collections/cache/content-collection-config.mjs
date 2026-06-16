@@ -48,7 +48,7 @@ var posts = defineCollection({
     const mdx = await compileMDX(context, document, {
       remarkPlugins: [remarkGfm, remarkCodeMeta]
     });
-    const wordCount = document.content.split(/\s+/).length;
+    const wordCount = document.content.trim().split(/\s+/).length;
     const readTime = Math.max(1, Math.ceil(wordCount / 200));
     return {
       ...document,

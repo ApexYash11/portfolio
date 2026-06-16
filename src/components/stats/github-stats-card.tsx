@@ -51,13 +51,16 @@ export default function GithubStatsCard() {
             const repos: any[] = await reposRes.json();
             setTotalStars(repos.reduce((sum: number, r: any) => sum + (r.stargazers_count || 0), 0));
 
-            // Fetch language breakdown per repo
+            // Fetch language breakdown per repo (batched to avoid rate limiting)
             try {
-              const langResults = await Promise.all(
-                repos.map((r: any) =>
+              const langResults: Record<string, number>[] = [];
+              for (let i = 0; i < repos.length; i += 5) {
+                const batch = repos.slice(i, i + 5).map((r: any) =>
                   fetch(r.languages_url).then((res) => (res.ok ? res.json() : {}))
-                )
-              );
+                );
+                const results = await Promise.all(batch);
+                langResults.push(...results);
+              }
               const langBytes: Record<string, number> = {};
               langResults.forEach((ld: Record<string, number>) => {
                 Object.entries(ld).forEach(([lang, bytes]) => {
@@ -114,7 +117,7 @@ export default function GithubStatsCard() {
                 break;
               }
             }
-            if (streakCount > 0) setStreak(streakCount);
+            setStreak(streakCount);
           }
         } catch {}
       } catch {} finally {

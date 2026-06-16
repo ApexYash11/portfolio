@@ -23,10 +23,9 @@ const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
 const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
 
 export default async function Page() {
-  const sortedPosts = [...allPosts].sort((a, b) => {
-    if (new Date(a.publishedAt) > new Date(b.publishedAt)) return -1;
-    return 1;
-  });
+  const sortedPosts = [...allPosts].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
   const latestPosts = sortedPosts.slice(0, 3);
 
   return (
