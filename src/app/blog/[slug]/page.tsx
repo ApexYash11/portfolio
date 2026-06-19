@@ -16,6 +16,7 @@ const DOC_BACKED_BLOGS: Record<string, string> = {
   "deep-agents": join("old-site", "docs", "deepagents", "deep_agents_complete.md"),
   "mcp": join("old-site", "docs", "mcp", "mcp_blog_plan.md"),
   "rag-langsmith": join("old-site", "docs", "langsmith-rag", "rag_langsmith_blog_plan.md"),
+  "llm-evals": join("old-site", "docs", "llm evals", "llmeval.md"),
 };
 
 function getSortedPosts() {
