@@ -294,7 +294,7 @@ No side effects — just returns data. LLMs can cache resource responses aggress
 
 Transport is orthogonal to MCP protocol semantics. Same protocol, different delivery mechanisms:
 
-- **STDIO Transport** — standard input/output pipes between processes. Ultra-low latency (<1ms), maximum security (local-only). Best for local development and desktop applications. Configured via `claude_desktop_config.json` with command and args. The parent process (Claude Desktop) spawns your server as a child process and communicates through stdin/stdout pipes.
+- **STDIO Transport** — standard input/output pipes between processes. Ultra-low latency (`<1ms`), maximum security (local-only). Best for local development and desktop applications. Configured via `claude_desktop_config.json` with command and args. The parent process (Claude Desktop) spawns your server as a child process and communicates through stdin/stdout pipes.
 
 ```json
 {
@@ -337,7 +337,7 @@ export default async function handler(req: Request) {
 
 | Feature | STDIO | HTTP+SSE | Streamable HTTP |
 |---|---|---|---|
-| Latency | <1ms | 20-100ms | 50-200ms |
+| Latency | `<1ms` | 20-100ms | 50-200ms |
 | Location | Local only | Remote | Remote |
 | Deployment | Simple | Medium | Simple |
 | Serverless | No | No | Yes |
