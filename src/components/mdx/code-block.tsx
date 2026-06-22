@@ -52,35 +52,54 @@ async function ensureMermaid() {
   return (window as typeof window & { mermaid?: any }).mermaid ?? null;
 }
 
+type MermaidStatus = "loading" | "ready" | "error";
+
 export function CodeBlock({ children, ...props }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const [mermaidStatus, setMermaidStatus] = useState<MermaidStatus>("loading");
   const [mermaidHtml, setMermaidHtml] = useState("");
-  const [{ html, className, title }, setRenderState] = useState<{
+  const [renderState, setRenderState] = useState<{
     html: string;
     className: string;
     title: string | null;
   }>({ html: "", className: "", title: null });
+  const { html, className: codeClassName, title: codeTitle } = renderState;
   const preRef = useRef<HTMLPreElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const codeDetails = getCodeDetails(children);
   const { text: codeText, language: lang, title: nextTitle, className: nextClassName } = codeDetails;
 
   useEffect(() => {
     if (lang === "mermaid") {
-      setRenderState({ html: "", className: nextClassName, title: nextTitle });
+      setMermaidStatus("loading");
+      setMermaidHtml("");
+
+      timeoutRef.current = setTimeout(() => {
+        setMermaidStatus("error");
+      }, 5000);
+
       void ensureMermaid()
         .then((mermaid) => {
-          if (!mermaid) return;
+          if (!mermaid) throw new Error("Mermaid not available");
           mermaid.initialize({ startOnLoad: false, securityLevel: "loose" });
-          return mermaid.render(`mermaid-${Math.random().toString(36).slice(2)}`, codeText).then(({ svg }: { svg: string }) => {
-            setMermaidHtml(svg);
-          });
+          return mermaid.render(`mermaid-${Math.random().toString(36).slice(2)}`, codeText);
         })
-        .catch((error) => {
-          setMermaidHtml("");
+        .then(({ svg }: { svg: string }) => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          setMermaidHtml(svg);
+          setMermaidStatus("ready");
+        })
+        .catch(() => {
+          if (timeoutRef.current) clearTimeout(timeoutRef.current);
+          setMermaidStatus("error");
         });
-      return;
+
+      return () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
     }
 
+    setMermaidStatus("loading");
     setMermaidHtml("");
 
     void codeToHtml(codeText, {
@@ -121,26 +140,25 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     <div className="group relative rounded-xl overflow-hidden border border-border">
       {codeDetails.language === "mermaid" ? (
         <div className="relative bg-background">
-          {title && (
+          {codeTitle && (
             <div className="p-3 text-xs font-medium border-b border-border rounded-t-xl bg-muted/50 text-foreground">
-              {title}
+              {codeTitle}
             </div>
           )}
-          <Button
-            onClick={handleCopy}
-            variant="outline"
-            size="icon"
-            className="absolute size-8 text-primary cursor-pointer right-3 top-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity rounded-md border border-border shadow-none"
-            aria-label="Copy code"
-          >
-            {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-          </Button>
-          <div
-            className="p-4 overflow-x-auto"
-            dangerouslySetInnerHTML={{
-              __html: mermaidHtml || `<pre class="mermaid">${codeDetails.text}</pre>`,
-            }}
-          />
+          {mermaidStatus === "ready" ? (
+            <div
+              className="p-4 overflow-x-auto"
+              dangerouslySetInnerHTML={{ __html: mermaidHtml }}
+            />
+          ) : mermaidStatus === "error" ? (
+            <div className="p-4 text-sm text-muted-foreground">
+              Diagram unavailable
+            </div>
+          ) : (
+            <div className="p-4 text-sm text-muted-foreground">
+              Loading diagram...
+            </div>
+          )}
         </div>
       ) : (
         <pre
@@ -148,9 +166,9 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           {...props}
           className={cn("p-0! m-0! overflow-x-auto", props.className)}
         >
-          {title && (
+          {codeTitle && (
             <div className="p-3 text-xs font-medium border-b border-border rounded-t-xl bg-muted/50 text-foreground">
-              {title}
+              {codeTitle}
             </div>
           )}
 
@@ -160,7 +178,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
             size="icon"
             className={cn(
               "absolute size-8 text-primary cursor-pointer right-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity rounded-md border border-border shadow-none",
-              title ? "top-13" : "top-3",
+              codeTitle ? "top-13" : "top-3",
               props.className
             )}
             aria-label="Copy code"
@@ -170,7 +188,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           {html && (
             <div className="p-3">
               <code
-                className={`shiki ${className}`}
+                className={`shiki ${codeClassName}`}
                 dangerouslySetInnerHTML={{ __html: html }}
               />
             </div>

@@ -1,7 +1,3 @@
-# LLM Evaluation: Your AI Looks Great in Testing But That Means Nothing
-
-_Published · June 2026 · 15 min read_
-
 ---
 
 You've built something cool. A RAG pipeline, a support bot, a document analyzer. It works perfectly in your test cases. You demo it to your team and it's smooth. You ship it.

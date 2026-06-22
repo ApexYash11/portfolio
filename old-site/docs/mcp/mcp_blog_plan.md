@@ -1,5 +1,3 @@
-# Model Context Protocol: The USB-C Port for AI
-
 ![MCP Hero](/images-mcp/connection.png)
 
 ## The Integration Nightmare

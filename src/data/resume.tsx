@@ -19,7 +19,7 @@ import { FaBrain, FaChartBar, FaChartLine, FaComments, FaFlag, FaLanguage, FaPuz
 export const DATA = {
   name: "Yash Maheshwari",
   initials: "YM",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://yashmaheshwari.is-a.dev",
   location: "INDIA / Open to Remote",
   locationLink: "https://www.google.com/maps/place/India",
   description:

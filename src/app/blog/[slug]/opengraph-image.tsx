@@ -122,7 +122,6 @@ export default async function Image({
         const imageUrl = DATA.avatarUrl
             ? new URL(DATA.avatarUrl, DATA.url).toString()
             : undefined;
-        const showAvatar = imageUrl && !imageUrl.startsWith("http://localhost");
 
         if (!post) {
             return new ImageResponse(
@@ -130,7 +129,7 @@ export default async function Image({
                     <div style={styles.outerWrapper}>
                         <div style={styles.middleWrapper}>
                             <div style={styles.wrapper}>
-                                {showAvatar && (
+                                {imageUrl && (
                                     <div style={styles.imageSection}>
                                         <img src={imageUrl} alt="Blog Post" style={styles.image} width={140} height={140} />
                                     </div>
@@ -174,7 +173,7 @@ export default async function Image({
                 <div style={styles.outerWrapper}>
                     <div style={styles.middleWrapper}>
                         <div style={styles.wrapper}>
-                            {showAvatar && (
+                            {imageUrl && (
                                 <div style={styles.imageSection}>
                                     <img src={imageUrl} alt={title} style={styles.image} width={140} height={140} />
                                 </div>

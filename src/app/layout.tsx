@@ -12,17 +12,22 @@ import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 const geist = GeistSans;
 const geistMono = GeistMono;
 
+const SITE_URL = "https://yashmaheshwari.is-a.dev";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(DATA.url),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: DATA.name,
+    default: "Yash Maheshwari | AI/ML Engineer — Agentic AI, RAG & Backend",
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: `${DATA.name}`,
+    title: "Yash Maheshwari | AI/ML Engineer — Agentic AI, RAG & Backend",
     description: DATA.description,
-    url: DATA.url,
+    url: SITE_URL,
     siteName: `${DATA.name}`,
     locale: "en_US",
     type: "website",
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: `${DATA.name}`,
+    title: "Yash Maheshwari | AI/ML Engineer — Agentic AI, RAG & Backend",
     card: "summary_large_image",
   },
   verification: {
@@ -62,6 +67,25 @@ export default function RootLayout({
           geistMono.variable
         )}
       >
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Person",
+              name: "Yash Maheshwari",
+              jobTitle: "AI/ML Engineer",
+              alumniOf: "Manipal University Jaipur",
+              sameAs: [
+                "https://github.com/ApexYash11",
+                "https://linkedin.com/in/yash-maheshwari-3b891a307",
+                "https://x.com/YashMah11",
+                "https://instagram.com/yash_maheshwari_11",
+              ],
+            }),
+          }}
+        />
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider delayDuration={0}>
             <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
