@@ -8,6 +8,9 @@ import { ChevronRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "Blog",
   description: "Thoughts on software development, life, and more.",
+  alternates: {
+    canonical: "/blog",
+  },
   openGraph: {
     title: "Blog",
     description: "Thoughts on software development, life, and more.",

@@ -58,6 +58,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title,
       description,
@@ -160,7 +163,7 @@ export default async function Blog({
               {post.title}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {formatDate(post.publishedAt)}
+              {formatDate(post.publishedAt)} · {post.readTime} min read
             </p>
           </div>
           <div className="my-6 flex w-full items-center">

@@ -18,8 +18,6 @@ readTime: "22 min"
 coverImage: "../assets/images/deep-agents-hero.png"
 ---
 
-# Deep Agents: Why Most AI Agents Are Shallow (And How to Fix It)
-
 ![Deep Agents Architecture](../assets/images/deep-agents-hero.png)
 
 A complete guide to building AI agents that actually plan, delegate, and remember. Learn the architecture behind Claude Code, Deep Research, and how to build production-ready deep agents with LangChain.

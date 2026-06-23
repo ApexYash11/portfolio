@@ -1,5 +1,3 @@
-# Blog Plan: Production-Ready RAG with LangSmith Optimization
-
 **Title:** "RAG Systems in Production: From 40% Accuracy to 95% with LangSmith"
 
 **Subtitle:** "How to trace, evaluate, and optimize Retrieval-Augmented Generation pipelines for production deployment"
