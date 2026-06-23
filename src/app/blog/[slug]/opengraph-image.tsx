@@ -12,6 +12,13 @@ export const size = {
     height: 630,
 };
 export const contentType = "image/png";
+export const dynamic = "force-static";
+
+export function generateStaticParams() {
+  return allPosts.map((post) => ({
+    slug: post._meta.path.replace(/\.mdx$/, ""),
+  }));
+}
 
 const getFontData = async () => {
     try {

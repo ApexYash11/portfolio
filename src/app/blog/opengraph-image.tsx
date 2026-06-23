@@ -10,6 +10,7 @@ export const size = {
     height: 630,
 };
 export const contentType = "image/png";
+export const dynamic = "force-static";
 
 const getFontData = async () => {
     try {
