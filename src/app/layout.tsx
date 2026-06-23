@@ -8,6 +8,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import { Analytics } from "@vercel/analytics/react";
 
 const geist = GeistSans;
 const geistMono = GeistMono;
@@ -103,6 +104,7 @@ export default function RootLayout({
               {children}
             </div>
             <Navbar />
+            <Analytics />
           </TooltipProvider>
         </ThemeProvider>
       </body>
