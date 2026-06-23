@@ -140,9 +140,9 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
     <div className="group relative rounded-xl overflow-hidden border border-border">
       {codeDetails.language === "mermaid" ? (
         <div className="relative bg-background">
-          {codeTitle && (
+          {codeDetails.title && (
             <div className="p-3 text-xs font-medium border-b border-border rounded-t-xl bg-muted/50 text-foreground">
-              {codeTitle}
+              {codeDetails.title}
             </div>
           )}
           {mermaidStatus === "ready" ? (
