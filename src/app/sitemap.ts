@@ -5,31 +5,34 @@ import { getAllCaseStudySlugs } from "@/data/case-studies";
 const base = "https://yashmaheshwari.is-a.dev";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const blogSlugs = allPosts.map((post) => post._meta.path.replace(/\.mdx$/, ""));
+  const now = new Date();
   const caseSlugs = getAllCaseStudySlugs();
 
   return [
     {
       url: base,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
+      lastModified: now,
+      changeFrequency: "monthly" as const,
       priority: 1,
     },
     {
       url: `${base}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
+      lastModified: now,
+      changeFrequency: "weekly" as const,
       priority: 0.8,
     },
-    ...blogSlugs.map((slug) => ({
-      url: `${base}/blog/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    })),
+    ...allPosts.map((post) => {
+      const slug = post._meta.path.replace(/\.mdx$/, "");
+      return {
+        url: `${base}/blog/${slug}`,
+        lastModified: new Date(post.updatedAt ?? post.publishedAt),
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      };
+    }),
     ...caseSlugs.map((slug) => ({
       url: `${base}/case-study/${slug}`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
