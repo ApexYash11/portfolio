@@ -4,6 +4,8 @@ import { getAllCaseStudySlugs } from "@/data/case-studies";
 
 const base = "https://yashmaheshwari.is-a.dev";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
   const caseSlugs = getAllCaseStudySlugs();
