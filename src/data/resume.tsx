@@ -187,7 +187,7 @@ export const DATA = {
       description:
         "Demand forecasting system using SARIMAX — converts raw inventory and order data into reorder recommendations and multi-warehouse decisions.",
       technologies: ["Python", "Pandas", "NumPy", "Statsmodels", "FastAPI", "Streamlit"],
-      video: undefined,
+      video: "/stock-iq.mp4",
       links: [
         {
           type: "Source",
