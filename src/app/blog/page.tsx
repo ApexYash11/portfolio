@@ -24,8 +24,11 @@ export const metadata: Metadata = {
 const BLUR_FADE_DELAY = 0.04;
 
 const posts = [...allPosts].sort((a, b) => {
-  if (new Date(a.publishedAt) > new Date(b.publishedAt)) return -1;
-  return 1;
+  const dA = new Date(a.publishedAt);
+  const dB = new Date(b.publishedAt);
+  if (dA > dB) return -1;
+  if (dA < dB) return 1;
+  return 0;
 });
 
 export default async function BlogPage() {
