@@ -163,6 +163,7 @@ export const DATA = {
       description:
         "Autonomous financial research agent built on LangGraph — orchestrates multi-step web research, synthesis, and report generation.",
       technologies: ["Python", "LangChain", "OpenAI", "yfinance"],
+      video: "/jasper-demo.mp4",
       links: [
         {
           type: "Source",
@@ -186,6 +187,7 @@ export const DATA = {
       description:
         "Demand forecasting system using SARIMAX — converts raw inventory and order data into reorder recommendations and multi-warehouse decisions.",
       technologies: ["Python", "Pandas", "NumPy", "Statsmodels", "FastAPI", "Streamlit"],
+      video: undefined,
       links: [
         {
           type: "Source",
@@ -209,6 +211,7 @@ export const DATA = {
       description:
         "Insurance claim automation platform using NLP and computer vision — cuts manual verification time by 80%.",
       technologies: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
+      video: undefined,
       links: [
         {
           type: "Source",
@@ -232,6 +235,7 @@ export const DATA = {
       description:
         "Personal finance app with ML-powered transaction categorization, spending insights, and bank integration.",
       technologies: ["Next.js", "FastAPI", "Supabase"],
+      video: undefined,
       links: [
         {
           type: "Source",
