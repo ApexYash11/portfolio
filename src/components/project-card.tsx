@@ -109,7 +109,7 @@ export function ProjectCard({
                 loop
                 muted
                 playsInline
-                className="absolute inset-0 h-full w-full object-cover object-center"
+className="absolute inset-0 h-full w-full object-contain object-center"
               />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
             </div>
