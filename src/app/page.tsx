@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import Markdown from "react-markdown";
-import ContactSection from "@/components/section/contact-section";
+import ContactConsole from "@/components/ContactConsole";
 import SupportSection from "@/components/section/support-section";
 import StatsSection from "@/components/section/stats-section";
 import ProjectsSection from "@/components/section/projects-section";
@@ -210,7 +210,7 @@ export default async function Page() {
       </section>
       <section id="contact">
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
-          <ContactSection />
+          <ContactConsole />
         </BlurFade>
       </section>
 
