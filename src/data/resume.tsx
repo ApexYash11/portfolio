@@ -162,7 +162,7 @@ export const DATA = {
       active: false,
       description:
         "Autonomous financial research agent built on LangGraph — orchestrates multi-step web research, synthesis, and report generation.",
-      technologies: ["Python", "LangChain", "OpenAI", "yfinance"],
+      technologies: ["Python", "LangChain", "LangGraph", "OpenAI", "yfinance", "Agentic AI"],
       video: "/jasper-demo.mp4",
       links: [
         {
