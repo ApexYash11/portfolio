@@ -120,6 +120,30 @@ export const DATA = {
       description:
         "Built a production-ready demand forecasting engine connecting ML models with scalable backend APIs. • Engineered a hybrid forecasting approach (time-series plus heuristic modeling) for D2C inventory planning. • Improved forecast accuracy by around 70% with better feature design and model calibration. • Implemented probabilistic inference (P10/P50/P90) for safer inventory decisions under uncertainty. • Deployed FastAPI inference endpoints for real-time predictions with sub-100ms latency.",
     },
+    {
+      company: "Traceroot AI",
+      href: "https://github.com/traceroot-ai/traceroot/pull/1152",
+      badges: [],
+      location: "Remote",
+      title: "Open Source Contributor",
+      logoUrl: "/traceroot-ai.png",
+      start: "2026",
+      end: "2026",
+      description:
+        "Merged PR #1152 to traceroot-ai/traceroot, shipping a version badge feature reviewed and approved by project maintainers.",
+    },
+    {
+      company: "TracerCloud",
+      href: "https://github.com/Tracer-Cloud/opensre/pull/2761",
+      badges: [],
+      location: "Remote",
+      title: "Open Source Contributor",
+      logoUrl: "/tracercloud.png",
+      start: "2026",
+      end: "2026",
+      description:
+        "Added types-PyYAML stubs to dev dependencies and removed type: ignore[import-untyped] suppressions from YAML imports, enabling full mypy type-checking of PyYAML usage with no runtime changes.",
+    },
   ],
   education: [
     {

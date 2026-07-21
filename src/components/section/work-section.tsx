@@ -41,8 +41,8 @@ export default function WorkSection() {
 
         return (
         <AccordionItem
-          key={work.company}
-          value={work.company}
+          key={`${work.company}-${work.title}`}
+          value={work.title}
           className="w-full border-b-0 grid gap-2"
         >
           <AccordionTrigger className="hover:no-underline p-0 cursor-pointer transition-colors rounded-none group [&>svg]:hidden">
