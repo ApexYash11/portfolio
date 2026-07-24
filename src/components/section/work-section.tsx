@@ -54,14 +54,7 @@ export default function WorkSection() {
                 <LogoImage src={work.logoUrl} alt={work.company} />
                 <div className="flex-1 min-w-0 gap-0.5 flex flex-col">
                   <div className="font-semibold leading-none flex items-center gap-2">
-                    {work.href && work.href !== "#" ? (
-                      <a href={work.href} target="_blank" rel="noopener noreferrer" className="hover:underline inline-flex items-center gap-1">
-                        {work.company}
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10"/><path d="M7 17 21 3"/></svg>
-                      </a>
-                    ) : (
-                      work.company
-                    )}
+                    {work.company}
                     <span className="relative inline-flex items-center w-3.5 h-3.5">
                       <ChevronRight
                         className={cn(
@@ -93,6 +86,12 @@ export default function WorkSection() {
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 ml-13 text-xs sm:text-sm text-muted-foreground">
+            {work.href && work.href !== "#" && (
+              <a href={work.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium hover:underline mb-2">
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10"/><path d="M7 17 21 3"/></svg>
+                View on GitHub
+              </a>
+            )}
             <ul className="list-disc pl-4 space-y-1 marker:text-muted-foreground/80">
               {points.map((point, index) =>
                 isHeading(point) ? (
