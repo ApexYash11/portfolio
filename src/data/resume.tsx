@@ -130,7 +130,7 @@ export const DATA = {
       start: "2026",
       end: "2026",
       description:
-        "Merged PR #1152 to traceroot-ai/traceroot, shipping a version badge feature reviewed and approved by project maintainers.",
+        "Merged PR #1152 to traceroot-ai/traceroot, shipping a version badge feature. • Reviewed and approved by project maintainers before merge.",
     },
     {
       company: "TracerCloud",
@@ -142,7 +142,19 @@ export const DATA = {
       start: "2026",
       end: "2026",
       description:
-        "Added types-PyYAML stubs to dev dependencies and removed type: ignore[import-untyped] suppressions from YAML imports, enabling full mypy type-checking of PyYAML usage with no runtime changes.",
+        "Merged PR #2761 to Tracer-Cloud/opensre, adding types-PyYAML stubs to dev dependencies. • Removed type: ignore[import-untyped] suppressions from YAML imports. • Enabled full mypy type-checking of PyYAML usage with no runtime changes.",
+    },
+    {
+      company: "AgentWrapper",
+      href: "https://github.com/AgentWrapper/agent-orchestrator/commits/main/",
+      badges: [],
+      location: "Remote",
+      title: "Open Source Contributor",
+      logoUrl: "/agentwrapper.svg",
+      start: "2026",
+      end: "2026",
+      description:
+        "Reviewer Binary Preflight Check (#2092, #2767) • Added a preflight validation step in the review trigger that checks the reviewer binary is on PATH before creating review runs. • Built a ReviewerPreflighter interface supporting Codex and Claude Code adapters. • Prevents silent failed/0-findings outcomes when the binary is missing. Prompt Byte Metrics (#2839) • Surfaced assembled prompt and system prompt byte lengths during agent spawn. • Threaded promptBytes and systemPromptBytes through the spawn response and CLI output. • Regenerated the OpenAPI spec and added test coverage for the new metrics.",
     },
   ],
   education: [
