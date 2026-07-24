@@ -39,10 +39,13 @@ export default function WorkSection() {
           .map((point) => point.trim())
           .filter(Boolean);
 
+        const isHeading = (point: string) =>
+          /\(#\d+(?:,\s*#\d+)*\)$/.test(point);
+
         return (
         <AccordionItem
           key={`${work.company}-${work.title}`}
-          value={work.title}
+          value={`${work.company}-${work.title}`}
           className="w-full border-b-0 grid gap-2"
         >
           <AccordionTrigger className="hover:no-underline p-0 cursor-pointer transition-colors rounded-none group [&>svg]:hidden">
@@ -83,12 +86,27 @@ export default function WorkSection() {
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 ml-13 text-xs sm:text-sm text-muted-foreground">
-            <ul className="list-disc pl-4 space-y-2 marker:text-muted-foreground/80">
-              {points.map((point, index) => (
-                <li key={`${work.company}-${index}`} className="leading-relaxed">
-                  {point}
-                </li>
-              ))}
+            {work.href && work.href !== "#" && (
+              <a href={work.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium hover:underline mb-2">
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10"/><path d="M7 17 21 3"/></svg>
+                View on GitHub
+              </a>
+            )}
+            <ul className="list-disc pl-4 space-y-1 marker:text-muted-foreground/80">
+              {points.map((point, index) =>
+                isHeading(point) ? (
+                  <li
+                    key={`${work.company}-${index}`}
+                    className="leading-relaxed list-none -ml-4 pt-3 first:pt-0 font-semibold text-foreground"
+                  >
+                    {point}
+                  </li>
+                ) : (
+                  <li key={`${work.company}-${index}`} className="leading-relaxed">
+                    {point}
+                  </li>
+                )
+              )}
             </ul>
           </AccordionContent>
         </AccordionItem>
