@@ -5,8 +5,16 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, type PointerEvent } from "react";
 import Markdown from "react-markdown";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "motion/react";
+import { motionTokens } from "@/lib/motion";
 
 function ProjectImage({ src, alt, aspectRatio = "16 / 9" }: { src: string; alt: string; aspectRatio?: string }) {
   const [imageError, setImageError] = useState(false);
@@ -30,7 +38,7 @@ function ProjectImage({ src, alt, aspectRatio = "16 / 9" }: { src: string; alt: 
       <img
         src={src}
         alt={alt}
-        className="absolute inset-0 h-full w-full object-cover object-center"
+        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
         onError={() => setImageError(true)}
       />
     </div>
@@ -68,6 +76,14 @@ export function ProjectCard({
   links,
   className,
 }: Props) {
+  const reduced = Boolean(useReducedMotion());
+  const tiltX = useMotionValue(0);
+  const tiltY = useMotionValue(0);
+  const smoothTiltX = useSpring(tiltX, motionTokens.transitions.ui);
+  const smoothTiltY = useSpring(tiltY, motionTokens.transitions.ui);
+  const rotateX = useTransform(smoothTiltY, (value) => -value);
+  const rotateY = useTransform(smoothTiltX, (value) => value);
+
   const openHref = useCallback((e?: React.MouseEvent | React.KeyboardEvent) => {
     if (!href || href === "#") return;
     // If the click originates from an anchor inside the card, let that anchor handle it
@@ -77,19 +93,42 @@ export function ProjectCard({
     window.open(href, "_blank", "noopener,noreferrer");
   }, [href]);
 
+  const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (reduced || event.pointerType !== "mouse") return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    tiltX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 3);
+    tiltY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 3);
+  };
+
+  const resetTilt = () => {
+    tiltX.set(0);
+    tiltY.set(0);
+  };
+
   return (
-    <div
+    <motion.article
       role="link"
       tabIndex={0}
       onClick={openHref}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetTilt}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") openHref(e);
       }}
+      whileHover={reduced ? undefined : { y: -motionTokens.travel.hover }}
+      whileFocus={reduced ? undefined : { y: -2 }}
+      transition={motionTokens.transitions.ui}
+      style={{
+        rotateX: reduced ? 0 : rotateX,
+        rotateY: reduced ? 0 : rotateY,
+        transformPerspective: 900,
+      }}
       className={cn(
-        "flex flex-col h-full min-h-0 border border-border rounded-xl overflow-hidden hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
+        "group relative flex flex-col h-full min-h-0 border border-border rounded-xl overflow-hidden cursor-pointer bg-background transform-gpu",
         className
       )}
     >
+      <div className="pointer-events-none absolute inset-0 z-20 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 [background:linear-gradient(120deg,transparent_18%,color-mix(in_oklab,var(--border)_70%,transparent)_48%,transparent_78%)] [mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)] [mask-composite:exclude] p-px" />
       <div className="relative shrink-0">
         <Link
           href={href || "#"}
@@ -109,7 +148,7 @@ export function ProjectCard({
                 loop
                 muted
                 playsInline
-className="absolute inset-0 h-full w-full object-contain object-center"
+                className="absolute inset-0 h-full w-full object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
               />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
             </div>
@@ -157,7 +196,7 @@ className="absolute inset-0 h-full w-full object-contain object-center"
             href={href || "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="text-muted-foreground hover:text-foreground transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-focus-within:translate-x-0.5 group-focus-within:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             aria-label={`Open ${title}`}
           >
             <ArrowUpRight className="h-4 w-4" aria-hidden />
@@ -180,6 +219,6 @@ className="absolute inset-0 h-full w-full object-contain object-center"
           </div>
         )}
       </div>
-    </div>
+    </motion.article>
   );
 }
