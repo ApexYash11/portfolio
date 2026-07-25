@@ -97,6 +97,18 @@ export const DATA = {
   },
   work: [
     {
+      company: "WSP",
+      href: "#",
+      badges: [],
+      location: "Remote",
+      title: "AI Intern",
+      logoUrl: "/wsp.svg",
+      start: "Jul 2026",
+      end: "Present",
+      description:
+        "Working on AI-driven solutions for practical business use cases. • Building workflow automation to streamline repeatable processes. • Developing agentic flows that coordinate tools and multi-step tasks.",
+    },
+    {
       company: "Orydle",
       href: "#",
       badges: [],
