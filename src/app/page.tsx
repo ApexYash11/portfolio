@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
-import BlurFadeText from "@/components/magicui/blur-fade-text";
 import { Marquee } from "@/components/magicui/marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,8 +15,14 @@ import { allPosts } from "content-collections";
 import { CalEmbedInit } from "@/components/cal-embed-init";
 import { BlogCard } from "@/components/blog/blog-card";
 import { ArrowUpRight, Calendar, FileText } from "lucide-react";
+import {
+  HeroAvatar,
+  HeroHeadline,
+  HeroItem,
+  HeroMotion,
+  Magnetic,
+} from "@/components/motion/hero-motion";
 
-const BLUR_FADE_DELAY = 0.04;
 const SKILL_SPLIT_INDEX = Math.ceil(DATA.skills.length / 2);
 const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
 const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
@@ -33,41 +38,41 @@ export default async function Page() {
       <CalEmbedInit />
       <section id="hero">
         <div className="mx-auto w-full max-w-4xl space-y-8">
-          <div className="gap-2 gap-y-6 flex flex-col md:flex-row md:items-start md:gap-x-10">
+          <HeroMotion className="gap-2 gap-y-6 flex flex-col md:flex-row md:items-start md:gap-x-10">
             <div className="gap-2 flex flex-col order-2 md:order-1">
-              <BlurFadeText
-                delay={BLUR_FADE_DELAY}
+              <HeroHeadline
                 className="text-3xl font-semibold tracking-tighter sm:text-4xl lg:text-5xl"
-                yOffset={8}
                 text={`Hi, I'm ${DATA.name.split(" ")[0]}`}
               />
-              <BlurFadeText
-                className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl"
-                delay={BLUR_FADE_DELAY}
-                text={DATA.description}
-              />
-              <BlurFade delay={BLUR_FADE_DELAY * 2} className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button
-                  data-cal-link="yash-maheshwari-qklkhu/30min"
-                  data-cal-config={JSON.stringify({ layout: "month_view" })}
-                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6"
-                >
-                  <Calendar className="size-4" />
-                  Schedule a Call
-                </Button>
-                <Button
-                  variant="outline"
-                  asChild
-                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6"
-                >
-                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-                    <FileText className="size-4" />
-                    Download Resume
-                  </a>
-                </Button>
-              </BlurFade>
+              <HeroItem className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl">
+                {DATA.description}
+              </HeroItem>
+              <HeroItem className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Magnetic>
+                  <Button
+                    data-cal-link="yash-maheshwari-qklkhu/30min"
+                    data-cal-config={JSON.stringify({ layout: "month_view" })}
+                    className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
+                  >
+                    <Calendar className="size-4" />
+                    Schedule a Call
+                  </Button>
+                </Magnetic>
+                <Magnetic>
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
+                  >
+                    <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                      <FileText className="size-4" />
+                      Download Resume
+                    </a>
+                  </Button>
+                </Magnetic>
+              </HeroItem>
             </div>
-            <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2 md:ml-auto">
+            <HeroAvatar className="order-1 md:order-2 md:ml-auto">
               <Avatar className="h-40 w-28 md:h-56 md:w-40 border rounded-2xl shadow-lg ring-2 ring-muted/60">
                 <AvatarImage
                   alt={DATA.name}
@@ -76,16 +81,16 @@ export default async function Page() {
                 />
                 <AvatarFallback>{DATA.initials}</AvatarFallback>
               </Avatar>
-            </BlurFade>
-          </div>
+            </HeroAvatar>
+          </HeroMotion>
         </div>
       </section>
       <section id="about">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <BlurFade delay={BLUR_FADE_DELAY * 3}>
+          <BlurFade inView>
             <h2 className="text-xl font-bold">About</h2>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 4}>
+          <BlurFade inView delay={0.08}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
               <Markdown>
                 {DATA.summary}
@@ -96,24 +101,25 @@ export default async function Page() {
       </section>
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <BlurFade delay={BLUR_FADE_DELAY * 5}>
+          <BlurFade inView>
             <h2 className="text-xl font-bold">Work Experience</h2>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 6}>
+          <BlurFade inView delay={0.08}>
             <WorkSection />
           </BlurFade>
         </div>
       </section>
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <BlurFade delay={BLUR_FADE_DELAY * 7}>
+          <BlurFade inView>
             <h2 className="text-xl font-bold">Education</h2>
           </BlurFade>
           <div className="flex flex-col gap-8">
             {DATA.education.map((education, index) => (
               <BlurFade
                 key={education.school}
-                delay={BLUR_FADE_DELAY * 8 + index * 0.05}
+                inView
+                delay={index * 0.05}
               >
                 <div className="flex items-center gap-x-3 justify-between group">
                   <div className="flex items-center gap-x-3 flex-1 min-w-0">
@@ -148,10 +154,10 @@ export default async function Page() {
       </section>
       <section id="skills">
         <div className="flex min-h-0 flex-col gap-y-4">
-          <BlurFade delay={BLUR_FADE_DELAY * 9}>
+          <BlurFade inView>
             <h2 className="text-xl font-bold">Skills</h2>
           </BlurFade>
-          <BlurFade delay={BLUR_FADE_DELAY * 10}>
+          <BlurFade inView delay={0.08}>
             <div className="relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/35 p-3">
               <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-linear-to-r from-background to-transparent" />
               <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-linear-to-l from-background to-transparent" />
@@ -192,32 +198,32 @@ export default async function Page() {
         </div>
       </section>
       <section id="projects">
-        <BlurFade delay={BLUR_FADE_DELAY * 11}>
+        <BlurFade inView>
           <ProjectsSection />
         </BlurFade>
       </section>
       <StatsSection />
       <section id="support">
-        <BlurFade delay={BLUR_FADE_DELAY * 15}>
+        <BlurFade inView>
           <SupportSection />
         </BlurFade>
       </section>
       <section id="contact">
-        <BlurFade delay={BLUR_FADE_DELAY * 16}>
+        <BlurFade inView>
           <ContactConsole />
         </BlurFade>
       </section>
 
       <section id="writing">
         <div className="flex min-h-0 flex-col gap-y-6">
-          <BlurFade delay={BLUR_FADE_DELAY * 17}>
+          <BlurFade inView>
             <h2 className="text-xl font-bold">Latest Writing</h2>
           </BlurFade>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {latestPosts.map((post, idx) => {
               const slug = post._meta.path.replace(/\.mdx$/, "");
               return (
-                <BlurFade key={slug} delay={BLUR_FADE_DELAY * 18 + idx * 0.05}>
+                <BlurFade key={slug} inView delay={idx * 0.05}>
                   <BlogCard
                     title={post.title}
                     summary={post.summary}
@@ -229,7 +235,7 @@ export default async function Page() {
               );
             })}
           </div>
-          <BlurFade delay={BLUR_FADE_DELAY * 21}>
+          <BlurFade inView delay={0.08}>
             <Link
               href="/blog"
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"

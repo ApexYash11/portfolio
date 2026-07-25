@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { ExternalLink } from "lucide-react";
+import { AnimatedNumber } from "@/components/motion/animated-number";
+import { motion, useInView, useReducedMotion } from "motion/react";
+import { motionTokens } from "@/lib/motion";
 
 const GITHUB_USERNAME = "ApexYash11";
 
@@ -31,6 +34,12 @@ export default function GithubStatsCard() {
   const [grade, setGrade] = useState<string | null>(null);
   const [languageData, setLanguageData] = useState<LangEntry[]>([]);
   const [ready, setReady] = useState(false);
+  const languageBarRef = useRef<HTMLDivElement>(null);
+  const languageBarInView = useInView(languageBarRef, {
+    once: true,
+    margin: "-32px",
+  });
+  const reduced = Boolean(useReducedMotion());
 
   useEffect(() => {
     let cancelled = false;
@@ -169,9 +178,30 @@ export default function GithubStatsCard() {
         {/* Stats Row */}
         {streak !== null && grade !== null ? (
           <div className="grid grid-cols-3 gap-3">
-            <StatBox label="Stars" value={totalStars !== null ? totalStars.toLocaleString() : "—"} />
-            <StatBox label="Streak" value={`${streak} days`} />
-            <StatBox label="Grade" value={grade} />
+            <StatBox
+              label="Stars"
+              value={
+                totalStars !== null ? <AnimatedNumber value={totalStars} /> : "—"
+              }
+            />
+            <StatBox
+              label="Streak"
+              value={<AnimatedNumber value={streak} suffix=" days" />}
+            />
+            <StatBox
+              label="Grade"
+              value={
+                <motion.span
+                  initial={reduced ? false : { opacity: 0, scale: 0.88 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={
+                    reduced ? { duration: 0.01 } : motionTokens.transitions.ui
+                  }
+                >
+                  {grade}
+                </motion.span>
+              }
+            />
           </div>
         ) : ready ? (
           <div className="grid grid-cols-2 gap-3">
@@ -216,11 +246,26 @@ export default function GithubStatsCard() {
               TOP LANGUAGES ACROSS OWN REPOS
             </p>
             <div className="rounded-lg border border-border/40 bg-black/[0.03] dark:bg-white/[0.03] p-4">
-              <div className="flex w-full h-5 rounded overflow-hidden">
+              <div
+                ref={languageBarRef}
+                className="flex w-full h-5 rounded overflow-hidden"
+              >
                 {languageData.map((lang) => (
-                  <div
+                  <motion.div
                     key={lang.name}
-                    style={{ width: `${lang.percentage}%`, backgroundColor: lang.color }}
+                    initial={reduced ? false : { width: 0 }}
+                    animate={{
+                      width:
+                        reduced || languageBarInView
+                          ? `${lang.percentage}%`
+                          : 0,
+                    }}
+                    transition={
+                      reduced
+                        ? { duration: 0.01 }
+                        : motionTokens.transitions.gentle
+                    }
+                    style={{ backgroundColor: lang.color }}
                     title={`${lang.name}: ${lang.percentage}%`}
                   />
                 ))}
@@ -256,7 +301,7 @@ export default function GithubStatsCard() {
   );
 }
 
-function StatBox({ label, value }: { label: string; value: string }) {
+function StatBox({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex flex-col gap-1 rounded-lg border border-border/40 bg-black/[0.03] dark:bg-white/[0.03] p-4 min-h-[80px] justify-center items-center text-center">
       <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">
