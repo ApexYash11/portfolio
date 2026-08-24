@@ -1,22 +1,20 @@
 import BlurFade from "@/components/magicui/blur-fade";
-import GithubStatsCard from "@/components/stats/github-stats-card";
-import DeveloperEcosystem from "@/components/DeveloperEcosystem";
-import DailyQuoteCard from "@/components/stats/daily-quote-card";
+import BentoGrid from "@/components/stats/bento-grid";
 
 export default function StatsSection() {
   return (
     <section id="stats" className="flex flex-col gap-6 w-full">
       <BlurFade inView>
-        <GithubStatsCard />
+        <div className="flex flex-col gap-y-2">
+          <h2 className="text-xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-sm text-muted-foreground">
+            A live snapshot of what I build, ship, and share.
+          </p>
+        </div>
       </BlurFade>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BlurFade inView>
-          <DeveloperEcosystem />
-        </BlurFade>
-        <BlurFade inView delay={0.08}>
-          <DailyQuoteCard />
-        </BlurFade>
-      </div>
+      <BlurFade inView delay={0.08}>
+        <BentoGrid />
+      </BlurFade>
     </section>
   );
 }
