@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useState, useCallback, type PointerEvent } from "react";
+import { useState, useCallback, useEffect, useRef, type PointerEvent } from "react";
 import Markdown from "react-markdown";
 import {
   motion,
@@ -16,18 +16,104 @@ import {
 } from "motion/react";
 import { motionTokens } from "@/lib/motion";
 
+function ProjectVideo({
+  src,
+  poster,
+  alt,
+  aspectRatio,
+}: {
+  src: string;
+  poster?: string;
+  alt: string;
+  aspectRatio: string;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === "undefined") {
+      const id = window.setTimeout(() => setShouldLoad(true), 0);
+      return () => window.clearTimeout(id);
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        } else {
+          videoRef.current?.pause();
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoad) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const video = videoRef.current;
+        if (!video) return;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [shouldLoad]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full overflow-hidden"
+      style={{ aspectRatio }}
+    >
+      <video
+        ref={videoRef}
+        src={shouldLoad ? src : undefined}
+        poster={poster}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="none"
+        aria-label={alt}
+        className="absolute inset-0 h-full w-full object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
+      />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
+    </div>
+  );
+}
+
 function ProjectImage({ src, alt, aspectRatio = "16 / 9" }: { src: string; alt: string; aspectRatio?: string }) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
     return (
       <div
-        className="flex w-full items-center justify-center bg-linear-to-br from-muted/80 via-muted to-muted/60 px-6 text-center"
+        className="relative flex w-full items-center justify-center overflow-hidden bg-linear-to-br from-primary/15 via-card to-primary/5 px-6 text-center"
         style={{ aspectRatio }}
       >
-        <div className="space-y-2">
-          <div className="text-sm font-semibold tracking-wide text-foreground/90">No preview available</div>
-          <div className="text-xs text-muted-foreground">{alt}</div>
+        <div
+          className="pointer-events-none absolute inset-0 opacity-40 [background:radial-gradient(24rem_12rem_at_70%_20%,color-mix(in_oklab,var(--primary)_25%,transparent),transparent_70%)]"
+          aria-hidden
+        />
+        <div className="relative space-y-1.5">
+          <div className="text-3xl font-bold tracking-tighter text-primary/70">
+            {alt.charAt(0)}
+          </div>
+          <div className="text-sm font-semibold tracking-wide text-foreground/90">
+            {alt}
+          </div>
         </div>
       </div>
     );
@@ -141,17 +227,12 @@ export function ProjectCard({
           }}
         >
           {video ? (
-            <div className="relative w-full overflow-hidden" style={{ aspectRatio: mediaAspectRatio || "16 / 9" }}>
-              <video
-                src={video}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 h-full w-full object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
-              />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
-            </div>
+            <ProjectVideo
+              src={video}
+              poster={image || undefined}
+              alt={title}
+              aspectRatio={mediaAspectRatio || "16 / 9"}
+            />
           ) : image ? (
             <div className="relative w-full">
               <ProjectImage src={image} alt={title} aspectRatio={mediaAspectRatio || "16 / 9"} />
