@@ -27,6 +27,56 @@ export const DATA = {
   summary:
     "I build agentic AI systems that plan, reason, and execute reliably in real workflows. My focus is AI infrastructure: scalable backend services, orchestration pipelines, and production-ready RAG systems built for speed, reliability, and growth.",
   avatarUrl: "/profile-pic-new.jpg",
+  openSource: [
+    {
+      repo: "agent-orchestrator",
+      fullName: "Untrivial-ai/agent-orchestrator",
+      url: "https://github.com/Untrivial-ai/agent-orchestrator",
+      logoUrl: "/agentwrapper.svg",
+      prs: [
+        { id: 4277, title: "fix(cli): carry reviewers through project set-config", merged: true },
+        { id: 4240, title: "feat(terminal): show copied toast after selection auto-copy", merged: true },
+        { id: 4157, title: "fix(claude-code): confirm native session id on --resume relaunch", merged: true },
+        { id: 3998, title: "fix: classify unclassified spawn internal failures", merged: true },
+        { id: 3958, title: "fix(frontend): navigate after settings orchestrator replacement", merged: true },
+        { id: 3818, title: "fix: reconcile review runs after provider submit", merged: false },
+        { id: 3579, title: "fix(browser): prevent wrong tab content after switching", merged: true },
+        { id: 3302, title: "test(config): use portable override paths", merged: true },
+        { id: 3084, title: "fix: isolate session kill state across worker switches", merged: true },
+        { id: 3068, title: "fix(opencode): honor configured model on launch and restore", merged: false },
+        { id: 2839, title: "feat: surface assembled prompt byte metrics during spawn", merged: true },
+        { id: 2831, title: "fix: tmux isalive agent exited detection", merged: true },
+        { id: 2767, title: "fix(review): preflight reviewer binary before creating review runs", merged: true },
+      ],
+    },
+    {
+      repo: "cognee",
+      fullName: "topoteretes/cognee",
+      url: "https://github.com/topoteretes/cognee",
+      logoUrl: "/cognee.png",
+      prs: [
+        { id: 4290, title: "fix(skills): make ingest idempotent by name and add delete endpoint", merged: true },
+      ],
+    },
+    {
+      repo: "traceroot",
+      fullName: "traceroot-ai/traceroot",
+      url: "https://github.com/traceroot-ai/traceroot",
+      logoUrl: "/traceroot-ai.png",
+      prs: [
+        { id: 1152, title: "ship a version badge feature", merged: true },
+      ],
+    },
+    {
+      repo: "opensre",
+      fullName: "Tracer-Cloud/opensre",
+      url: "https://github.com/Tracer-Cloud/opensre",
+      logoUrl: "/tracercloud.png",
+      prs: [
+        { id: 2761, title: "add types-PyYAML stubs to dev dependencies", merged: true },
+      ],
+    },
+  ],
   skills: [
     { name: "Python", icon: Python, color: "#3776AB" },
     { name: "Java", icon: Java, color: "#F89820" },

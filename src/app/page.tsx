@@ -56,12 +56,9 @@ export default async function Page() {
                 className="text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent"
                 text={DATA.name}
               />
-              <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+              <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase max-w-xl mx-auto text-balance">
                 {DATA.description}
               </p>
-              <HeroItem className="text-muted-foreground max-w-xl mx-auto md:text-base leading-relaxed pt-1">
-                {DATA.summary.split(". ")[0]}.
-              </HeroItem>
             </div>
             <HeroItem className="flex flex-col sm:flex-row items-center gap-3 pt-1">
               <Magnetic>
@@ -220,15 +217,7 @@ export default async function Page() {
       </section>
       <section id="contact">
         <BlurFade inView>
-          <div className="flex flex-col gap-y-6">
-            <div className="flex flex-col items-center text-center gap-2">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Get in Touch</h2>
-              <p className="text-muted-foreground text-balance max-w-md md:text-lg">
-                Got a project, a question, or just want to say hi? My inbox is always open.
-              </p>
-            </div>
-            <ContactConsole />
-          </div>
+          <ContactConsole />
         </BlurFade>
       </section>
 

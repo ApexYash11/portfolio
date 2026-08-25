@@ -44,7 +44,9 @@ export default function WorkSection() {
       onValueChange={setOpenValue}
       className="w-full grid gap-6"
     >
-      {DATA.work.map((work) => {
+      {DATA.work
+        .filter((work) => work.title !== "Open Source Contributor")
+        .map((work) => {
         const points = work.description
           .split("•")
           .map((point) => point.trim())
