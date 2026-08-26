@@ -53,7 +53,7 @@ export default async function Page() {
             </HeroAvatar>
             <div className="flex flex-col gap-3">
               <HeroHeadline
-                className="text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent"
+                className="justify-center text-center text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent"
                 text={DATA.name}
               />
               <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase max-w-xl mx-auto text-balance">

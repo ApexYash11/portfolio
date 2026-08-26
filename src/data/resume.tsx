@@ -25,7 +25,7 @@ export const DATA = {
   description:
     "AI/ML Engineer building agentic AI systems, backend infrastructure, and production-ready RAG workflows.",
   summary:
-    "I build agentic AI systems that plan, reason, and execute reliably in real workflows. My focus is AI infrastructure: scalable backend services, orchestration pipelines, and production-ready RAG systems built for speed, reliability, and growth.",
+    "Hi, my name is Yash, an AI engineer based in Surat, and at the moment developing solutions in Bangalore.\n\nI got into tech just for the pure fun of it, and guess what, that's still true. Currently, I'm immersed in agent-based workflows, training LLMs to do planning, tooling, and hallucination free work (mostly). Anything on backend infrastructure, orchestration pipelines, and RAG systems, if it helps with the practical implementation of agents, I'm in.\n\nDoing this on a daily basis is pretty rewarding. When I'm not doing development stuff, I might be scrolling through X for some model drama, only for research purposes, though.",
   avatarUrl: "/profile-pic-new.jpg",
   openSource: [
     {
