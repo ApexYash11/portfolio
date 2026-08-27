@@ -4,14 +4,16 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import { Analytics } from "@vercel/analytics/react";
 
-const geist = GeistSans;
-const geistMono = GeistMono;
+const terminalMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-terminal-mono",
+  display: "swap",
+});
 
 const SITE_URL = "https://yashmaheshwari.is-a.dev";
 
@@ -67,8 +69,7 @@ export default function RootLayout({
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased relative",
-          geist.variable,
-          geistMono.variable
+          terminalMono.variable
         )}
       >
         <script
@@ -103,7 +104,7 @@ export default function RootLayout({
                 }}
               />
             </div>
-            <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+            <div className="relative z-10 max-w-4xl mx-auto py-12 pb-24 sm:py-24 px-6">
               {children}
             </div>
             <Navbar />

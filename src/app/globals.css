@@ -2,9 +2,12 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
+/* Terminal mono font wiring */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  --font-sans: var(--font-terminal-mono), ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  --font-mono: var(--font-terminal-mono), ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
