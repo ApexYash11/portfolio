@@ -9,8 +9,11 @@
   },
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/github-stats.mjs",
     "build": "next build",
     "start": "next start",
+    "stats:refresh": "node scripts/github-stats.mjs",
+    "test": "node --test scripts/*.test.mjs",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
   },
