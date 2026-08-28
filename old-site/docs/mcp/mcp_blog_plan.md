@@ -1,4 +1,4 @@
-![MCP Hero](/images-mcp/connection.png)
+![MCP Hero](/images-mcp/connection.jpg)
 
 ## The Integration Nightmare
 
@@ -68,13 +68,13 @@ graph LR
     end
 ```
 
-![N×M to N+M Visual](/images-mcp/comparison%20diagram.png)
+![N×M to N+M Visual](/images-mcp/comparison%20diagram.jpg)
 
 Write each MCP server once. Every MCP-compatible client can use it. N applications + M servers = N+M implementations.
 
 ## Architecture: The Three Players
 
-![MCP Three-Layer Architecture](/images-mcp/layerd-arch.png)
+![MCP Three-Layer Architecture](/images-mcp/layerd-arch.jpg)
 
 MCP follows a strict three-layer architecture. Understanding this is critical.
 
@@ -254,7 +254,7 @@ sequenceDiagram
 
 ## Protocol Lifecycle: Three Phases
 
-![MCP Protocol Lifecycle](/images-mcp/phases.png)
+![MCP Protocol Lifecycle](/images-mcp/phases.jpg)
 
 MCP sessions follow a strict lifecycle. Understanding this prevents debugging hell.
 
@@ -413,7 +413,7 @@ Session ends when either side terminates. Connection closes. To use the server a
 
 ## Tools vs Resources: Critical Distinction
 
-![Tools vs Resources](/images-mcp/layers.png)
+![Tools vs Resources](/images-mcp/layers.jpg)
 
 MCP defines two types of capabilities. Choosing the right one matters.
 
@@ -463,7 +463,7 @@ Transport is orthogonal to MCP protocol semantics. Same protocol, different deli
 
 ### STDIO Transport (Local Servers)
 
-![Transport Comparison](/images-mcp/side-by-side.png)
+![Transport Comparison](/images-mcp/side-by-side.jpg)
 
 **What it is:** Standard input/output pipes between processes.
 
@@ -1226,7 +1226,7 @@ agent = create_openai_functions_agent(llm, tools)
 
 ## Real-World Pattern: AI-Powered Expense Tracker
 
-![MCP Expense Tracker Flow](/images-mcp/simple-analogy.png)
+![MCP Expense Tracker Flow](/images-mcp/simple-analogy.jpg)
 
 Let's see how MCP enables natural language interfaces for data management.
 

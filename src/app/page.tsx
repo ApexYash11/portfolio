@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import BlurFade from "@/components/magicui/blur-fade";
-import { Marquee } from "@/components/magicui/marquee";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
@@ -11,6 +10,7 @@ import SupportSection from "@/components/section/support-section";
 import StatsSection from "@/components/section/stats-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
+import OpenSourceSection from "@/components/section/open-source-section";
 import { allPosts } from "content-collections";
 import { CalEmbedInit } from "@/components/cal-embed-init";
 import { BlogCard } from "@/components/blog/blog-card";
@@ -23,10 +23,6 @@ import {
   Magnetic,
 } from "@/components/motion/hero-motion";
 
-const SKILL_SPLIT_INDEX = Math.ceil(DATA.skills.length / 2);
-const SKILL_ROW_ONE = DATA.skills.slice(0, SKILL_SPLIT_INDEX);
-const SKILL_ROW_TWO = DATA.skills.slice(SKILL_SPLIT_INDEX);
-
 export default async function Page() {
   const sortedPosts = [...allPosts].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
@@ -36,59 +32,85 @@ export default async function Page() {
   return (
     <main className="min-h-dvh flex flex-col gap-14 relative w-full">
       <CalEmbedInit />
-      <section id="hero">
-        <div className="mx-auto w-full max-w-4xl space-y-8">
-          <HeroMotion className="gap-2 gap-y-6 flex flex-col md:flex-row md:items-start md:gap-x-10">
-            <div className="gap-2 flex flex-col order-2 md:order-1">
-              <HeroHeadline
-                className="text-3xl font-semibold tracking-tighter sm:text-4xl lg:text-5xl"
-                text={`Hi, I'm ${DATA.name.split(" ")[0]}`}
-              />
-              <HeroItem className="text-muted-foreground max-w-[600px] md:text-lg lg:text-xl">
-                {DATA.description}
-              </HeroItem>
-              <HeroItem className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Magnetic>
-                  <Button
-                    data-cal-link="yash-maheshwari-qklkhu/30min"
-                    data-cal-config={JSON.stringify({ layout: "month_view" })}
-                    className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
-                  >
-                    <Calendar className="size-4" />
-                    Schedule a Call
-                  </Button>
-                </Magnetic>
-                <Magnetic>
-                  <Button
-                    variant="outline"
-                    asChild
-                    className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
-                  >
-                    <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-                      <FileText className="size-4" />
-                      Download Resume
-                    </a>
-                  </Button>
-                </Magnetic>
-              </HeroItem>
-            </div>
-            <HeroAvatar className="order-1 md:order-2 md:ml-auto">
-              <Avatar className="h-40 w-28 md:h-56 md:w-40 border rounded-2xl shadow-lg ring-2 ring-muted/60">
+      <section id="hero" className="bg-glow -mx-4 px-4 rounded-b-[3rem] md:rounded-b-[5rem] pb-12">
+        <div className="mx-auto w-full max-w-4xl flex flex-col items-center text-center gap-6 pt-8">
+          <HeroMotion className="flex flex-col items-center gap-6">
+            <HeroItem>
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-medium text-primary">
+                <span className="size-1.5 rounded-full bg-primary animate-pulse-dot" />
+                Open to work
+              </span>
+            </HeroItem>
+            <HeroAvatar>
+              <Avatar className="h-24 w-24 md:h-28 md:w-28 border rounded-full shadow-lg ring-2 ring-primary/25 ring-offset-4 ring-offset-background">
                 <AvatarImage
                   alt={DATA.name}
                   src={DATA.avatarUrl}
-                  className="!aspect-auto h-full w-full object-contain bg-black/20"
+                  className="!aspect-auto h-full w-full object-cover"
                 />
                 <AvatarFallback>{DATA.initials}</AvatarFallback>
               </Avatar>
             </HeroAvatar>
+            <div className="flex flex-col gap-3">
+              <HeroHeadline
+                className="justify-center text-center text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl bg-linear-to-b from-foreground to-foreground/70 bg-clip-text text-transparent"
+                text={DATA.name}
+              />
+              <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase max-w-xl mx-auto text-balance">
+                {DATA.description}
+              </p>
+            </div>
+            <HeroItem className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+              <Magnetic>
+                <Button
+                  data-cal-link="yash-maheshwari-qklkhu/30min"
+                  data-cal-config={JSON.stringify({ layout: "month_view" })}
+                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto shadow-[0_0_24px_-6px] shadow-primary/40"
+                >
+                  <Calendar className="size-4" />
+                  Schedule a Call
+                </Button>
+              </Magnetic>
+              <Magnetic>
+                <Button
+                  variant="outline"
+                  asChild
+                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
+                >
+                  <a href="/resume.pdf" target="_blank" rel="noopener noreferrer">
+                    <FileText className="size-4" />
+                    Download Resume
+                  </a>
+                </Button>
+              </Magnetic>
+            </HeroItem>
+            <HeroItem className="flex items-center justify-center gap-2 pt-2">
+              {Object.entries(DATA.contact.social)
+                .filter(([_, social]) => social.navbar)
+                .map(([name, social]) => {
+                  const IconComponent = social.icon;
+                  return (
+                    <a
+                      key={name}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={name}
+                      title={name}
+                      className="flex size-9 items-center justify-center rounded-lg border border-border/70 bg-card/50 text-muted-foreground transition-all hover:text-foreground hover:border-primary/40 hover:bg-card hover:-translate-y-0.5"
+                    >
+                      <IconComponent className="size-4" />
+                    </a>
+                  );
+                })}
+            </HeroItem>
           </HeroMotion>
         </div>
       </section>
       <section id="about">
         <div className="flex min-h-0 flex-col gap-y-4">
           <BlurFade inView>
-            <h2 className="text-xl font-bold">About</h2>
+            <h2 className="text-xl font-bold tracking-tight">About</h2>
           </BlurFade>
           <BlurFade inView delay={0.08}>
             <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
@@ -99,10 +121,15 @@ export default async function Page() {
           </BlurFade>
         </div>
       </section>
+      <section id="open-source" className="pt-4">
+        <BlurFade inView>
+          <OpenSourceSection />
+        </BlurFade>
+      </section>
       <section id="work">
         <div className="flex min-h-0 flex-col gap-y-6">
           <BlurFade inView>
-            <h2 className="text-xl font-bold">Work Experience</h2>
+            <h2 className="text-xl font-bold tracking-tight">Work Experience</h2>
           </BlurFade>
           <BlurFade inView delay={0.08}>
             <WorkSection />
@@ -112,7 +139,7 @@ export default async function Page() {
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-6">
           <BlurFade inView>
-            <h2 className="text-xl font-bold">Education</h2>
+            <h2 className="text-xl font-bold tracking-tight">Education</h2>
           </BlurFade>
           <div className="flex flex-col gap-8">
             {DATA.education.map((education, index) => (
@@ -155,44 +182,24 @@ export default async function Page() {
       <section id="skills">
         <div className="flex min-h-0 flex-col gap-y-4">
           <BlurFade inView>
-            <h2 className="text-xl font-bold">Skills</h2>
+            <h2 className="text-xl font-bold tracking-tight">Skills</h2>
           </BlurFade>
           <BlurFade inView delay={0.08}>
-            <div className="relative flex flex-col gap-3 overflow-hidden rounded-xl border border-border/60 bg-card/35 p-3">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-linear-to-r from-background to-transparent" />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-linear-to-l from-background to-transparent" />
-              <Marquee duration={26}>
-                {SKILL_ROW_ONE.map((skill) => (
-                  <div
-                    key={`row1-${skill.name}`}
-                    className="border border-border/70 bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-sm ring-1 ring-white/10 rounded-xl h-8 w-fit px-4 flex items-center gap-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]"
-                  >
-                    {skill.icon && (
-                      <skill.icon
-                        className="size-4 rounded overflow-hidden object-contain"
-                        style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
-                      />
-                    )}
-                    <span className="text-foreground text-sm font-medium">{skill.name}</span>
-                  </div>
-                ))}
-              </Marquee>
-              <Marquee reverse duration={30}>
-                {SKILL_ROW_TWO.map((skill) => (
-                  <div
-                    key={`row2-${skill.name}`}
-                    className="border border-border/70 bg-white/[0.06] dark:bg-white/[0.06] backdrop-blur-sm ring-1 ring-white/10 rounded-xl h-8 w-fit px-4 flex items-center gap-2 shadow-[0_0_0_1px_rgba(255,255,255,0.02)]"
-                  >
-                    {skill.icon && (
-                      <skill.icon
-                        className="size-4 rounded overflow-hidden object-contain"
-                        style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
-                      />
-                    )}
-                    <span className="text-foreground text-sm font-medium">{skill.name}</span>
-                  </div>
-                ))}
-              </Marquee>
+            <div className="flex flex-wrap gap-2">
+              {DATA.skills.map((skill) => (
+                <div
+                  key={skill.name}
+                  className="group flex items-center gap-2 rounded-lg border border-border/70 bg-card/40 h-9 px-3 transition-colors hover:border-primary/40 hover:bg-card"
+                >
+                  {skill.icon && (
+                    <skill.icon
+                      className="size-4 rounded overflow-hidden object-contain transition-transform group-hover:scale-110"
+                      style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
+                    />
+                  )}
+                  <span className="text-foreground text-sm">{skill.name}</span>
+                </div>
+              ))}
             </div>
           </BlurFade>
         </div>
@@ -217,7 +224,7 @@ export default async function Page() {
       <section id="writing">
         <div className="flex min-h-0 flex-col gap-y-6">
           <BlurFade inView>
-            <h2 className="text-xl font-bold">Latest Writing</h2>
+            <h2 className="text-xl font-bold tracking-tight">Latest Writing</h2>
           </BlurFade>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {latestPosts.map((post, idx) => {
@@ -246,8 +253,34 @@ export default async function Page() {
         </div>
       </section>
 
-      <footer className="text-center text-sm text-muted-foreground/60 pb-4">
-        <p>&copy; {new Date().getFullYear()} {DATA.name}. All rights reserved.</p>
+      <footer className="mt-6 border-t border-border/60 pt-10 pb-24 md:pb-10">
+        <div className="flex flex-col items-center gap-5 text-center">
+          <p className="text-2xl font-semibold tracking-tighter bg-linear-to-b from-foreground to-foreground/60 bg-clip-text text-transparent select-none">
+            {DATA.name.toUpperCase()}
+          </p>
+          <div className="flex items-center gap-2">
+            {Object.entries(DATA.contact.social)
+              .filter(([_, social]) => social.navbar)
+              .map(([name, social]) => {
+                const IconComponent = social.icon;
+                return (
+                  <a
+                    key={`footer-${name}`}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground/70 transition-colors hover:text-primary"
+                  >
+                    <IconComponent className="size-4" />
+                  </a>
+                );
+              })}
+          </div>
+          <p className="text-sm text-muted-foreground/60">
+            &copy; {new Date().getFullYear()} {DATA.name}. All rights reserved.
+          </p>
+        </div>
       </footer>
     </main>
   );
