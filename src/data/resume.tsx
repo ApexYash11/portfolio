@@ -26,7 +26,7 @@ export const DATA = {
     "AI/ML Engineer building agentic AI systems, backend infrastructure, and production-ready RAG workflows.",
   summary:
     "Hi, my name is Yash, an AI engineer based in Surat, and at the moment developing solutions in Bangalore.\n\nI got into tech just for the pure fun of it, and guess what, that's still true. Currently, I'm immersed in agent-based workflows, training LLMs to do planning, tooling, and hallucination free work (mostly). Anything on backend infrastructure, orchestration pipelines, and RAG systems, if it helps with the practical implementation of agents, I'm in.\n\nDoing this on a daily basis is pretty rewarding. When I'm not doing development stuff, I might be scrolling through X for some model drama, only for research purposes, though.",
-  avatarUrl: "/profile-pic-new.jpg",
+  avatarUrl: "/profile-desk.jpg",
   openSource: [
     {
       repo: "agent-orchestrator",
