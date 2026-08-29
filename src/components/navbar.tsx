@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -18,10 +19,21 @@ export default function Navbar() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30">
       <Dock className="z-50 pointer-events-auto relative h-14 p-2 w-fit mx-auto flex gap-2 border bg-card/90 backdrop-blur-3xl shadow-[0_0_10px_3px] shadow-primary/5">
-        {DATA.navbar.map((item) => {
+        {DATA.navbar.map((item, navIndex) => {
           const isExternal = item.href.startsWith("http");
           return (
-            <Tooltip key={item.href}>
+            <motion.div
+              key={item.href}
+              initial={{ opacity: 0, y: 24, scale: 0.4 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 18,
+                delay: 0.15 + navIndex * 0.06,
+              }}
+            >
+            <Tooltip>
               <TooltipTrigger asChild>
                 <a
                   href={item.href}
@@ -34,7 +46,7 @@ export default function Navbar() {
                         ? pathname === "/"
                         : pathname.startsWith(item.href)
                     }
-                    className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted backdrop-blur-3xl border border-border transition-colors"
+                    className="rounded-3xl cursor-pointer size-full bg-background p-0 text-muted-foreground hover:text-foreground hover:bg-muted hover:shadow-[0_0_16px_2px] hover:shadow-primary/25 backdrop-blur-3xl border border-border transition-all duration-300"
                   >
                     <item.icon className="size-full rounded-sm overflow-hidden object-contain" />
                   </DockIcon>
@@ -48,7 +60,8 @@ export default function Navbar() {
                 <p>{item.label}</p>
                 <TooltipArrow className="fill-primary" />
               </TooltipContent>
-            </Tooltip>
+              </Tooltip>
+            </motion.div>
           );
         })}
         <Separator

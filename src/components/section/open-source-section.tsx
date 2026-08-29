@@ -4,7 +4,7 @@
 import { useState } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
 import { DATA } from "@/data/resume";
-import { GitMerge, GitPullRequestArrow } from "lucide-react";
+import { GitMerge } from "lucide-react";
 
 const PREVIEW_COUNT = 4;
 
@@ -14,12 +14,14 @@ export default function OpenSourceSection() {
   type OsRepo = (typeof DATA.openSource)[number];
 type OsPr = OsRepo["prs"][number];
 
-const repos: OsRepo[] = [...DATA.openSource];
-  const totalPrs = repos.reduce((sum, r) => sum + r.prs.length, 0);
-  const totalMerged = repos.reduce(
-    (sum, r) => sum + r.prs.filter((p) => p.merged).length,
-    0
-  );
+// Merged PRs only — anything not merged is excluded entirely
+const repos: (OsRepo & { mergedPrs: OsPr[] })[] = DATA.openSource
+  .map((repo) => ({
+    ...repo,
+    mergedPrs: repo.prs.filter((p) => p.merged),
+  }))
+  .filter((repo) => repo.mergedPrs.length > 0);
+  const totalMerged = repos.reduce((sum, r) => sum + r.mergedPrs.length, 0);
 
   return (
     <div className="flex min-h-0 flex-col gap-y-6">
@@ -31,7 +33,7 @@ const repos: OsRepo[] = [...DATA.openSource];
           <p className="text-sm text-muted-foreground">
             Patches I&apos;ve shipped to projects I don&apos;t own.{" "}
             <span className="text-foreground font-medium">{totalMerged} merged</span>{" "}
-            of <span className="text-foreground font-medium">{totalPrs}</span> across{" "}
+            PRs across{" "}
             <span className="text-foreground font-medium">{repos.length} repos</span>.
           </p>
         </BlurFade>
@@ -39,8 +41,10 @@ const repos: OsRepo[] = [...DATA.openSource];
       <div className="flex flex-col gap-4">
         {repos.map((repo, index) => {
           const isOpen = expanded === repo.repo;
-          const visiblePrs = isOpen ? repo.prs : repo.prs.slice(0, PREVIEW_COUNT);
-          const mergedCount = repo.prs.filter((p) => p.merged).length;
+          const visiblePrs = isOpen
+            ? repo.mergedPrs
+            : repo.mergedPrs.slice(0, PREVIEW_COUNT);
+          const mergedCount = repo.mergedPrs.length;
           return (
             <BlurFade key={repo.repo} inView delay={index * 0.06}>
               <div className="group rounded-xl border border-border/70 bg-card/40 p-4 md:p-5 transition-colors hover:border-primary/40 hover:bg-card/60">
@@ -63,27 +67,15 @@ const repos: OsRepo[] = [...DATA.openSource];
                   </div>
                   <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground flex-none">
                     <GitMerge className="size-3.5 text-primary" />
-                    {mergedCount}/{repo.prs.length} merged
+                    {mergedCount} merged
                   </div>
                 </div>
                 <ul className="mt-3 space-y-1.5">
                   {visiblePrs.map((pr) => (
                     <li key={pr.id} className="flex items-center gap-2 text-sm min-w-0">
-                      <GitPullRequestArrow
-                        className={
-                          pr.merged
-                            ? "size-3.5 flex-none text-primary"
-                            : "size-3.5 flex-none text-muted-foreground/60"
-                        }
-                      />
-                      <span
-                        className={
-                          pr.merged
-                            ? "inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary tabular-nums flex-none"
-                            : "inline-flex items-center gap-1 rounded-md border border-border bg-muted/50 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground tabular-nums flex-none"
-                        }
-                      >
-                        {pr.merged ? "Merged" : "Closed"}
+                      <GitMerge className="size-3.5 flex-none text-primary" />
+                      <span className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary tabular-nums flex-none">
+                        Merged
                       </span>
                       <a
                         href={`https://github.com/${repo.fullName}/pull/${pr.id}`}
@@ -99,7 +91,7 @@ const repos: OsRepo[] = [...DATA.openSource];
                     </li>
                   ))}
                 </ul>
-                {repo.prs.length > PREVIEW_COUNT && (
+                {repo.mergedPrs.length > PREVIEW_COUNT && (
                   <button
                     type="button"
                     onClick={() => setExpanded(isOpen ? null : repo.repo)}
@@ -107,7 +99,7 @@ const repos: OsRepo[] = [...DATA.openSource];
                   >
                     {isOpen
                       ? "Show less"
-                      : `Show all ${repo.prs.length}`}
+                      : `Show all ${repo.mergedPrs.length}`}
                   </button>
                 )}
               </div>
