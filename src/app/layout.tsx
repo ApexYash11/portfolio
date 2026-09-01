@@ -34,6 +34,14 @@ export const metadata: Metadata = {
     siteName: `${DATA.name}`,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Yash Maheshwari — AI/ML Engineer portfolio",
+      },
+    ],
   },
   robots: {
     index: true,
@@ -49,6 +57,7 @@ export const metadata: Metadata = {
   twitter: {
     title: "Yash Maheshwari | AI/ML Engineer — Agentic AI, RAG & Backend",
     card: "summary_large_image",
+    images: ["/og-image.jpg"],
   },
   verification: {
     google: "",

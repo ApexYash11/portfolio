@@ -133,46 +133,145 @@ query($login: String!) {
   }
 }`;
 
+const SNAPSHOT_QUERY = `
+query($login: String!, $cursor: String) {
+  user(login: $login) {
+    name
+    createdAt
+    followers { totalCount }
+    repositories(first: 100, ownerAffiliations: OWNER, after: $cursor) {
+      pageInfo { hasNextPage endCursor }
+      nodes {
+        stargazerCount
+        forkCount
+        languages(first: 100) {
+          edges { size node { name } }
+        }
+      }
+    }
+    contributionsCollection {
+      totalCommitContributions
+      totalPullRequestContributions
+      totalIssueContributions
+      contributionCalendar {
+        totalContributions
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+          }
+        }
+      }
+    }
+  }
+}`;
+
+function parseContributionsCollection(collection) {
+  if (!collection?.contributionCalendar?.weeks) return null;
+
+  const weeks = collection.contributionCalendar.weeks
+    .map((week) => ({
+      days: (week.contributionDays || []).map((day) => ({
+        date: day.date,
+        count: day.contributionCount,
+      })),
+    }))
+    .filter((week) => week.days.length > 0);
+
+  return {
+    totalContributions: collection.contributionCalendar.totalContributions ?? 0,
+    totalPullRequests: collection.totalPullRequestContributions ?? 0,
+    totalIssues: collection.totalIssueContributions ?? 0,
+    weeks,
+  };
+}
+
+async function graphqlRequest(fetchImpl, url, token, body) {
+  const response = await fetchImpl(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "User-Agent": "ApexYash11-portfolio-stats",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) throw responseError(url, response);
+  const payload = await response.json();
+  if (payload.errors) throw new Error(payload.errors.map((e) => e.message).join("; "));
+  return payload.data;
+}
+
 async function fetchContributions({ fetchImpl, username, token, warn }) {
   if (!token) return null;
   try {
-    const response = await fetchImpl("https://api.github.com/graphql", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "User-Agent": "ApexYash11-portfolio-stats",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: CONTRIBUTIONS_QUERY,
-        variables: { login: username },
-      }),
+    const data = await graphqlRequest(fetchImpl, "https://api.github.com/graphql", token, {
+      query: CONTRIBUTIONS_QUERY,
+      variables: { login: username },
     });
-    if (!response.ok) throw responseError("https://api.github.com/graphql", response);
-    const payload = await response.json();
-    if (payload.errors) throw new Error(payload.errors.map((e) => e.message).join("; "));
-    const collection = payload.data?.user?.contributionsCollection;
-    if (!collection?.contributionCalendar?.weeks) return null;
-
-    const weeks = collection.contributionCalendar.weeks
-      .map((week) => ({
-        days: (week.contributionDays || []).map((day) => ({
-          date: day.date,
-          count: day.contributionCount,
-        })),
-      }))
-      .filter((week) => week.days.length > 0);
-
-    return {
-      totalContributions: collection.contributionCalendar.totalContributions ?? 0,
-      totalPullRequests: collection.totalPullRequestContributions ?? 0,
-      totalIssues: collection.totalIssueContributions ?? 0,
-      weeks,
-    };
+    return parseContributionsCollection(data?.user?.contributionsCollection);
   } catch (error) {
     warn?.(`Contributions fetch failed; heatmap will be hidden: ${error.message}`);
     return null;
   }
+}
+
+async function fetchGithubSnapshotGraphQL({ fetchImpl, username, token, warn, now }) {
+  // A single GraphQL request replaces ~1 + N REST calls (user, repo pages,
+  // one languages call per repository), which keeps well clear of the
+  // unauthenticated 60/hour REST rate limit.
+  const languageBytes = {};
+  const repositories = [];
+  let displayName = username;
+  let memberSince = null;
+  let followers = 0;
+  let contributions = null;
+  let cursor = null;
+
+  for (let page = 1; ; page += 1) {
+    const data = await graphqlRequest(fetchImpl, "https://api.github.com/graphql", token, {
+      query: SNAPSHOT_QUERY,
+      variables: { login: username, cursor },
+    });
+
+    const user = data?.user;
+    if (!user?.repositories) {
+      throw new Error("GitHub GraphQL returned invalid snapshot data");
+    }
+
+    displayName = user.name || displayName;
+    if (memberSince === null) {
+      memberSince = new Date(user.createdAt).getUTCFullYear();
+      followers = user.followers?.totalCount ?? 0;
+      contributions = parseContributionsCollection(user.contributionsCollection);
+    }
+
+    repositories.push(...(user.repositories.nodes ?? []));
+    for (const repository of user.repositories.nodes ?? []) {
+      for (const edge of repository.languages?.edges ?? []) {
+        const name = edge?.node?.name;
+        if (!name || !Number.isFinite(edge.size) || edge.size < 0) continue;
+        languageBytes[name] = (languageBytes[name] ?? 0) + edge.size;
+      }
+    }
+
+    if (!user.repositories.pageInfo?.hasNextPage) break;
+    cursor = user.repositories.pageInfo.endCursor;
+    if (!cursor) break;
+  }
+
+  return {
+    username,
+    displayName,
+    memberSince,
+    followers,
+    publicRepositoryCount: repositories.length,
+    totalStars: repositories.reduce((sum, r) => sum + (r.stargazerCount || 0), 0),
+    totalForks: repositories.reduce((sum, r) => sum + (r.forkCount || 0), 0),
+    contributions,
+    languages: normalizeLanguages(languageBytes),
+    generatedAt: now().toISOString(),
+  };
 }
 
 export async function fetchGithubSnapshot({
@@ -184,6 +283,25 @@ export async function fetchGithubSnapshot({
   warn = console.warn,
 } = {}) {
   const encodedUsername = encodeURIComponent(username);
+
+  // Prefer the single-request GraphQL snapshot when a token is available;
+  // fall back to the REST pipeline if GraphQL fails for any reason.
+  if (token) {
+    try {
+      return await fetchGithubSnapshotGraphQL({
+        fetchImpl,
+        username,
+        token,
+        warn,
+        now,
+      });
+    } catch (error) {
+      warn?.(
+        `GraphQL snapshot failed; falling back to REST pipeline: ${error.message}`,
+      );
+    }
+  }
+
   const userUrl = `${API_ROOT}/users/${encodedUsername}`;
   const user = await requestJson(fetchImpl, userUrl, token);
 
@@ -206,11 +324,27 @@ export async function fetchGithubSnapshot({
   const languageResults = await mapWithConcurrency(
     repositories,
     concurrency,
-    (repository) => requestJson(fetchImpl, repository.languages_url, token),
+    async (repository) => {
+      try {
+        return await requestJson(fetchImpl, repository.languages_url, token);
+      } catch (error) {
+        // A single language failure (e.g. a secondary rate limit hit) should
+        // not discard the entire snapshot; skip it and continue.
+        warn?.(
+          `Language fetch failed for ${repository.name ?? repository.id}; skipping: ${error.message}`,
+        );
+        return null;
+      }
+    },
   );
   const languageBytes = {};
+  let languageFailureCount = 0;
   for (const result of languageResults) {
-    if (!result || Array.isArray(result) || typeof result !== "object") {
+    if (!result) {
+      languageFailureCount += 1;
+      continue;
+    }
+    if (Array.isArray(result) || typeof result !== "object") {
       throw new Error("GitHub returned invalid language data");
     }
     for (const [name, bytes] of Object.entries(result)) {
@@ -219,6 +353,9 @@ export async function fetchGithubSnapshot({
       }
       languageBytes[name] = (languageBytes[name] ?? 0) + bytes;
     }
+  }
+  if (repositories.length > 0 && languageFailureCount === repositories.length) {
+    throw new Error("All repository language fetches failed");
   }
 
   const contributions = await fetchContributions({

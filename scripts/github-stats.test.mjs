@@ -100,6 +100,130 @@ test("fetchGithubSnapshot paginates all owned public repositories, including for
   ]);
 });
 
+test("fetchGithubSnapshot uses a single GraphQL request when a token is provided", async () => {
+  const requests = [];
+  const fetchImpl = async (url, init) => {
+    requests.push({ url: String(url), method: init?.method });
+    return jsonResponse({
+      data: {
+        user: {
+          name: "Yash Maheshwari",
+          createdAt: "2020-04-15T00:00:00Z",
+          followers: { totalCount: 14 },
+          repositories: {
+            pageInfo: { hasNextPage: false, endCursor: null },
+            nodes: [
+              {
+                stargazerCount: 5,
+                forkCount: 2,
+                languages: {
+                  edges: [
+                    { size: 900, node: { name: "TypeScript" } },
+                    { size: 100, node: { name: "CSS" } },
+                  ],
+                },
+              },
+              {
+                stargazerCount: 7,
+                forkCount: 3,
+                languages: {
+                  edges: [{ size: 50, node: { name: "TypeScript" } }],
+                },
+              },
+            ],
+          },
+          contributionsCollection: {
+            totalCommitContributions: 10,
+            totalPullRequestContributions: 2,
+            totalIssueContributions: 1,
+            contributionCalendar: {
+              totalContributions: 13,
+              weeks: [
+                {
+                  contributionDays: [
+                    { date: "2026-07-29", contributionCount: 13 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  };
+
+  const snapshot = await fetchGithubSnapshot({
+    fetchImpl,
+    username: "ApexYash11",
+    token: "test-token",
+    now: () => new Date("2026-09-01T12:00:00.000Z"),
+    warn: () => {},
+  });
+
+  assert.deepEqual(requests, [
+    { url: "https://api.github.com/graphql", method: "POST" },
+  ]);
+  assert.equal(snapshot.displayName, "Yash Maheshwari");
+  assert.equal(snapshot.memberSince, 2020);
+  assert.equal(snapshot.followers, 14);
+  assert.equal(snapshot.publicRepositoryCount, 2);
+  assert.equal(snapshot.totalStars, 12);
+  assert.equal(snapshot.totalForks, 5);
+  assert.equal(snapshot.contributions.totalContributions, 13);
+  assert.deepEqual(
+    snapshot.languages.map((language) => [language.name, language.percentage]),
+    [
+      ["TypeScript", 90.5],
+      ["CSS", 9.5],
+    ],
+  );
+});
+
+test("fetchGithubSnapshot falls back to REST when GraphQL fails with a token", async () => {
+  const fetchImpl = async (url, init) => {
+    const value = String(url);
+    if (init?.method === "POST") {
+      return jsonResponse({ message: "Bad credentials" }, 401);
+    }
+    if (value.endsWith("/users/ApexYash11")) {
+      return jsonResponse({
+        name: "Yash Maheshwari",
+        created_at: "2020-04-15T00:00:00Z",
+      });
+    }
+    if (value.includes("/repos?")) {
+      return jsonResponse([
+        {
+          id: 1,
+          fork: false,
+          stargazers_count: 1,
+          forks_count: 0,
+          languages_url: "https://api.github.test/repos/1/languages",
+        },
+      ]);
+    }
+    if (value.endsWith("/repos/1/languages")) {
+      return jsonResponse({ Python: 100 });
+    }
+    return jsonResponse({ message: "Not Found" }, 404);
+  };
+
+  const warnings = [];
+  const snapshot = await fetchGithubSnapshot({
+    fetchImpl,
+    username: "ApexYash11",
+    token: "test-token",
+    warn: (message) => warnings.push(message),
+  });
+
+  assert.equal(snapshot.publicRepositoryCount, 1);
+  assert.equal(snapshot.languages[0].name, "Python");
+  assert.equal(
+    warnings.some((message) => message.includes("falling back to REST")),
+    true,
+  );
+});
+
 test("normalizeLanguages groups individually sub-one-percent entries and totals exactly 100 percent", () => {
   const languages = normalizeLanguages({
     TypeScript: 9_901,
@@ -124,6 +248,104 @@ test("normalizeLanguages groups individually sub-one-percent entries and totals 
   assert.equal(
     languages.reduce((sum, language) => sum + language.percentage, 0),
     100,
+  );
+});
+
+test("fetchGithubSnapshot skips individual language failures instead of failing the whole refresh", async () => {
+  const fetchImpl = async (url) => {
+    const value = String(url);
+    if (value.endsWith("/users/ApexYash11")) {
+      return jsonResponse({
+        name: "Yash Maheshwari",
+        created_at: "2020-04-15T00:00:00Z",
+      });
+    }
+    if (value.includes("/repos?")) {
+      return jsonResponse([
+        {
+          id: 1,
+          name: "ok-repo",
+          fork: false,
+          stargazers_count: 1,
+          forks_count: 0,
+          languages_url: "https://api.github.test/repos/1/languages",
+        },
+        {
+          id: 2,
+          name: "rate-limited-repo",
+          fork: false,
+          stargazers_count: 2,
+          forks_count: 1,
+          languages_url: "https://api.github.test/repos/2/languages",
+        },
+      ]);
+    }
+    if (value.endsWith("/repos/1/languages")) {
+      return jsonResponse({ TypeScript: 900 });
+    }
+    if (value.endsWith("/repos/2/languages")) {
+      return jsonResponse({ message: "rate limit exceeded" }, 403);
+    }
+    return jsonResponse({ message: "Not Found" }, 404);
+  };
+
+  const warnings = [];
+  const snapshot = await fetchGithubSnapshot({
+    fetchImpl,
+    username: "ApexYash11",
+    warn: (message) => warnings.push(message),
+  });
+
+  assert.equal(snapshot.publicRepositoryCount, 2);
+  assert.equal(snapshot.totalStars, 3);
+  assert.deepEqual(snapshot.languages, [
+    {
+      name: "TypeScript",
+      bytes: 900,
+      percentage: 100,
+      color: "#3178C6",
+    },
+  ]);
+  assert.equal(
+    warnings.some((message) => message.includes("rate-limited-repo")),
+    true,
+  );
+});
+
+test("fetchGithubSnapshot rejects when every language fetch fails", async () => {
+  const fetchImpl = async (url) => {
+    const value = String(url);
+    if (value.endsWith("/users/ApexYash11")) {
+      return jsonResponse({
+        name: "Yash Maheshwari",
+        created_at: "2020-04-15T00:00:00Z",
+      });
+    }
+    if (value.includes("/repos?")) {
+      return jsonResponse([
+        {
+          id: 1,
+          name: "broken-repo",
+          fork: false,
+          stargazers_count: 1,
+          forks_count: 0,
+          languages_url: "https://api.github.test/repos/1/languages",
+        },
+      ]);
+    }
+    if (value.includes("/languages")) {
+      return jsonResponse({ message: "rate limit exceeded" }, 403);
+    }
+    return jsonResponse({ message: "Not Found" }, 404);
+  };
+
+  await assert.rejects(
+    fetchGithubSnapshot({
+      fetchImpl,
+      username: "ApexYash11",
+      warn: () => {},
+    }),
+    /All repository language fetches failed/,
   );
 });
 
