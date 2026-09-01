@@ -1,0 +1,22 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="760" height="390" viewBox="0 0 760 390" font-family="ui-monospace, 'JetBrains Mono', monospace">
+  <rect width="760" height="390" fill="#0a0f1c"/>
+  <text x="40" y="46" fill="#e2e8f0" font-size="18" font-weight="bold">Cost per agentic task: 400K input + 8K output tokens</text>
+  <text x="40" y="72" fill="#64748b" font-size="12">list-price API pricing, USD (Aug 2026)</text>
+  <g font-size="13">
+    <text x="40" y="124" fill="#94a3b8">Claude Opus 4.6 ($5 / $25 per MTok)</text>
+    <rect x="40" y="134" width="660" height="26" fill="#7c3aed"/>
+    <text x="690" y="152" fill="#e2e8f0" font-weight="bold">$2.20</text>
+
+    <text x="40" y="192" fill="#94a3b8">Claude Sonnet 5 ($2 / $10 per MTok)</text>
+    <rect x="40" y="202" width="264" height="26" fill="#3b82f6"/>
+    <text x="312" y="220" fill="#e2e8f0" font-weight="bold">$0.88</text>
+
+    <text x="40" y="260" fill="#94a3b8">GLM-5.3 ($1.40 / $4.40 per MTok)</text>
+    <rect x="40" y="270" width="180" height="26" fill="#f59e0b"/>
+    <text x="228" y="288" fill="#e2e8f0" font-weight="bold">$0.60</text>
+
+    <text x="40" y="328" fill="#94a3b8">GLM-5.3-Flash ($0.15 / $0.50 per MTok)</text>
+    <rect x="40" y="338" width="20" height="26" fill="#22c55e"/>
+    <text x="68" y="356" fill="#e2e8f0" font-weight="bold">$0.064</text>
+  </g>
+</svg>
