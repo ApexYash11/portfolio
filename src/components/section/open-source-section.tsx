@@ -1,27 +1,69 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import BlurFade from "@/components/magicui/blur-fade";
 import { DATA } from "@/data/resume";
-import { GitMerge } from "lucide-react";
+import githubStats from "@/data/github-stats.json";
+import { GitMerge, Star } from "lucide-react";
 
 const PREVIEW_COUNT = 4;
+
+interface OpenSourcePr {
+  id: number;
+  title: string;
+  mergedAt?: string;
+  url?: string;
+}
+
+interface OpenSourceRepo {
+  repo: string;
+  fullName: string;
+  url: string;
+  stars: number;
+  prs: OpenSourcePr[];
+}
+
+function formatMergedAt(value?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
 
 export default function OpenSourceSection() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  type OsRepo = (typeof DATA.openSource)[number];
-type OsPr = OsRepo["prs"][number];
+  const manualLogos = useMemo(() => {
+    const logos: Record<string, string> = {};
+    for (const repo of DATA.openSource) {
+      logos[repo.fullName] = repo.logoUrl;
+    }
+    return logos;
+  }, []);
 
-// Merged PRs only — anything not merged is excluded entirely
-const repos: (OsRepo & { mergedPrs: OsPr[] })[] = DATA.openSource
-  .map((repo) => ({
-    ...repo,
-    mergedPrs: repo.prs.filter((p) => p.merged),
-  }))
-  .filter((repo) => repo.mergedPrs.length > 0);
-  const totalMerged = repos.reduce((sum, r) => sum + r.mergedPrs.length, 0);
+  const repositories: OpenSourceRepo[] = useMemo(() => {
+    const fromGitHub = githubStats.openSource;
+    if (Array.isArray(fromGitHub) && fromGitHub.length > 0) {
+      return fromGitHub as OpenSourceRepo[];
+    }
+
+    // Fallback to the hand-maintained list when the snapshot has no data yet.
+    return DATA.openSource
+      .map((repo) => ({
+        repo: repo.repo,
+        fullName: repo.fullName,
+        url: repo.url,
+        stars: 0,
+        prs: repo.prs.filter((pr) => pr.merged),
+      }))
+      .filter((repo) => repo.prs.length > 0);
+  }, []);
+
+  const totalMerged = repositories.reduce(
+    (sum, repository) => sum + repository.prs.length,
+    0,
+  );
 
   return (
     <div className="flex min-h-0 flex-col gap-y-6">
@@ -31,27 +73,32 @@ const repos: (OsRepo & { mergedPrs: OsPr[] })[] = DATA.openSource
         </BlurFade>
         <BlurFade inView delay={0.05}>
           <p className="text-sm text-muted-foreground">
-            Patches I&apos;ve shipped to projects I don&apos;t own.{" "}
+            Merged patches I&apos;ve shipped to projects I don&apos;t own, synced
+            from the GitHub API.{" "}
             <span className="text-foreground font-medium">{totalMerged} merged</span>{" "}
             PRs across{" "}
-            <span className="text-foreground font-medium">{repos.length} repos</span>.
+            <span className="text-foreground font-medium">
+              {repositories.length} repos
+            </span>
+            .
           </p>
         </BlurFade>
       </div>
       <div className="flex flex-col gap-4">
-        {repos.map((repo, index) => {
-          const isOpen = expanded === repo.repo;
-          const visiblePrs = isOpen
-            ? repo.mergedPrs
-            : repo.mergedPrs.slice(0, PREVIEW_COUNT);
-          const mergedCount = repo.mergedPrs.length;
+        {repositories.map((repo, index) => {
+          const isOpen = expanded === repo.fullName;
+          const visiblePrs = isOpen ? repo.prs : repo.prs.slice(0, PREVIEW_COUNT);
+          const logo =
+            manualLogos[repo.fullName] ??
+            `https://github.com/${repo.fullName.split("/")[0]}.png?size=80`;
           return (
-            <BlurFade key={repo.repo} inView delay={index * 0.06}>
+            <BlurFade key={repo.fullName} inView delay={index * 0.06}>
               <div className="group rounded-xl border border-border/70 bg-card/40 p-4 md:p-5 transition-colors hover:border-primary/40 hover:bg-card/60">
                 <div className="flex items-center gap-x-3">
                   <img
-                    src={repo.logoUrl}
+                    src={logo}
                     alt={repo.repo}
+                    loading="lazy"
                     className="size-9 p-1 border rounded-lg ring-1 ring-border object-contain bg-background/60"
                   />
                   <div className="flex-1 min-w-0">
@@ -65,20 +112,30 @@ const repos: (OsRepo & { mergedPrs: OsPr[] })[] = DATA.openSource
                     </a>
                     <p className="text-xs text-muted-foreground">Open Source</p>
                   </div>
-                  <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground flex-none">
-                    <GitMerge className="size-3.5 text-primary" />
-                    {mergedCount} merged
+                  <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground flex-none">
+                    {repo.stars > 0 && (
+                      <span className="flex items-center gap-1 tabular-nums">
+                        <Star className="size-3.5" aria-hidden />
+                        {repo.stars >= 1000
+                          ? `${(repo.stars / 1000).toFixed(1)}k`
+                          : repo.stars}
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1.5 tabular-nums">
+                      <GitMerge className="size-3.5 text-primary" aria-hidden />
+                      {repo.prs.length} merged
+                    </span>
                   </div>
                 </div>
                 <ul className="mt-3 space-y-1.5">
                   {visiblePrs.map((pr) => (
                     <li key={pr.id} className="flex items-center gap-2 text-sm min-w-0">
-                      <GitMerge className="size-3.5 flex-none text-primary" />
+                      <GitMerge className="size-3.5 flex-none text-primary" aria-hidden />
                       <span className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary tabular-nums flex-none">
                         Merged
                       </span>
                       <a
-                        href={`https://github.com/${repo.fullName}/pull/${pr.id}`}
+                        href={pr.url ?? `https://github.com/${repo.fullName}/pull/${pr.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-muted-foreground hover:text-foreground transition-colors truncate hover:underline underline-offset-4"
@@ -86,20 +143,18 @@ const repos: (OsRepo & { mergedPrs: OsPr[] })[] = DATA.openSource
                         {pr.title}
                       </a>
                       <span className="ml-auto text-xs text-muted-foreground/70 tabular-nums flex-none">
-                        #{pr.id}
+                        {formatMergedAt(pr.mergedAt) ?? `#${pr.id}`}
                       </span>
                     </li>
                   ))}
                 </ul>
-                {repo.mergedPrs.length > PREVIEW_COUNT && (
+                {repo.prs.length > PREVIEW_COUNT && (
                   <button
                     type="button"
-                    onClick={() => setExpanded(isOpen ? null : repo.repo)}
+                    onClick={() => setExpanded(isOpen ? null : repo.fullName)}
                     className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                   >
-                    {isOpen
-                      ? "Show less"
-                      : `Show all ${repo.mergedPrs.length}`}
+                    {isOpen ? "Show less" : `Show all ${repo.prs.length}`}
                   </button>
                 )}
               </div>

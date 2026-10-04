@@ -5,6 +5,17 @@ import { fileURLToPath } from "node:url";
 const API_ROOT = "https://api.github.com";
 const DEFAULT_USERNAME = "ApexYash11";
 
+// Patches merged into tiny personal or hackathon repositories read as padding
+// rather than as open source work, so only established projects are listed.
+// Override with OSS_MIN_REPO_STARS (0 disables the filter).
+const DEFAULT_MIN_REPO_STARS = 200;
+
+function minRepoStars() {
+  const raw = process.env.OSS_MIN_REPO_STARS;
+  const parsed = raw === undefined ? NaN : Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : DEFAULT_MIN_REPO_STARS;
+}
+
 const LANGUAGE_COLORS = {
   Python: "#3572A5",
   JavaScript: "#F1E05A",
@@ -133,7 +144,7 @@ query($login: String!) {
   }
 }`;
 
-const SNAPSHOT_QUERY = `
+const SNAPSHOT_QUERY_HEAD = `
 query($login: String!, $cursor: String) {
   user(login: $login) {
     name
@@ -165,6 +176,31 @@ query($login: String!, $cursor: String) {
     }
   }
 }`;
+
+// Merged pull requests authored by the account, folded into the same request as
+// the snapshot so the whole refresh still costs a single GraphQL call.
+const MERGED_PRS_FIELD = `
+  search(query: "is:pr is:merged author:__LOGIN__ sort:updated-desc", type: ISSUE, first: 100) {
+    issueCount
+    nodes {
+      ... on PullRequest {
+        number
+        title
+        mergedAt
+        url
+        repository {
+          nameWithOwner
+          stargazerCount
+          owner { login }
+        }
+      }
+    }
+  }`;
+
+function snapshotQuery(login) {
+  const field = MERGED_PRS_FIELD.replace("__LOGIN__", login);
+  return SNAPSHOT_QUERY_HEAD.replace(/\}\s*$/, `${field}\n}`);
+}
 
 function parseContributionsCollection(collection) {
   if (!collection?.contributionCalendar?.weeks) return null;
@@ -216,6 +252,102 @@ async function fetchContributions({ fetchImpl, username, token, warn }) {
   }
 }
 
+export function normalizeOpenSource(nodes, username, { minStars = 0, starsKnown = true } = {}) {
+  const repositories = new Map();
+
+  for (const node of nodes ?? []) {
+    const number = node?.number;
+    const title = node?.title;
+    const repository = node?.repository;
+    const fullName = repository?.nameWithOwner;
+    const owner = repository?.owner?.login;
+    const mergedAt = node?.mergedAt;
+
+    if (
+      !Number.isInteger(number) ||
+      typeof title !== "string" ||
+      title.length === 0 ||
+      typeof fullName !== "string" ||
+      !fullName.includes("/") ||
+      typeof mergedAt !== "string" ||
+      Number.isNaN(Date.parse(mergedAt))
+    ) {
+      continue;
+    }
+    // Contributions to your own repositories are not open source work.
+    if (typeof owner === "string" && owner.toLowerCase() === username.toLowerCase()) {
+      continue;
+    }
+
+    const existing = repositories.get(fullName) ?? {
+      repo: fullName.split("/")[1],
+      fullName,
+      url: `https://github.com/${fullName}`,
+      stars: Number.isFinite(repository?.stargazerCount) ? repository.stargazerCount : 0,
+      prs: [],
+    };
+
+    existing.prs.push({
+      id: number,
+      title,
+      mergedAt: new Date(mergedAt).toISOString(),
+      url: node.url ?? `https://github.com/${fullName}/pull/${number}`,
+    });
+    repositories.set(fullName, existing);
+  }
+
+  return [...repositories.values()]
+    .map((repository) => ({
+      ...repository,
+      prs: repository.prs.sort(
+        (a, b) => Date.parse(b.mergedAt) - Date.parse(a.mergedAt),
+      ),
+    }))
+    .filter((repository) => !starsKnown || repository.stars >= minStars)
+    .sort(
+      (a, b) =>
+        b.prs.length - a.prs.length ||
+        Date.parse(b.prs[0].mergedAt) - Date.parse(a.prs[0].mergedAt),
+    );
+}
+
+async function fetchOpenSourceRest({ fetchImpl, username, token, warn }) {
+  try {
+    const url = new URL(`${API_ROOT}/search/issues`);
+    url.searchParams.set("q", `is:pr is:merged author:${username}`);
+    url.searchParams.set("sort", "updated");
+    url.searchParams.set("per_page", "100");
+    const payload = await requestJson(fetchImpl, url, token);
+    if (!Array.isArray(payload?.items)) return null;
+
+    const repositories = normalizeOpenSource(
+      payload.items.map((item) => ({
+        number: item.number,
+        title: item.title,
+        mergedAt: item.pull_request?.merged_at ?? null,
+        url: item.html_url,
+        repository: {
+          nameWithOwner: item.repository_url?.split("/repos/")[1] ?? null,
+          stargazerCount: 0,
+          owner: {
+            login: item.repository_url?.split("/repos/")[1]?.split("/")[0],
+          },
+        },
+      })),
+      username,
+      { minStars: 0, starsKnown: false },
+    );
+
+    return {
+      repositories,
+      totalCount: Number.isFinite(payload.total_count) ? payload.total_count : null,
+    };
+  } catch (error) {
+    warn?.(`Merged PR fetch failed; open source list will use the last snapshot: ${error.message}`);
+    return null;
+  }
+}
+
 async function fetchGithubSnapshotGraphQL({ fetchImpl, username, token, warn, now }) {
   // A single GraphQL request replaces ~1 + N REST calls (user, repo pages,
   // one languages call per repository), which keeps well clear of the
@@ -226,11 +358,13 @@ async function fetchGithubSnapshotGraphQL({ fetchImpl, username, token, warn, no
   let memberSince = null;
   let followers = 0;
   let contributions = null;
+  let openSource = null;
+  let mergedPullRequestCount = null;
   let cursor = null;
 
   for (let page = 1; ; page += 1) {
     const data = await graphqlRequest(fetchImpl, "https://api.github.com/graphql", token, {
-      query: SNAPSHOT_QUERY,
+      query: snapshotQuery(username),
       variables: { login: username, cursor },
     });
 
@@ -244,6 +378,21 @@ async function fetchGithubSnapshotGraphQL({ fetchImpl, username, token, warn, no
       memberSince = new Date(user.createdAt).getUTCFullYear();
       followers = user.followers?.totalCount ?? 0;
       contributions = parseContributionsCollection(user.contributionsCollection);
+      const allOpenSource = normalizeOpenSource(data?.search?.nodes, username);
+      const threshold = minRepoStars();
+      openSource =
+        threshold > 0
+          ? allOpenSource.filter((repository) => repository.stars >= threshold)
+          : allOpenSource;
+      const hidden = allOpenSource.length - openSource.length;
+      if (hidden > 0) {
+        warn?.(
+          `Open source list: hid ${hidden} merged-PR repo(s) below ${threshold} stars`,
+        );
+      }
+      mergedPullRequestCount = Number.isFinite(data?.search?.issueCount)
+        ? data.search.issueCount
+        : null;
     }
 
     repositories.push(...(user.repositories.nodes ?? []));
@@ -269,6 +418,8 @@ async function fetchGithubSnapshotGraphQL({ fetchImpl, username, token, warn, no
     totalStars: repositories.reduce((sum, r) => sum + (r.stargazerCount || 0), 0),
     totalForks: repositories.reduce((sum, r) => sum + (r.forkCount || 0), 0),
     contributions,
+    openSource,
+    mergedPullRequestCount,
     languages: normalizeLanguages(languageBytes),
     generatedAt: now().toISOString(),
   };
@@ -365,6 +516,13 @@ export async function fetchGithubSnapshot({
     warn,
   });
 
+  const openSourceResult = await fetchOpenSourceRest({
+    fetchImpl,
+    username,
+    token,
+    warn,
+  });
+
   return {
     username,
     displayName: user.name || username,
@@ -380,6 +538,8 @@ export async function fetchGithubSnapshot({
       0,
     ),
     contributions,
+    openSource: openSourceResult?.repositories ?? null,
+    mergedPullRequestCount: openSourceResult?.totalCount ?? null,
     languages: normalizeLanguages(languageBytes),
     generatedAt: now().toISOString(),
   };
@@ -430,6 +590,36 @@ export function isValidSnapshot(value) {
         ),
     );
     if (!validWeeks) return false;
+  }
+
+  if (
+    value.mergedPullRequestCount != null &&
+    (!Number.isInteger(value.mergedPullRequestCount) ||
+      value.mergedPullRequestCount < 0)
+  ) {
+    return false;
+  }
+
+  if (value.openSource != null) {
+    const validOpenSource =
+      Array.isArray(value.openSource) &&
+      value.openSource.every(
+        (repository) =>
+          repository &&
+          typeof repository.fullName === "string" &&
+          repository.fullName.includes("/") &&
+          typeof repository.url === "string" &&
+          Array.isArray(repository.prs) &&
+          repository.prs.length > 0 &&
+          repository.prs.every(
+            (pr) =>
+              pr &&
+              Number.isInteger(pr.id) &&
+              typeof pr.title === "string" &&
+              !Number.isNaN(Date.parse(pr.mergedAt)),
+          ),
+      );
+    if (!validOpenSource) return false;
   }
 
   const validLanguages = value.languages.every(
