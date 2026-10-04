@@ -15,6 +15,71 @@ export interface CaseStudy {
 }
 
 const caseStudies: Record<string, CaseStudy> = {
+  gatewise: {
+    title: "Gatewise",
+    summary:
+      "Decision infrastructure for autonomous software engineering — a typed System-1 decision model (Jev) gates every agent action, so every decision is a real, auditable model output instead of a heuristic guess.",
+    problem:
+      "Coding agents act on untrusted text. Pull request titles, descriptions, and diffs are attacker-controlled, and most automation answers them with keyword rules or a free-form LLM verdict. Both fail the same way: a heuristic fallback is indistinguishable from a real judgement at the call site, so a visible failure quietly becomes an unauditable wrong answer. There was no layer where a decision could fail loudly instead of defaulting to `safe = true`.",
+    techStack: [
+      "Python 3.12",
+      "FastAPI",
+      "Jev (TypeSafe AI)",
+      "OpenRouter",
+      "SQLAlchemy",
+      "SQLite",
+      "pytest",
+      "GitHub Apps",
+    ],
+    features: [
+      "Six versioned typed questions (category, risk, breaking change, additional testing, maintainer review, security review) batched into a single Jev call and stored as `name@version` artifacts",
+      "A `DecisionProvider` abstraction so Jev is swappable and every layer above it stays provider-independent",
+      "A hard untrusted-input boundary: pull request text is isolated structurally from decision instructions, with adversarial prompt-injection tests in the suite",
+      "Verified, deduplicated GitHub webhook ingestion feeding a context builder that keeps untrusted text in its own compartment",
+      "A deterministic action router that plans actions on every path, while execution stays a separate, explicit, token-gated step",
+      "An audit store persisting every run, decision, and planned action, with a dashboard to filter by decision and expand the full decision path",
+      "An evaluation harness scoring a provider against labelled pull requests on accuracy, precision/recall, F1, Brier score, latency, tokens, and cost",
+    ],
+    challenges: [
+      {
+        title: "Refusing to ship a fallback",
+        problem:
+          "Every practical instinct says wrap the model call in a try/except and default to low risk when it is unreachable. That one convenience would have made the entire decision layer unauditable.",
+        solution:
+          "Turned it into a repository rule instead of a convention: no heuristic stand-in may exist, provider failure is recorded as a failed run with a non-zero smoke-test exit code, and a missing decision surfaces as an error rather than `risk = 0`.",
+      },
+      {
+        title: "Treating PR text as hostile input",
+        problem:
+          "Pull request content is fully attacker-controlled, so anything that concatenates it into instructions lets a pull request rewrite the decision it is being judged by.",
+        solution:
+          "Isolated untrusted text at the context-builder boundary so it can never be read as instruction, then covered that boundary with an adversarial suite asserting injected directives are ignored rather than obeyed.",
+      },
+      {
+        title: "Keeping decisions comparable over time",
+        problem:
+          "Editing a risk rubric in place silently invalidates every historical run, because those answers were produced under different criteria.",
+        solution:
+          "Versioned the question registry so each decision is stored with the question version it was asked under, and required contributors to bump the version whenever a rubric changes.",
+      },
+      {
+        title: "Staying reviewable without a paid key",
+        problem:
+          "A decision system that only runs with a live model credential is impossible to test, review, or contribute to.",
+        solution:
+          "Wrote 248 tests that stub only the HTTP transport and never model judgement, so the suite runs with no API key and no network access while still covering schemas, webhook security, deduplication, persistence, metrics, and the pipeline.",
+      },
+      {
+        title: "Separating deciding from acting",
+        problem:
+          "An agent that evaluates a pull request and acts on it in one step can mutate a repository off a single untrusted click.",
+        solution:
+          "Split the paths: every route plans actions deterministically, and applying them requires an explicit token-gated step, so the browser review form can never write to GitHub.",
+      },
+    ],
+    outcome:
+      "Gatewise is a working decision layer with 248 passing tests, a live dashboard, and real Jev calls stored alongside the question version each was asked under. The research question — whether a fast typed System-1 model is reliable enough to gate autonomous software engineering — is measured rather than asserted: the harness and seed dataset exist, and no accuracy or cost claim is made until it is scored against a human-labelled dataset.",
+  },
   jasper: {
     title: "Jasper Finance",
     summary:

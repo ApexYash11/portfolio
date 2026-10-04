@@ -254,6 +254,30 @@ export const DATA = {
   }>,
   projects: [
     {
+      title: "GATEWISE",
+      href: "https://github.com/ApexYash11/Gatewise",
+      dates: "2026",
+      active: false,
+      description:
+        "Decision infrastructure for autonomous software engineering — typed System-1 decision models (Jev) gate every agent action. No heuristic fallbacks, only real auditable model decisions, with prompt-injection guards and full decision observability.",
+      technologies: ["Python", "FastAPI", "LLMs", "Agentic AI", "Security", "Observability"],
+      video: "/gatewise.mp4",
+      links: [
+        {
+          type: "Source",
+          href: "https://github.com/ApexYash11/Gatewise",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "Case Study",
+          href: "/case-study/gatewise",
+          icon: <Icons.notion className="size-3" />,
+        },
+      ],
+      image: "/gatewise.jpg",
+      mediaAspectRatio: "16 / 9",
+    },
+    {
       title: "JASPER FINANCE",
       href: "https://github.com/ApexYash11/jasper",
       dates: "",
