@@ -2,207 +2,15 @@
   "username": "ApexYash11",
   "displayName": "Yash Maheshwari",
   "memberSince": 2024,
-  "followers": 13,
-  "publicRepositoryCount": 47,
-  "totalStars": 3,
+  "followers": 21,
+  "publicRepositoryCount": 71,
+  "totalStars": 6,
   "totalForks": 5,
   "contributions": {
-    "totalContributions": 1200,
-    "totalPullRequests": 128,
-    "totalIssues": 42,
+    "totalContributions": 1419,
+    "totalPullRequests": 201,
+    "totalIssues": 66,
     "weeks": [
-      {
-        "days": [
-          {
-            "date": "2025-08-24",
-            "count": 11
-          },
-          {
-            "date": "2025-08-25",
-            "count": 2
-          },
-          {
-            "date": "2025-08-26",
-            "count": 3
-          },
-          {
-            "date": "2025-08-27",
-            "count": 1
-          },
-          {
-            "date": "2025-08-28",
-            "count": 1
-          },
-          {
-            "date": "2025-08-29",
-            "count": 1
-          },
-          {
-            "date": "2025-08-30",
-            "count": 1
-          }
-        ]
-      },
-      {
-        "days": [
-          {
-            "date": "2025-08-31",
-            "count": 0
-          },
-          {
-            "date": "2025-09-01",
-            "count": 3
-          },
-          {
-            "date": "2025-09-02",
-            "count": 0
-          },
-          {
-            "date": "2025-09-03",
-            "count": 2
-          },
-          {
-            "date": "2025-09-04",
-            "count": 0
-          },
-          {
-            "date": "2025-09-05",
-            "count": 6
-          },
-          {
-            "date": "2025-09-06",
-            "count": 1
-          }
-        ]
-      },
-      {
-        "days": [
-          {
-            "date": "2025-09-07",
-            "count": 1
-          },
-          {
-            "date": "2025-09-08",
-            "count": 2
-          },
-          {
-            "date": "2025-09-09",
-            "count": 2
-          },
-          {
-            "date": "2025-09-10",
-            "count": 8
-          },
-          {
-            "date": "2025-09-11",
-            "count": 8
-          },
-          {
-            "date": "2025-09-12",
-            "count": 0
-          },
-          {
-            "date": "2025-09-13",
-            "count": 0
-          }
-        ]
-      },
-      {
-        "days": [
-          {
-            "date": "2025-09-14",
-            "count": 0
-          },
-          {
-            "date": "2025-09-15",
-            "count": 4
-          },
-          {
-            "date": "2025-09-16",
-            "count": 0
-          },
-          {
-            "date": "2025-09-17",
-            "count": 0
-          },
-          {
-            "date": "2025-09-18",
-            "count": 0
-          },
-          {
-            "date": "2025-09-19",
-            "count": 0
-          },
-          {
-            "date": "2025-09-20",
-            "count": 0
-          }
-        ]
-      },
-      {
-        "days": [
-          {
-            "date": "2025-09-21",
-            "count": 0
-          },
-          {
-            "date": "2025-09-22",
-            "count": 0
-          },
-          {
-            "date": "2025-09-23",
-            "count": 0
-          },
-          {
-            "date": "2025-09-24",
-            "count": 0
-          },
-          {
-            "date": "2025-09-25",
-            "count": 0
-          },
-          {
-            "date": "2025-09-26",
-            "count": 0
-          },
-          {
-            "date": "2025-09-27",
-            "count": 0
-          }
-        ]
-      },
-      {
-        "days": [
-          {
-            "date": "2025-09-28",
-            "count": 0
-          },
-          {
-            "date": "2025-09-29",
-            "count": 0
-          },
-          {
-            "date": "2025-09-30",
-            "count": 0
-          },
-          {
-            "date": "2025-10-01",
-            "count": 0
-          },
-          {
-            "date": "2025-10-02",
-            "count": 0
-          },
-          {
-            "date": "2025-10-03",
-            "count": 0
-          },
-          {
-            "date": "2025-10-04",
-            "count": 0
-          }
-        ]
-      },
       {
         "days": [
           {
@@ -1567,7 +1375,7 @@
           },
           {
             "date": "2026-07-30",
-            "count": 0
+            "count": 1
           },
           {
             "date": "2026-07-31",
@@ -1591,11 +1399,11 @@
           },
           {
             "date": "2026-08-04",
-            "count": 1
+            "count": 3
           },
           {
             "date": "2026-08-05",
-            "count": 1
+            "count": 4
           },
           {
             "date": "2026-08-06",
@@ -1683,55 +1491,492 @@
           },
           {
             "date": "2026-08-24",
+            "count": 3
+          },
+          {
+            "date": "2026-08-25",
+            "count": 8
+          },
+          {
+            "date": "2026-08-26",
+            "count": 7
+          },
+          {
+            "date": "2026-08-27",
+            "count": 3
+          },
+          {
+            "date": "2026-08-28",
+            "count": 8
+          },
+          {
+            "date": "2026-08-29",
+            "count": 9
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-08-30",
+            "count": 21
+          },
+          {
+            "date": "2026-08-31",
+            "count": 14
+          },
+          {
+            "date": "2026-09-01",
+            "count": 15
+          },
+          {
+            "date": "2026-09-02",
+            "count": 5
+          },
+          {
+            "date": "2026-09-03",
+            "count": 9
+          },
+          {
+            "date": "2026-09-04",
+            "count": 6
+          },
+          {
+            "date": "2026-09-05",
+            "count": 43
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-09-06",
+            "count": 49
+          },
+          {
+            "date": "2026-09-07",
             "count": 1
+          },
+          {
+            "date": "2026-09-08",
+            "count": 3
+          },
+          {
+            "date": "2026-09-09",
+            "count": 2
+          },
+          {
+            "date": "2026-09-10",
+            "count": 3
+          },
+          {
+            "date": "2026-09-11",
+            "count": 0
+          },
+          {
+            "date": "2026-09-12",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-09-13",
+            "count": 0
+          },
+          {
+            "date": "2026-09-14",
+            "count": 8
+          },
+          {
+            "date": "2026-09-15",
+            "count": 2
+          },
+          {
+            "date": "2026-09-16",
+            "count": 0
+          },
+          {
+            "date": "2026-09-17",
+            "count": 1
+          },
+          {
+            "date": "2026-09-18",
+            "count": 0
+          },
+          {
+            "date": "2026-09-19",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-09-20",
+            "count": 11
+          },
+          {
+            "date": "2026-09-21",
+            "count": 1
+          },
+          {
+            "date": "2026-09-22",
+            "count": 2
+          },
+          {
+            "date": "2026-09-23",
+            "count": 0
+          },
+          {
+            "date": "2026-09-24",
+            "count": 4
+          },
+          {
+            "date": "2026-09-25",
+            "count": 2
+          },
+          {
+            "date": "2026-09-26",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-09-27",
+            "count": 4
+          },
+          {
+            "date": "2026-09-28",
+            "count": 1
+          },
+          {
+            "date": "2026-09-29",
+            "count": 3
+          },
+          {
+            "date": "2026-09-30",
+            "count": 6
+          },
+          {
+            "date": "2026-10-01",
+            "count": 0
+          },
+          {
+            "date": "2026-10-02",
+            "count": 9
+          },
+          {
+            "date": "2026-10-03",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "days": [
+          {
+            "date": "2026-10-04",
+            "count": 3
+          },
+          {
+            "date": "2026-10-05",
+            "count": 0
           }
         ]
       }
     ]
   },
+  "openSource": [
+    {
+      "repo": "agent-orchestrator",
+      "fullName": "Untrivial-ai/agent-orchestrator",
+      "url": "https://github.com/Untrivial-ai/agent-orchestrator",
+      "stars": 12736,
+      "prs": [
+        {
+          "id": 6167,
+          "title": "fix(desktop): restore terminal focus after switching session tabs",
+          "mergedAt": "2026-10-03T11:53:45.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/6167"
+        },
+        {
+          "id": 4990,
+          "title": "fix(cline): write .ps1 hooks on Windows so Cline discovers and runs them",
+          "mergedAt": "2026-09-23T15:38:52.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4990"
+        },
+        {
+          "id": 4510,
+          "title": "fix(workspacewatch): degrade when directory watches fail",
+          "mergedAt": "2026-09-23T15:32:30.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4510"
+        },
+        {
+          "id": 5281,
+          "title": "fix: forward reasoning effort to OpenCode ACP sessions",
+          "mergedAt": "2026-09-15T06:36:39.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/5281"
+        },
+        {
+          "id": 5115,
+          "title": "fix(updates): parse nightly build stamps as UTC, not local wall time",
+          "mergedAt": "2026-09-09T18:38:02.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/5115"
+        },
+        {
+          "id": 4864,
+          "title": "fix(workspacewatch): verify git toplevel belongs to the workspace (#4860)",
+          "mergedAt": "2026-09-06T11:26:44.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4864"
+        },
+        {
+          "id": 4939,
+          "title": "fix(tmux): target bare session in respawn-pane and pane-pid probe",
+          "mergedAt": "2026-09-05T06:55:46.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4939"
+        },
+        {
+          "id": 4904,
+          "title": "fix(session): don't report terminated session as merged while a PR is open",
+          "mergedAt": "2026-09-04T18:39:29.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4904"
+        },
+        {
+          "id": 4903,
+          "title": "fix(cli): echo display name in ao spawn confirmation output",
+          "mergedAt": "2026-09-04T16:22:58.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4903"
+        },
+        {
+          "id": 4629,
+          "title": " fix  : invoke Windows hook executable with PowerShell call operator",
+          "mergedAt": "2026-08-30T19:20:13.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4629"
+        },
+        {
+          "id": 4550,
+          "title": "fix(installer): wire Windows code signing into the NSIS maker (#4502)",
+          "mergedAt": "2026-08-30T18:13:28.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4550"
+        },
+        {
+          "id": 4595,
+          "title": "fix(preview): clear session preview URL when managed dev server crashes (#4500)",
+          "mergedAt": "2026-08-30T17:52:53.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4595"
+        },
+        {
+          "id": 4356,
+          "title": "fix(cli): carry reviewers through project set-config (#4277)",
+          "mergedAt": "2026-08-25T09:52:02.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4356"
+        },
+        {
+          "id": 3998,
+          "title": "fix: classify unclassified spawn internal failures",
+          "mergedAt": "2026-08-23T14:43:27.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/3998"
+        },
+        {
+          "id": 4157,
+          "title": "fix(claude-code): confirm native session id on --resume relaunch",
+          "mergedAt": "2026-08-23T14:43:09.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4157"
+        },
+        {
+          "id": 4240,
+          "title": "feat(terminal): show copied toast after selection auto-copy",
+          "mergedAt": "2026-08-23T10:29:41.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/4240"
+        },
+        {
+          "id": 3958,
+          "title": "fix(frontend): navigate after settings orchestrator replacement",
+          "mergedAt": "2026-08-14T15:59:48.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/3958"
+        },
+        {
+          "id": 3579,
+          "title": "fix(browser): prevent wrong tab content after switching",
+          "mergedAt": "2026-08-05T15:18:38.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/3579"
+        },
+        {
+          "id": 3302,
+          "title": "test(config): use portable override paths",
+          "mergedAt": "2026-07-31T15:43:32.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/3302"
+        },
+        {
+          "id": 3084,
+          "title": "fix: isolate session kill state across worker switches",
+          "mergedAt": "2026-07-26T17:34:54.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/3084"
+        },
+        {
+          "id": 2831,
+          "title": "Fix/tmux isalive agent exited 2802",
+          "mergedAt": "2026-07-25T13:51:13.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/2831"
+        },
+        {
+          "id": 2767,
+          "title": "fix(review): preflight reviewer binary before creating review runs (#2092)",
+          "mergedAt": "2026-07-24T06:15:56.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/2767"
+        },
+        {
+          "id": 2839,
+          "title": "feat: surface assembled prompt byte metrics during spawn (#2822)",
+          "mergedAt": "2026-07-23T18:49:04.000Z",
+          "url": "https://github.com/Untrivial-ai/agent-orchestrator/pull/2839"
+        }
+      ]
+    },
+    {
+      "repo": "OpenBot",
+      "fullName": "CopilotKit/OpenBot",
+      "url": "https://github.com/CopilotKit/OpenBot",
+      "stars": 6028,
+      "prs": [
+        {
+          "id": 625,
+          "title": "Warn on staged text attachment the model may read truncated",
+          "mergedAt": "2026-09-20T23:47:02.000Z",
+          "url": "https://github.com/CopilotKit/OpenBot/pull/625"
+        }
+      ]
+    },
+    {
+      "repo": "react-image-editor",
+      "fullName": "unlayer/react-image-editor",
+      "url": "https://github.com/unlayer/react-image-editor",
+      "stars": 255,
+      "prs": [
+        {
+          "id": 68,
+          "title": "fix: normalize line endings via .gitattributes",
+          "mergedAt": "2026-09-07T08:00:59.000Z",
+          "url": "https://github.com/unlayer/react-image-editor/pull/68"
+        }
+      ]
+    },
+    {
+      "repo": "NVSentinel",
+      "fullName": "NVIDIA/NVSentinel",
+      "url": "https://github.com/NVIDIA/NVSentinel",
+      "stars": 394,
+      "prs": [
+        {
+          "id": 1726,
+          "title": "fix(health-events-analyzer): skip XID events with nil GeneratedTimestamp instead of panicking",
+          "mergedAt": "2026-09-03T14:02:54.000Z",
+          "url": "https://github.com/NVIDIA/NVSentinel/pull/1726"
+        }
+      ]
+    },
+    {
+      "repo": "cognee",
+      "fullName": "topoteretes/cognee",
+      "url": "https://github.com/topoteretes/cognee",
+      "stars": 31353,
+      "prs": [
+        {
+          "id": 4290,
+          "title": "fix(skills): make ingest idempotent by name and add delete endpoint",
+          "mergedAt": "2026-08-08T10:43:17.000Z",
+          "url": "https://github.com/topoteretes/cognee/pull/4290"
+        }
+      ]
+    },
+    {
+      "repo": "traceroot",
+      "fullName": "traceroot-ai/traceroot",
+      "url": "https://github.com/traceroot-ai/traceroot",
+      "stars": 794,
+      "prs": [
+        {
+          "id": 1152,
+          "title": "feat(sidebar): display app version in the sidebar when expanded",
+          "mergedAt": "2026-06-14T22:46:10.000Z",
+          "url": "https://github.com/traceroot-ai/traceroot/pull/1152"
+        }
+      ]
+    },
+    {
+      "repo": "opensre",
+      "fullName": "Tracer-Cloud/opensre",
+      "url": "https://github.com/Tracer-Cloud/opensre",
+      "stars": 11372,
+      "prs": [
+        {
+          "id": 2761,
+          "title": "fix(deps): update YAML import statements and add types-PyYAML to dev …",
+          "mergedAt": "2026-06-06T03:23:08.000Z",
+          "url": "https://github.com/Tracer-Cloud/opensre/pull/2761"
+        }
+      ]
+    }
+  ],
+  "mergedPullRequestCount": 177,
   "languages": [
     {
+      "name": "TypeScript",
+      "bytes": 192241128,
+      "percentage": 42.2,
+      "color": "#3178C6"
+    },
+    {
       "name": "Python",
-      "bytes": 60310966,
-      "percentage": 54.1,
+      "bytes": 112372872,
+      "percentage": 24.7,
       "color": "#3572A5"
     },
     {
       "name": "JavaScript",
-      "bytes": 17606402,
-      "percentage": 15.8,
+      "bytes": 52948512,
+      "percentage": 11.6,
       "color": "#F1E05A"
     },
     {
-      "name": "TypeScript",
-      "bytes": 15302000,
-      "percentage": 13.7,
-      "color": "#3178C6"
-    },
-    {
       "name": "Go",
-      "bytes": 8584006,
-      "percentage": 7.7,
+      "bytes": 42768978,
+      "percentage": 9.4,
       "color": "hsl(152, 55%, 50%)"
     },
     {
-      "name": "Jupyter Notebook",
-      "bytes": 3778547,
-      "percentage": 3.4,
-      "color": "#DA5B0B"
+      "name": "Java",
+      "bytes": 16811996,
+      "percentage": 3.7,
+      "color": "hsl(26, 55%, 50%)"
+    },
+    {
+      "name": "MDX",
+      "bytes": 13352144,
+      "percentage": 2.9,
+      "color": "hsl(233, 55%, 50%)"
     },
     {
       "name": "Shell",
-      "bytes": 3616626,
-      "percentage": 3.2,
+      "bytes": 6737948,
+      "percentage": 1.5,
       "color": "hsl(144, 55%, 50%)"
     },
     {
+      "name": "Rust",
+      "bytes": 5975993,
+      "percentage": 1.3,
+      "color": "hsl(100, 55%, 50%)"
+    },
+    {
       "name": "Other",
-      "bytes": 2349595,
-      "percentage": 2.1,
+      "bytes": 12140728,
+      "percentage": 2.7,
       "color": "#8B949E"
     }
   ],
-  "generatedAt": "2026-08-24T17:14:03.364Z"
+  "generatedAt": "2026-10-04T19:49:31.859Z"
 }

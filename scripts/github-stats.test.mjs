@@ -7,6 +7,7 @@ import test from "node:test";
 import {
   fetchGithubSnapshot,
   normalizeLanguages,
+  normalizeOpenSource,
   refreshSnapshot,
 } from "./github-stats.mjs";
 
@@ -148,6 +149,33 @@ test("fetchGithubSnapshot uses a single GraphQL request when a token is provided
             },
           },
         },
+        search: {
+          issueCount: 2,
+          nodes: [
+            {
+              number: 4277,
+              title: "fix(cli): carry reviewers through project set-config",
+              mergedAt: "2026-08-02T10:00:00Z",
+              url: "https://github.com/Untrivial-ai/agent-orchestrator/pull/4277",
+              repository: {
+                nameWithOwner: "Untrivial-ai/agent-orchestrator",
+                stargazerCount: 12_735,
+                owner: { login: "Untrivial-ai" },
+              },
+            },
+            {
+              number: 4278,
+              title: "feat: self PR",
+              mergedAt: "2026-08-03T10:00:00Z",
+              url: "https://github.com/ApexYash11/portfolio/pull/4278",
+              repository: {
+                nameWithOwner: "ApexYash11/portfolio",
+                stargazerCount: 3,
+                owner: { login: "ApexYash11" },
+              },
+            },
+          ],
+        },
       },
     });
   };
@@ -170,6 +198,13 @@ test("fetchGithubSnapshot uses a single GraphQL request when a token is provided
   assert.equal(snapshot.totalStars, 12);
   assert.equal(snapshot.totalForks, 5);
   assert.equal(snapshot.contributions.totalContributions, 13);
+  assert.deepEqual(
+    snapshot.openSource.map((repository) => [
+      repository.fullName,
+      repository.prs.map((pr) => pr.id),
+    ]),
+    [["Untrivial-ai/agent-orchestrator", [4277]]],
+  );
   assert.deepEqual(
     snapshot.languages.map((language) => [language.name, language.percentage]),
     [
@@ -346,6 +381,120 @@ test("fetchGithubSnapshot rejects when every language fetch fails", async () => 
       warn: () => {},
     }),
     /All repository language fetches failed/,
+  );
+});
+
+test("normalizeOpenSource groups merged PRs by repo, drops self-owned repos and sorts newest first", () => {
+  const repositories = normalizeOpenSource(
+    [
+      {
+        number: 1152,
+        title: "ship a version badge feature",
+        mergedAt: "2026-05-02T00:00:00Z",
+        url: "https://github.com/traceroot-ai/traceroot/pull/1152",
+        repository: {
+          nameWithOwner: "traceroot-ai/traceroot",
+          stargazerCount: 900,
+          owner: { login: "traceroot-ai" },
+        },
+      },
+      {
+        number: 2767,
+        title: "preflight reviewer binary",
+        mergedAt: "2026-06-11T00:00:00Z",
+        url: "https://github.com/traceroot-ai/traceroot/pull/2767",
+        repository: {
+          nameWithOwner: "traceroot-ai/traceroot",
+          stargazerCount: 900,
+          owner: { login: "traceroot-ai" },
+        },
+      },
+      {
+        number: 1,
+        title: "own repo change",
+        mergedAt: "2026-07-01T00:00:00Z",
+        url: "https://github.com/ApexYash11/gatewise/pull/1",
+        repository: {
+          nameWithOwner: "ApexYash11/gatewise",
+          stargazerCount: 1,
+          owner: { login: "ApexYash11" },
+        },
+      },
+      {
+        number: 2,
+        title: "still open",
+        mergedAt: null,
+        url: "https://github.com/opensre/opensre/pull/2",
+        repository: {
+          nameWithOwner: "opensre/opensre",
+          stargazerCount: 10,
+          owner: { login: "opensre" },
+        },
+      },
+      null,
+    ],
+    "ApexYash11",
+  );
+
+  assert.deepEqual(repositories, [
+    {
+      repo: "traceroot",
+      fullName: "traceroot-ai/traceroot",
+      url: "https://github.com/traceroot-ai/traceroot",
+      stars: 900,
+      prs: [
+        {
+          id: 2767,
+          title: "preflight reviewer binary",
+          mergedAt: "2026-06-11T00:00:00.000Z",
+          url: "https://github.com/traceroot-ai/traceroot/pull/2767",
+        },
+        {
+          id: 1152,
+          title: "ship a version badge feature",
+          mergedAt: "2026-05-02T00:00:00.000Z",
+          url: "https://github.com/traceroot-ai/traceroot/pull/1152",
+        },
+      ],
+    },
+  ]);
+});
+
+test("normalizeOpenSource hides repositories below the star threshold", () => {
+  const nodes = [
+    {
+      number: 10,
+      title: "established fix",
+      mergedAt: "2026-08-02T00:00:00Z",
+      url: "https://github.com/bigorg/toolkit/pull/10",
+      repository: {
+        nameWithOwner: "bigorg/toolkit",
+        stargazerCount: 4_200,
+        owner: { login: "bigorg" },
+      },
+    },
+    {
+      number: 3,
+      title: "hackathon fix",
+      mergedAt: "2026-08-02T00:00:00Z",
+      url: "https://github.com/someone-else/hackathon-repo/pull/3",
+      repository: {
+        nameWithOwner: "someone-else/hackathon-repo",
+        stargazerCount: 0,
+        owner: { login: "someone-else" },
+      },
+    },
+  ];
+
+  assert.deepEqual(
+    normalizeOpenSource(nodes, "ApexYash11").map((repo) => repo.fullName),
+    ["bigorg/toolkit", "someone-else/hackathon-repo"],
+  );
+  assert.deepEqual(
+    normalizeOpenSource(nodes, "ApexYash11", { minStars: 200 }).map(
+      (repo) => repo.fullName,
+    ),
+    ["bigorg/toolkit"],
   );
 });
 
