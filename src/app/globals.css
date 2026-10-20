@@ -58,7 +58,7 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.505 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -239,6 +239,15 @@
 }
 
 @layer utilities {
+  /* Progressive reveal fallback: if hydration does not complete in time,
+     force hidden reveal elements back to a readable state. */
+  [data-motion-fallback] [style*="opacity: 0"],
+  [data-motion-fallback] [style*="opacity:0"] {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+
   .bg-glow {
     background-image:
       radial-gradient(60rem 32rem at 50% -8rem, color-mix(in oklab, var(--foreground) 7%, transparent), transparent 70%),

@@ -72,7 +72,7 @@ export function StaggerItem({
   children,
   className,
   y = motionTokens.travel.enter,
-  blur = 8,
+  blur = 4,
   ...props
 }: StaggerItemProps) {
   const { reduced } = useContext(StaggerContext);

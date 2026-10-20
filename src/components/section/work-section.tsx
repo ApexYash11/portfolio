@@ -133,7 +133,7 @@ export default function WorkSection() {
                   View on GitHub
                 </a>
               )}
-              <ul className="list-disc pl-4 space-y-1 marker:text-muted-foreground/80">
+              <ul className="list-disc pl-4 space-y-1 marker:text-muted-foreground">
                 {points.map((point, index) =>
                   isHeading(point) ? (
                     <li

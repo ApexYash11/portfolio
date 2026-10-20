@@ -110,7 +110,7 @@ export default async function CaseStudyPage({
                 </h3>
                 <div className="space-y-3 text-sm">
                   <div>
-                    <span className="text-muted-foreground/60 font-medium text-xs uppercase tracking-wider">Problem</span>
+                    <span className="text-muted-foreground font-medium text-xs uppercase tracking-wider">Problem</span>
                     <p className="text-muted-foreground mt-1 leading-relaxed">
                       {challenge.problem}
                     </p>

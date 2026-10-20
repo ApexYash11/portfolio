@@ -28,7 +28,7 @@ export function BlogCard({ title, summary, readTime, slug, className }: Props) {
       <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
         {summary}
       </p>
-      <p className="text-xs text-muted-foreground/70 mt-4">
+      <p className="text-xs text-muted-foreground mt-4">
         {readTime} min read
       </p>
     </Link>

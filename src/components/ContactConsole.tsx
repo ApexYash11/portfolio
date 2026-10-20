@@ -2,24 +2,23 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
+import { Mail } from "lucide-react";
+import { Icons } from "@/components/icons";
 import { DATA } from "@/data/resume";
 
-type Unit = { c?: string[]; f: string; link?: boolean };
+type Unit = { c?: string[]; f: string; link?: boolean; href?: string };
 
 const UNITS: Unit[] = [
   { c: ["hey", "yo", "hi"], f: "Want" },
   { f: "to" },
   { f: "chat?" },
-  { c: ["send", "ping", "shoot"], f: "Shoot" },
+  { c: ["send", "ping", "shoot"], f: "Send" },
   { f: "me" },
   { f: "a" },
   { f: "specific" },
   { f: "question" },
-  { f: "as" },
-  { f: "a" },
-  { c: ["message", "note", "dm"], f: "DM" },
-  { f: "on" },
-  { c: ["X", "Twitter"], f: "Twitter", link: true },
+  { f: "via" },
+  { c: ["message", "note", "email"], f: "email", link: true, href: "email" },
   { f: "—" },
   { f: "I" },
   { c: ["read", "see", "get"], f: "read" },
@@ -27,7 +26,7 @@ const UNITS: Unit[] = [
   { f: "one" },
   { f: "myself" },
   { f: "and" },
-  { c: ["reply", "respond", "answer"], f: "reply" },
+  { f: "reply" },
   { f: "when" },
   { f: "I" },
   { f: "can." },
@@ -53,6 +52,9 @@ export default function ContactConsole() {
   const reducedMotion = useRef(false);
   const cancelledRef = useRef(false);
   const twitterUrl = DATA.contact.social.X.url;
+  const emailUrl = DATA.contact.email
+    ? `mailto:${DATA.contact.email}`
+    : DATA.contact.social.email.url;
 
   function runGeneration() {
     cancelledRef.current = true;
@@ -153,6 +155,25 @@ export default function ContactConsole() {
         Get in touch
       </h2>
 
+      <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <a
+          href={emailUrl}
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground shadow-[0_0_24px_-6px] shadow-primary/40 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+        >
+          <Mail className="size-4" />
+          Email me
+        </a>
+        <a
+          href={twitterUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border/60 bg-card/80 px-6 text-sm font-medium text-foreground backdrop-blur-xl transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+        >
+          <Icons.x className="size-4" />
+          DM on X
+        </a>
+      </div>
+
       <div className="w-full max-w-2xl rounded-xl border border-border/60 bg-card/80 text-left font-mono backdrop-blur-xl">
         <div className="flex items-center justify-between border-b border-border/60 px-4 py-2.5 text-[11px] text-muted-foreground">
           <div className="flex items-center gap-2">
@@ -163,12 +184,12 @@ export default function ContactConsole() {
             </div>
             <span>yash · reachable-v1</span>
             {(generating || done) && startTime && (
-              <span className="tabular-nums text-muted-foreground/50">
+              <span className="tabular-nums text-muted-foreground">
                 · {latency}ms
               </span>
             )}
           </div>
-          <div className="tabular-nums text-muted-foreground/70">
+          <div className="tabular-nums text-muted-foreground">
             temp <b className="font-semibold text-foreground">0.3</b>
             &nbsp;·&nbsp; top_p{" "}
             <b className="font-semibold text-foreground">0.9</b>
@@ -186,8 +207,8 @@ export default function ContactConsole() {
               u.link ? (
                 <motion.a
                   key={idx}
-                  href={twitterUrl}
-                  target="_blank"
+                  href={u.href === "email" ? emailUrl : twitterUrl}
+                  target={u.href === "email" ? undefined : "_blank"}
                   rel="noopener noreferrer"
                   className="font-semibold text-sky-500 underline decoration-sky-500/40 underline-offset-4 transition-colors duration-300 hover:text-sky-400"
                   initial={{ opacity: 0, y: 4 }}
@@ -215,7 +236,7 @@ export default function ContactConsole() {
           </div>
         </div>
 
-        <div className="flex items-center gap-5 border-t border-dashed border-border/60 px-5 pb-5 pt-4 text-[11px] tabular-nums text-muted-foreground/70">
+        <div className="flex items-center gap-5 border-t border-dashed border-border/60 px-5 pb-5 pt-4 text-[11px] tabular-nums text-muted-foreground">
           <div>tokens {visible}</div>
           <div className="flex items-center gap-1.5">
             confidence
@@ -246,8 +267,7 @@ export default function ContactConsole() {
       </div>
 
       <p className="text-balance text-[11.5px] font-mono text-muted-foreground">
-        solicitation, cold pitches, &quot;quick calls&quot; →{" "}
-        <span className="text-foreground/70">auto-dropped</span>, not read.
+        email gets the fastest reply &mdash; no account needed.
       </p>
     </div>
   );

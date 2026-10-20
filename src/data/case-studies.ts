@@ -177,48 +177,49 @@ const caseStudies: Record<string, CaseStudy> = {
   claimwise: {
     title: "ClaimWise",
     summary:
-      "Insurance claim automation platform using NLP and computer vision — cuts manual verification time by 80%.",
+      "AI-powered insurance policy analysis platform — upload a policy, get a structured coverage breakdown, compare policies side by side, and ask questions with RAG document chat.",
     problem:
-      "Insurance claim processing remains manual, slow, and inconsistent. Adjusters must review documents, verify damage, cross-reference policy details, and detect fraud — a process that takes days per claim and produces uneven results across cases.",
-    techStack: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
+      "Insurance policies are long, dense documents full of exclusions, sub-limits and conditions that people rarely read through. Comparing two policies means manually aligning coverage sections, and asking a simple question like \"is this treatment covered?\" means scrolling through pages of PDF text. ClaimWise was built to make a policy understandable, comparable and queryable in minutes instead of hours.",
+    techStack: ["Next.js", "TypeScript", "FastAPI", "Supabase", "Groq", "Gemini", "OpenAI"],
     features: [
-      "OCR document parsing that extracts structured data from claim forms, invoices, and medical reports using NLP models",
-      "Fraud detection engine that computes risk scores using ML models trained on historical claims data",
-      "Automated underwriting that applies business rules and ML predictions to make coverage determinations",
-      "Real-time dashboard providing claims processors a centralized view of claim status, risk scores, and actionable tasks",
+      "Policy document upload with Tesseract OCR and pdf2image preprocessing, so scanned PDFs and photos of forms still yield structured text",
+      "Structured AI analysis that extracts policy type, provider, premium, coverage amount, deductibles and key features, plus coverage-gap and cost-optimization insights",
+      "RAG document chat that retrieves the relevant chunks of an uploaded policy and answers questions with citations back to the source text",
+      "Side-by-side multi-policy comparison with coverage gap analysis across aligned sections",
+      "Multi-LLM provider layer across Groq, Gemini and OpenAI behind a single interface, with JWT auth, per-user data isolation, caching and rate limiting",
     ],
     challenges: [
       {
-        title: "Document Understanding at Scale",
+        title: "Grounding answers in the actual policy",
         problem:
-          "Insurance documents arrive in diverse formats — scanned PDFs, photos of forms, digital files — with unstructured layouts that vary by provider.",
+          "A general LLM asked \"is this covered?\" will confidently invent coverage terms that are not in the document, which is worse than no answer for an insurance product.",
         solution:
-          "Combined OCR preprocessing with fine-tuned BERT-based NLP models to extract relevant fields (policy numbers, dates, amounts) with high accuracy across document types.",
+          "Built a retrieval pipeline that chunks the extracted policy text, retrieves the passages relevant to a question and forces the model to answer from that context, so replies trace back to the uploaded document instead of model priors.",
       },
       {
-        title: "Computer Vision for Damage Assessment",
+        title: "Making messy document uploads usable",
         problem:
-          "Analyzing vehicle and property damage from user-uploaded photos required accurate classification despite varying lighting, angles, and image quality.",
+          "Users upload scanned PDFs, photographed forms and provider-specific layouts; naive extraction produces garbled text that then poisons analysis and retrieval.",
         solution:
-          "Trained custom CNN models on labeled damage datasets with aggressive data augmentation to handle real-world variability, achieving consistent classification across lighting conditions.",
+          "Preprocessed uploads with pdf2image and Tesseract OCR before parsing, and kept extraction, analysis and chat as separate stages so a failed stage surfaces a clear error instead of a silently wrong answer.",
       },
       {
-        title: "Fraud Detection Sensitivity",
+        title: "Comparing policies that do not share a structure",
         problem:
-          "Fraud detection systems often face a trade-off between catching fraudulent claims and flagging legitimate ones, eroding trust with false positives.",
+          "Two policies from different providers organize coverage differently — the same benefit appears in different sections, under different wording, with different sub-limits.",
         solution:
-          "Implemented an ensemble approach combining rule-based signals with gradient-boosted tree models, using calibrated probability thresholds adjustable by claim value tier.",
+          "Normalised each policy into a shared typed schema first, then compared the normalised fields, so the comparison aligns semantics rather than raw section text.",
       },
       {
-        title: "End-to-End Pipeline Latency",
+        title: "Multi-provider LLM cost and reliability",
         problem:
-          "Processing a claim from document upload to decision output needed to complete in seconds to maintain real-time workflow usability.",
+          "Depending on a single model provider creates a single point of failure and locks the feature set to one vendor's rate limits and pricing.",
         solution:
-          "Architected an async FastAPI backend with AWS SQS for task queuing, parallel processing of independent checks, and incremental result streaming to the dashboard.",
+          "Introduced a provider abstraction over Groq, Gemini and OpenAI so analysis and chat calls can be routed by availability and cost, with JWT-protected async FastAPI endpoints, caching and rate limiting in front.",
       },
     ],
     outcome:
-      "ClaimWise reduces manual verification time by 80%, enabling claims processors to handle five times more claims per day while maintaining consistent, auditable decision quality and reducing fraud losses.",
+      "ClaimWise is deployed end to end — Next.js on Vercel talking to an async FastAPI backend on Render with Supabase for auth and storage. A user can upload a policy, get a structured analysis, compare it against another policy and ask follow-up questions with source-grounded answers, all in one session.",
   },
 
   wealthify: {
