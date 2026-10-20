@@ -51,10 +51,10 @@ export default function DailyQuoteCard() {
               {quote.text}
             </p>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/40 font-medium">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium">
                 Tech &amp; Code
               </span>
-              <p className="text-sm text-muted-foreground/70 font-medium">
+              <p className="text-sm text-muted-foreground font-medium">
                 &mdash; {quote.author}
               </p>
             </div>

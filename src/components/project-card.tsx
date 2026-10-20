@@ -87,9 +87,8 @@ function ProjectVideo({
         playsInline
         preload="none"
         aria-label={alt}
-        className="absolute inset-0 h-full w-full object-contain object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
+        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.03] group-focus-within:scale-[1.03]"
       />
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
     </div>
   );
 }
@@ -236,12 +235,10 @@ export function ProjectCard({
           ) : image ? (
             <div className="relative w-full">
               <ProjectImage src={image} alt={title} aspectRatio={mediaAspectRatio || "16 / 9"} />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
             </div>
           ) : (
             <div className="relative w-full">
               <ProjectImage src="" alt={title} aspectRatio={mediaAspectRatio || "16 / 9"} />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 to-transparent" />
             </div>
           )}
         </Link>
@@ -283,7 +280,7 @@ export function ProjectCard({
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
-        <div className="text-sm flex-1 min-h-0 prose max-w-full text-foreground/90 dark:prose-invert leading-relaxed break-words line-clamp-3">
+        <div className="text-sm flex-1 min-h-0 prose max-w-full text-foreground/90 dark:prose-invert leading-relaxed break-words">
           <Markdown>{description}</Markdown>
         </div>
         {tags && tags.length > 0 && (

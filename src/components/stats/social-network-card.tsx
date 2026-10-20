@@ -140,7 +140,7 @@ function RoleLabels() {
       {roles.map((role, i) => (
         <motion.span
           key={role}
-          className="text-xs text-muted-foreground/80 font-medium tracking-wide"
+          className="text-xs text-muted-foreground font-medium tracking-wide"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 + i * 0.12, duration: 0.5 }}

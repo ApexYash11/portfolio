@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import MotionGate from "@/components/motion-gate";
 import { Analytics } from "@vercel/analytics/react";
 
 const terminalMono = JetBrains_Mono({
@@ -74,6 +75,20 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta httpEquiv="Content-Security-Policy" content="frame-ancestors 'none';" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__motionFallback=setTimeout(function(){document.documentElement.setAttribute('data-motion-fallback','')},2500);`,
+          }}
+        />
+        <noscript>
+          <style>{`
+            [style*="opacity: 0"], [style*="opacity:0"] {
+              opacity: 1 !important;
+              filter: none !important;
+              transform: none !important;
+            }
+          `}</style>
+        </noscript>
       </head>
       <body
         className={cn(
@@ -102,6 +117,7 @@ export default function RootLayout({
         />
         <ThemeProvider attribute="class" defaultTheme="light">
           <TooltipProvider delayDuration={0}>
+            <MotionGate />
             <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
               <FlickeringGrid
                 className="h-full w-full"
@@ -113,7 +129,7 @@ export default function RootLayout({
                 }}
               />
             </div>
-            <div className="relative z-10 max-w-4xl mx-auto py-12 pb-24 sm:py-24 px-6">
+            <div className="relative z-10 max-w-4xl mx-auto py-12 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:py-24 sm:pb-32 px-6">
               {children}
             </div>
             <Navbar />

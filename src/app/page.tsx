@@ -14,7 +14,7 @@ import OpenSourceSection from "@/components/section/open-source-section";
 import { allPosts } from "content-collections";
 import { CalEmbedInit } from "@/components/cal-embed-init";
 import { BlogCard } from "@/components/blog/blog-card";
-import { ArrowUpRight, Calendar, FileText } from "lucide-react";
+import { ArrowUpRight, Calendar, FileText, Mail } from "lucide-react";
 import {
   HeroAvatar,
   HeroHeadline,
@@ -59,8 +59,23 @@ export default async function Page() {
               <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase max-w-xl mx-auto text-balance">
                 {DATA.description}
               </p>
+              <p className="text-sm font-medium text-primary/90 text-balance">
+                WSP AI Intern | B.Tech 2027 | Open to AI/backend internships.
+              </p>
             </div>
             <HeroItem className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+              <Magnetic>
+                <Button
+                  variant="outline"
+                  asChild
+                  className="gap-2 h-11 rounded-xl text-sm font-medium px-6 w-full sm:w-auto"
+                >
+                  <a href={`mailto:${DATA.contact.email}`}>
+                    <Mail className="size-4" />
+                    Email
+                  </a>
+                </Button>
+              </Magnetic>
               <Magnetic>
                 <Button
                   data-cal-link="yash-maheshwari-qklkhu/30min"
@@ -121,9 +136,9 @@ export default async function Page() {
           </BlurFade>
         </div>
       </section>
-      <section id="open-source" className="pt-4">
+      <section id="projects">
         <BlurFade inView>
-          <OpenSourceSection />
+          <ProjectsSection />
         </BlurFade>
       </section>
       <section id="work">
@@ -135,6 +150,11 @@ export default async function Page() {
             <WorkSection />
           </BlurFade>
         </div>
+      </section>
+      <section id="open-source" className="pt-4">
+        <BlurFade inView>
+          <OpenSourceSection />
+        </BlurFade>
       </section>
       <section id="education">
         <div className="flex min-h-0 flex-col gap-y-6">
@@ -148,8 +168,8 @@ export default async function Page() {
                 inView
                 delay={index * 0.05}
               >
-                <div className="flex items-center gap-x-3 justify-between group">
-                  <div className="flex items-center gap-x-3 flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 justify-between group">
+                  <div className="flex items-center gap-x-3 min-w-0 grow basis-[15rem]">
                     {education.logoUrl ? (
                       <img
                         src={education.logoUrl}
@@ -159,8 +179,8 @@ export default async function Page() {
                     ) : (
                       <div className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border bg-muted flex-none" />
                     )}
-                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                      <div className="font-semibold leading-none">
+                    <div className="min-w-0 flex-1 flex flex-col gap-0.5">
+                      <div className="leading-snug font-semibold">
                         {education.school}
                       </div>
                       <div className="font-sans text-sm text-muted-foreground">
@@ -168,7 +188,7 @@ export default async function Page() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground text-right flex-none">
+                  <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground sm:text-right shrink-0 ml-11 sm:ml-0">
                     <span>
                       {education.start} - {education.end}
                     </span>
@@ -186,38 +206,42 @@ export default async function Page() {
           </BlurFade>
           <BlurFade inView delay={0.08}>
             <div className="flex flex-wrap gap-2">
-              {DATA.skills.map((skill) => (
-                <div
-                  key={skill.name}
-                  className="group flex items-center gap-2 rounded-lg border border-border/70 bg-card/40 h-9 px-3 transition-colors hover:border-primary/40 hover:bg-card"
-                >
-                  {skill.icon && (
-                    <skill.icon
-                      className="size-4 rounded overflow-hidden object-contain transition-transform group-hover:scale-110"
-                      style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
-                    />
-                  )}
-                  <span className="text-foreground text-sm">{skill.name}</span>
+              {DATA.skillGroups.map((group) => (
+                <div key={group.title} className="w-full">
+                  <h3 className="mb-2 text-sm font-semibold tracking-tight text-muted-foreground">
+                    {group.title}
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {group.skills.map((skill) => (
+                      <div
+                        key={skill.name}
+                        className="group flex items-center gap-2 rounded-lg border border-border/70 bg-card/40 h-9 px-3 transition-colors hover:border-primary/40 hover:bg-card"
+                      >
+                        {skill.icon && (
+                          <skill.icon
+                            className="size-4 rounded overflow-hidden object-contain transition-transform group-hover:scale-110"
+                            style={skill.color ? { color: skill.color, fill: skill.color } : undefined}
+                          />
+                        )}
+                        <span className="text-foreground text-sm">{skill.name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
           </BlurFade>
         </div>
       </section>
-      <section id="projects">
-        <BlurFade inView>
-          <ProjectsSection />
-        </BlurFade>
-      </section>
       <StatsSection />
-      <section id="support">
-        <BlurFade inView>
-          <SupportSection />
-        </BlurFade>
-      </section>
       <section id="contact">
         <BlurFade inView>
           <ContactConsole />
+        </BlurFade>
+      </section>
+      <section id="support">
+        <BlurFade inView>
+          <SupportSection />
         </BlurFade>
       </section>
 
@@ -270,14 +294,14 @@ export default async function Page() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={name}
-                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground/70 transition-colors hover:text-primary"
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-primary"
                   >
                     <IconComponent className="size-4" />
                   </a>
                 );
               })}
           </div>
-          <p className="text-sm text-muted-foreground/60">
+          <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} {DATA.name}. All rights reserved.
           </p>
         </div>

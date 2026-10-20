@@ -245,7 +245,7 @@ function OrbitalNode({
         <IconComponent className="size-5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
       </div>
       <span
-        className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 text-[10px] text-muted-foreground/0 text-center whitespace-nowrap transition-all duration-300 group-hover:text-muted-foreground/80"
+        className="absolute left-1/2 -translate-x-1/2 top-full mt-1.5 text-[10px] text-muted-foreground/0 text-center whitespace-nowrap transition-all duration-300 group-hover:text-muted-foreground"
       >
         {label}
       </span>

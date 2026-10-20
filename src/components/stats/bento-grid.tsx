@@ -3,20 +3,20 @@ import { DATA } from "@/data/resume";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import snapshotJson from "@/data/github-stats.json";
-import { FileText, Sparkles } from "lucide-react";
+import { FileText } from "lucide-react";
+import ContributionGraph from "./contribution-graph";
 
 interface GithubSnapshot {
   username: string;
   displayName: string;
-  followers?: number;
+  publicRepositoryCount: number;
   totalStars: number;
-  contributions?: {
+  totalForks: number;
+  followers: number;
+  mergedPullRequestCount: number;
+  contributions: {
     totalContributions: number;
-    totalPullRequests?: number;
-    totalIssues?: number;
-    weeks: { days: { date: string; count: number }[] }[];
-  } | null;
-  languages: { name: string; percentage: number; color: string }[];
+  };
 }
 
 const snapshot = snapshotJson as GithubSnapshot;
@@ -24,186 +24,64 @@ const snapshot = snapshotJson as GithubSnapshot;
 const tileBase =
   "group relative flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card/40 p-4 transition-all duration-300 hover:border-primary/40 hover:bg-card/70 hover:shadow-[0_0_24px_-8px] hover:shadow-primary/30";
 
-function heatmapLevel(count: number) {
-  if (count <= 0) return "bg-foreground/[0.06]";
-  if (count <= 2) return "bg-primary/30";
-  if (count <= 5) return "bg-primary/55";
-  if (count <= 9) return "bg-primary/80";
-  return "bg-primary";
-}
-
-function Heatmap({
-  contributions,
+function StatCard({
+  value,
+  label,
+  icon,
+  iconColor,
 }: {
-  contributions: NonNullable<GithubSnapshot["contributions"]>;
+  value: string | number;
+  label: string;
+  icon: React.ReactNode;
+  iconColor: string;
 }) {
-  const weeks = contributions.weeks.slice(-40);
   return (
-    <div className="flex-1 min-h-0 flex items-center">
-      <div
-        className="grid grid-flow-col grid-rows-7 gap-[2px] w-full"
-        aria-label={`Contribution heatmap, ${contributions.totalContributions} contributions in the last year`}
-      >
-        {weeks.map((week, weekIndex) =>
-          week.days.map((day, dayIndex) => (
-            <div
-              key={`${weekIndex}-${dayIndex}`}
-              title={`${day.count} contributions on ${day.date}`}
-              className={cn("aspect-square rounded-[2px]", heatmapLevel(day.count))}
-            />
-          )),
-        )}
+    <div
+      className={cn(
+        tileBase,
+        "flex flex-col gap-2 items-start justify-between p-5"
+      )}
+    >
+      <div className="flex items-center gap-2">
+        <span className={`size-5 rounded p-1.5 ${iconColor}`}>{icon}</span>
+      </div>
+      <div>
+        <p className="text-2xl font-bold tracking-tight text-foreground">
+          {value}
+        </p>
+        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+          {label}
+        </p>
       </div>
     </div>
-  );
-}
-
-function StatDot({
-  color,
-  label,
-  value,
-}: {
-  color: string;
-  label: string;
-  value: number;
-}) {
-  return (
-    <span className="flex items-center gap-1.5 text-xs">
-      <span
-        className="size-2 rounded-full"
-        style={{ backgroundColor: color }}
-        aria-hidden
-      />
-      <span className="text-muted-foreground">{label}:</span>
-      <span className="font-semibold tabular-nums">{value}</span>
-    </span>
-  );
-}
-
-function GithubTile() {
-  const { contributions } = snapshot;
-
-  return (
-    <a
-      href={`https://github.com/${snapshot.username}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={cn(tileBase, "col-span-2 row-span-2 gap-3")}
-    >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-transparent" />
-      <div className="relative flex items-center gap-3">
-        <img
-          src={`https://github.com/${snapshot.username}.png`}
-          alt={snapshot.displayName}
-          className="size-10 rounded-full ring-2 ring-border object-cover"
-        />
-        <div className="min-w-0">
-          <p className="text-sm font-semibold leading-tight truncate">
-            {snapshot.displayName}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">
-            @{snapshot.username}
-          </p>
-        </div>
-      </div>
-
-      {contributions && <Heatmap contributions={contributions} />}
-
-      <div className="relative grid grid-cols-2 gap-x-3 gap-y-1.5">
-        <StatDot color="#f87171" label="Stars" value={snapshot.totalStars} />
-        <StatDot color="#c084fc" label="Followers" value={snapshot.followers ?? 0} />
-        {contributions && (
-          <>
-            <StatDot
-              color="#60a5fa"
-              label="PRs"
-              value={contributions.totalPullRequests ?? 0}
-            />
-            <StatDot
-              color="#e5e7eb"
-              label="Issues"
-              value={contributions.totalIssues ?? 0}
-            />
-          </>
-        )}
-      </div>
-
-      {snapshot.languages.length > 0 && (
-        <div className="relative flex h-1.5 w-full overflow-hidden rounded-full">
-          {snapshot.languages.slice(0, 6).map((language) => (
-            <div
-              key={language.name}
-              style={{
-                width: `${language.percentage}%`,
-                backgroundColor: language.color,
-              }}
-              title={`${language.name}: ${language.percentage}%`}
-            />
-          ))}
-        </div>
-      )}
-    </a>
-  );
-}
-
-function SocialTile({
-  href,
-  label,
-  caption,
-  icon,
-}: {
-  href: string;
-  label: string;
-  caption: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={cn(tileBase, "items-center justify-center gap-2 text-center")}
-      aria-label={label}
-    >
-      <span className="text-muted-foreground transition-colors group-hover:text-foreground">
-        {icon}
-      </span>
-      <span className="text-xs text-muted-foreground">({caption})</span>
-    </a>
   );
 }
 
 export default function BentoGrid() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 auto-rows-fr">
-      <GithubTile />
-      <SocialTile
-        href={DATA.contact.social.LinkedIn.url}
-        label="LinkedIn"
-        caption="let's connect;"
-        icon={<Icons.linkedin className="size-5" />}
+      <StatCard
+        value={snapshot.contributions.totalContributions.toLocaleString()}
+        label="contributions last year"
+        icon={<FileText className="size-4" />}
+        iconColor="bg-primary/10 text-primary"
       />
-      <SocialTile
-        href={DATA.contact.social.X.url}
-        label="X"
-        caption="hot takes"
-        icon={<Icons.x className="size-5" />}
+      <StatCard
+        value={snapshot.mergedPullRequestCount.toLocaleString()}
+        label="pull requests merged"
+        icon={<Icons.github className="size-4" />}
+        iconColor="bg-green/10 text-green"
       />
-      <div className={cn(tileBase, "items-center justify-center gap-2 text-center")}>
-        <Sparkles className="size-5 text-primary" />
-        <span className="text-xs text-muted-foreground">
-          building agentic AI workflows
-        </span>
-      </div>
-      <a
-        href="/resume.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={cn(tileBase, "items-center justify-center gap-2 text-center")}
-      >
-        <FileText className="size-5 text-primary" />
-        <span className="text-xs text-muted-foreground">grab my resume</span>
-      </a>
+      <StatCard
+        value={snapshot.publicRepositoryCount.toLocaleString()}
+        label="repositories"
+        icon={<Icons.github className="size-4" />}
+        iconColor="bg-muted/50 text-muted-foreground"
+      />
+      <ContributionGraph
+        className="col-span-1 row-span-2 md:col-span-1 md:row-span-2"
+        cellSize={8}
+      />
     </div>
   );
 }

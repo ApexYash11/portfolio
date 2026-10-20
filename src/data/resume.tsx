@@ -1,20 +1,14 @@
 import { Icons } from "@/components/icons";
 import { HomeIcon, NotebookIcon } from "lucide-react";
-import { ReactLight } from "@/components/ui/svgs/reactLight";
 import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
 import { Typescript } from "@/components/ui/svgs/typescript";
-import { Nodejs } from "@/components/ui/svgs/nodejs";
 import { Python } from "@/components/ui/svgs/python";
 import { Golang } from "@/components/ui/svgs/golang";
 import { Postgresql } from "@/components/ui/svgs/postgresql";
-import { Docker } from "@/components/ui/svgs/docker";
-import { Kubernetes } from "@/components/ui/svgs/kubernetes";
 import { Java } from "@/components/ui/svgs/java";
-import { Csharp } from "@/components/ui/svgs/csharp";
-import { SiDocker, SiFastapi, SiGithub, SiGit, SiLangchain, SiLanggraph, SiNumpy, SiPandas, SiScikitlearn, SiSupabase, SiTensorflow } from "react-icons/si";
-import { VscVscode } from "react-icons/vsc";
+import { SiDocker, SiFastapi, SiGit, SiInstagram, SiLangchain, SiLanggraph, SiNumpy, SiPandas, SiScikitlearn, SiSupabase } from "react-icons/si";
 import { FaProjectDiagram } from "react-icons/fa";
-import { FaBrain, FaChartBar, FaChartLine, FaComments, FaFlag, FaLanguage, FaPuzzlePiece, FaUsers } from "react-icons/fa6";
+import { FaBrain, FaChartBar, FaChartLine, FaLanguage } from "react-icons/fa6";
 
 export const DATA = {
   name: "Yash Maheshwari",
@@ -25,7 +19,7 @@ export const DATA = {
   description:
     "AI/ML Engineer building agentic AI systems, backend infrastructure, and production-ready RAG workflows.",
   summary:
-    "Hi, my name is Yash, an AI engineer based in Surat, and at the moment developing solutions in Bangalore.\n\nI got into tech just for the pure fun of it, and guess what, that's still true. Currently, I'm immersed in agent-based workflows, training LLMs to do planning, tooling, and hallucination free work (mostly). Anything on backend infrastructure, orchestration pipelines, and RAG systems, if it helps with the practical implementation of agents, I'm in.\n\nDoing this on a daily basis is pretty rewarding. When I'm not doing development stuff, I might be scrolling through X for some model drama, only for research purposes, though.",
+    "Hi, my name is Yash, an AI engineer based in Surat, and at the moment developing solutions in Bangalore.\n\nI got into tech just for the pure fun of it, and guess what, that's still true. Currently, I'm immersed in agent-based workflows, building agent workflows, orchestration pipelines, and RAG systems that keep LLM output grounded in real context. Anything on backend infrastructure and the practical implementation of agents, I'm in.\n\nDoing this on a daily basis is pretty rewarding. When I'm not doing development stuff, I might be scrolling through X for some model drama, only for research purposes, though.",
   avatarUrl: "/profile-desk.jpg",
   openSource: [
     {
@@ -77,33 +71,43 @@ export const DATA = {
       ],
     },
   ],
-  skills: [
-    { name: "Python", icon: Python, color: "#3776AB" },
-    { name: "Java", icon: Java, color: "#F89820" },
-    { name: "C", icon: Csharp, color: "#A179DC" },
-    { name: "SQL", icon: Postgresql, color: "#336791" },
-    { name: "FastAPI", icon: SiFastapi, color: "#009688" },
-    { name: "Supabase", icon: SiSupabase, color: "#3ECF8E" },
-    { name: "Docker", icon: SiDocker, color: "#2496ED" },
-    { name: "Git", icon: SiGit, color: "#F05032" },
-    { name: "GitHub", icon: SiGithub, color: "#FFFFFF" },
-    { name: "Power BI", icon: FaChartBar, color: "#F2C811" },
-    { name: "VS Code", icon: VscVscode, color: "#007ACC" },
-    { name: "Scikit-learn", icon: SiScikitlearn, color: "#F7931E" },
-    { name: "TensorFlow", icon: SiTensorflow, color: "#FF6F00" },
-    { name: "Pandas", icon: SiPandas, color: "#150458" },
-    { name: "NumPy", icon: SiNumpy, color: "#4D77CF" },
-    { name: "RAG", icon: FaProjectDiagram, color: "#F97373" },
-    { name: "LLMs", icon: FaBrain, color: "#A78BFA" },
-    { name: "NLP", icon: FaLanguage, color: "#5EEAD4" },
-    { name: "Matplotlib", icon: FaChartLine, color: "#11557C" },
-    { name: "LangChain", icon: SiLangchain, color: "#1C3C5A" },
-    { name: "LangGraph", icon: SiLanggraph, color: "#F59E0B" },
-    { name: "MCP", icon: FaProjectDiagram, color: "#38BDF8" },
-    { name: "Leadership", icon: FaFlag, color: "#FB7185" },
-    { name: "Collaboration", icon: FaUsers, color: "#60A5FA" },
-    { name: "Communication", icon: FaComments, color: "#FDE68A" },
-    { name: "Problem Solving", icon: FaPuzzlePiece, color: "#2DD4BF" },
+  skillGroups: [
+    {
+      title: "Languages",
+      skills: [
+        { name: "Python", icon: Python, color: "#3776AB" },
+        { name: "Java", icon: Java, color: "#F89820" },
+        { name: "SQL", icon: Postgresql, color: "#336791" },
+        { name: "TypeScript", icon: Typescript, color: "#3178C6" },
+        { name: "Go", icon: Golang, color: "#00ADD8" },
+      ],
+    },
+    {
+      title: "ML & Data",
+      skills: [
+        { name: "Scikit-learn", icon: SiScikitlearn, color: "#F7931E" },
+        { name: "Pandas", icon: SiPandas, color: "#150458" },
+        { name: "NumPy", icon: SiNumpy, color: "#4D77CF" },
+        { name: "Matplotlib", icon: FaChartLine, color: "#11557C" },
+        { name: "Power BI", icon: FaChartBar, color: "#F2C811" },
+        { name: "NLP", icon: FaLanguage, color: "#5EEAD4" },
+      ],
+    },
+    {
+      title: "Backend & Infra",
+      skills: [
+        { name: "FastAPI", icon: SiFastapi, color: "#009688" },
+        { name: "Next.js", icon: NextjsIconDark, color: "#000000" },
+        { name: "Supabase", icon: SiSupabase, color: "#3ECF8E" },
+        { name: "Docker", icon: SiDocker, color: "#2496ED" },
+        { name: "Git", icon: SiGit, color: "#F05032" },
+        { name: "RAG", icon: FaProjectDiagram, color: "#F97373" },
+        { name: "LLMs", icon: FaBrain, color: "#A78BFA" },
+        { name: "LangChain", icon: SiLangchain, color: "#1C3C5A" },
+        { name: "LangGraph", icon: SiLanggraph, color: "#F59E0B" },
+        { name: "MCP", icon: FaProjectDiagram, color: "#38BDF8" },
+      ],
+    },
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -134,7 +138,7 @@ export const DATA = {
       Instagram: {
         name: "Instagram",
         url: "https://instagram.com/yash_maheshwari_11",
-        icon: Icons.globe,
+        icon: SiInstagram,
         navbar: true,
       },
       email: {
@@ -299,7 +303,7 @@ export const DATA = {
         },
       ],
       image: "/jasper.png",
-      mediaAspectRatio: "17 / 8",
+      mediaAspectRatio: "16 / 9",
     },
     {
       title: "STOCKIQ",
@@ -331,8 +335,8 @@ export const DATA = {
       dates: "",
       active: false,
       description:
-        "Insurance claim automation platform using NLP and computer vision — cuts manual verification time by 80%.",
-      technologies: ["Python", "FastAPI", "TensorFlow", "React", "AWS"],
+        "Insurance policy analysis platform — upload policy documents, get AI coverage breakdowns, compare policies side by side, and ask questions about your policies with RAG-powered document chat.",
+      technologies: ["Next.js", "FastAPI", "Supabase", "Groq", "Gemini", "RAG"],
       video: undefined,
       links: [
         {
@@ -346,7 +350,7 @@ export const DATA = {
           icon: <Icons.notion className="size-3" />,
         },
       ],
-      image: "",
+      image: "/claimwise.jpg",
       mediaAspectRatio: "16 / 9",
     },
     {

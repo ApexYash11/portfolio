@@ -15,7 +15,7 @@ import {
 import { useRef, type PointerEvent, type ReactNode } from "react";
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 14, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 10, filter: "blur(4px)" },
   visible: {
     opacity: 1,
     y: 0,
