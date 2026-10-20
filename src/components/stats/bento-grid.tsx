@@ -4,6 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import snapshotJson from "@/data/github-stats.json";
 import { FileText, Sparkles } from "lucide-react";
+import ContributionGraph from "./contribution-graph";
 
 interface GithubSnapshot {
   username: string;
@@ -127,6 +128,7 @@ export default function BentoGrid() {
         caption="hot takes"
         icon={<Icons.x className="size-5" />}
       />
+      <ContributionGraph className="col-span-2 row-span-1" />
       <div className={cn(tileBase, "items-center justify-center gap-2 text-center")}>
         <Sparkles className="size-5 text-primary" />
         <span className="text-xs text-muted-foreground">
