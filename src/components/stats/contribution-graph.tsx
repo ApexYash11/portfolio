@@ -27,8 +27,10 @@ const LEVEL_CLASSES = [
 
 export default function ContributionGraph({
   className,
+  cellSize = 8,
 }: {
   className?: string;
+  cellSize?: number;
 }) {
   const snapshot = snapshotJson as unknown as {
     username: string;
@@ -71,14 +73,14 @@ export default function ContributionGraph({
       </div>
 
       <div className="flex flex-col gap-1">
-        <div className="flex items-end gap-0.5 h-24 text-[10px] text-muted-foreground">
+        <div className="flex items-end gap-0.5 h-20 text-[10px] text-muted-foreground">
           {dayNames.map((name) => (
             <span key={name} className="w-2 text-center">
               {name}
             </span>
           ))}
         </div>
-        <div className="relative">
+        <div className="relative overflow-x-auto">
           {weeks.map((week, wi) => (
             <div key={week.week} className="flex gap-0.5">
               {week.days.map((d, di) => {
@@ -89,9 +91,11 @@ export default function ContributionGraph({
                   <div
                     key={d.date}
                     className={cn(
-                      "size-2 rounded",
+                      "rounded transition-all duration-100 group-hover:scale-110",
+                      cellSize
+                        ? `w-[${cellSize}px] h-[${cellSize}px]`
+                        : "size-2 rounded",
                       LEVEL_CLASSES[level],
-                      "transition-all duration-100 group-hover:scale-110"
                     )}
                     title={`${d.date}: ${count} contribution${count === 1 ? "" : "s"}`}
                   />
