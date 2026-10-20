@@ -4,6 +4,7 @@ import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
 import snapshotJson from "@/data/github-stats.json";
 import { FileText } from "lucide-react";
+import ContributionGraph from "./contribution-graph";
 
 interface GithubSnapshot {
   username: string;
@@ -58,7 +59,7 @@ function StatCard({
 
 export default function BentoGrid() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 auto-rows-fr">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 auto-rows-fr">
       <StatCard
         value={snapshot.contributions.totalContributions.toLocaleString()}
         label="contributions last year"
@@ -76,6 +77,10 @@ export default function BentoGrid() {
         label="repositories"
         icon={<Icons.github className="size-4" />}
         iconColor="bg-muted/50 text-muted-foreground"
+      />
+      <ContributionGraph
+        className="col-span-1 row-span-2 md:col-span-1 md:row-span-2"
+        cellSize={8}
       />
     </div>
   );
